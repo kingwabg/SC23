@@ -720,7 +720,7 @@ const MeetingPage = () => {
                        getSunEditorInstance={(editor) => { editorRef.current = editor; }}
                        lang={ko}
                        defaultValue={selectedLog?.content || ''}
-                       onChange={(content) => updateLogData(selectedLogId, 'content', content)}
+                       onBlur={(e, content) => updateLogData(selectedLogId, 'content', content)}
                        setOptions={{
                           height: 'auto',
                           minHeight: '600px',
