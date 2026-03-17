@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import { motion, AnimatePresence } from 'framer-motion';
+import starInfoBg from '../assets/star-info-bg.webp';
 import { 
   Users, 
   Search, 
@@ -34,12 +35,14 @@ const ChildrenPage = () => {
   // --- 글로벌 시스템 상태 ---
   const userRole = localStorage.getItem('userRole') || 'ADMIN';
   const [selectedYear, setSelectedYear] = useState(2026);
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [activeTab, setActiveTab] = useState('active'); 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedChildId, setSelectedChildId] = useState(null);
   const [detailTab, setDetailTab] = useState('info');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isYearPickerOpen, setIsYearPickerOpen] = useState(false);
+  const [isMonthPickerOpen, setIsMonthPickerOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newChild, setNewChild] = useState({ name: '', gender: '남', birth: '', school: '', grade: 1, address: '', guardian: '', contact: '', cardId: '' });
 
@@ -334,47 +337,109 @@ const ChildrenPage = () => {
 
     const reader = new FileReader();
     reader.onload = (evt) => {
-      const bstr = evt.target.result;
-      const wb = XLSX.read(bstr, { type: 'binary' });
-      const wsname = wb.SheetNames[0];
-      const ws = wb.Sheets[wsname];
-      const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      try {
+        const data = new Uint8Array(evt.target.result);
+        const workbook = XLSX.read(data, { type: 'array', codepage: 65001 }); // UTF-8로 시도
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const jsonRows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
 
-      if (data.length < 2) return;
+        if (jsonRows.length < 2) return;
 
-      const headers = data[0]; 
-      const rows = data.slice(1);
+        let newChildren = [...children];
+        let currentYearMonth = null;
+        let isDataSection = false;
+        let importedCount = 0;
+        let newChildrenAdded = 0;
 
-      const newChildren = [...children];
-      const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0');
+        jsonRows.forEach((row) => {
+          if (!row || row.length === 0) return;
 
-      rows.forEach(row => {
-        const name = row[0];
-        const childIndex = newChildren.findIndex(c => c.name === name);
-        if (childIndex > -1) {
-          if (!newChildren[childIndex].attendance) newChildren[childIndex].attendance = {};
-          
-          headers.forEach((header, idx) => {
-            if (idx === 0) return;
-            const day = String(header).padStart(2, '0');
-            const status = row[idx];
-            
-            if (status === '출' || status === 'PRESENT' || status === 'O' || status === 1) {
-              const dateKey = `${selectedYear}-${currentMonth}-${day}`;
-              newChildren[childIndex].attendance[dateKey] = {
-                status: 'PRESENT',
-                time: '09:00:00',
-                memo: '엑셀 데이터 일괄 임포트'
-              };
+          // 문자열 정규화 및 트림 함수
+          const clean = (val) => String(val || '').trim().normalize('NFC');
+
+          // 월 정보 행 찾기 (예: ,일자,2026년02월,,,,)
+          const dateCell = clean(row[2]);
+          if (clean(row[1]) === '일자' && dateCell) {
+            const match = dateCell.match(/(\d{4})년(\d{1,2})월/);
+            if (match) {
+              currentYearMonth = { year: match[1], month: match[2].padStart(2, '0') };
             }
-          });
-        }
-      });
+            isDataSection = false;
+          }
 
-      setChildren(newChildren);
-      alert('출결 데이터가 성공적으로 통합되었습니다.');
+          // 데이터 시작 행 찾기 (번호,이름,학교,1일,2일...)
+          if (clean(row[0]) === '번호' && clean(row[1]) === '이름') {
+            isDataSection = true;
+            return;
+          }
+
+          // 데이터 섹션 처리
+          if (isDataSection && currentYearMonth && row[1]) {
+            const name = clean(row[1]);
+            if (name === '이름' || name === '') return;
+
+            // 아동 찾기 또는 생성
+            let childIndex = newChildren.findIndex(c => clean(c.name) === name);
+            if (childIndex === -1) {
+              // 아동이 없으면 자동 등록
+              const newId = Date.now() + Math.random();
+              const newChildData = {
+                id: newId,
+                name: name,
+                birth: '',
+                gender: clean(row[38]) || '미지정', // 성별 열 (인덱스 보정 필요할 수 있음)
+                cardId: `IMP_${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
+                yearlyData: {
+                  [currentYearMonth.year]: {
+                    school: clean(row[2]) || '',
+                    grade: 1,
+                    address: '',
+                    guardian: '',
+                    contact: ''
+                  }
+                },
+                logs: {
+                  [currentYearMonth.year]: { observation: [], h1: null, h2: null, guardian: [] }
+                },
+                attendance: {}
+              };
+              newChildren.push(newChildData);
+              childIndex = newChildren.length - 1;
+              newChildrenAdded++;
+            }
+
+            // 1일부터 31일까지 출결 확인 (인덱스 3 ~ 33)
+            for (let day = 1; day <= 31; day++) {
+              const status = clean(row[day + 2]);
+              const dateKey = `${currentYearMonth.year}-${currentYearMonth.month}-${String(day).padStart(2, '0')}`;
+              
+              if (['출석', '출', 'O', 'V', '1'].includes(status)) {
+                newChildren[childIndex].attendance[dateKey] = {
+                  status: 'PRESENT',
+                  time: '09:00:00',
+                  memo: 'CSV 통합 임포트'
+                };
+                importedCount++;
+              } else if (['결석', 'X', '0'].includes(status)) {
+                newChildren[childIndex].attendance[dateKey] = {
+                  status: 'ABSENT',
+                  time: '-',
+                  memo: 'CSV 통합 임포트'
+                };
+              }
+            }
+          }
+        });
+
+        setChildren(newChildren);
+        alert(`${newChildrenAdded}명의 아동을 새로 등록하고, ${importedCount}건의 출결 기록을 통합했습니다.`);
+      } catch (err) {
+        console.error(err);
+        alert('파일을 읽는 중 오류가 발생했습니다. CSV 형식을 확인해 주세요.');
+      }
     };
-    reader.readAsBinaryString(file);
+    reader.readAsArrayBuffer(file);
     e.target.value = null;
   };
 
@@ -471,10 +536,38 @@ const ChildrenPage = () => {
                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Attendance Registry</span>
                   </div>
                   <h3 className="text-4xl font-black text-slate-900 tracking-tighter uppercase italic">
-                    월간 출결 현황 대장 <span className="text-indigo-600">.</span>
+                    {selectedMonth}월 출결 현황 대장 <span className="text-indigo-600">.</span>
                   </h3>
                 </div>
                  <div className="flex gap-4">
+                   <div className="relative">
+                     <button 
+                       onClick={() => setIsMonthPickerOpen(!isMonthPickerOpen)}
+                       className="px-6 py-3 bg-white border border-slate-200 rounded-xl font-black text-[11px] flex items-center gap-2"
+                     >
+                       {selectedMonth}월 <ChevronDown className="w-4 h-4" />
+                     </button>
+                     <AnimatePresence>
+                       {isMonthPickerOpen && (
+                         <motion.div 
+                           initial={{ opacity: 0, scale: 0.95 }}
+                           animate={{ opacity: 1, scale: 1 }}
+                           exit={{ opacity: 0, scale: 0.95 }}
+                           className="absolute top-full right-0 mt-2 bg-white border border-slate-100 rounded-2xl shadow-2xl z-50 p-2 grid grid-cols-3 gap-1 w-48"
+                         >
+                           {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
+                             <button 
+                               key={m} 
+                               onClick={() => { setSelectedMonth(m); setIsMonthPickerOpen(false); }}
+                               className={`p-2 rounded-lg text-xs font-black transition-all ${selectedMonth === m ? 'bg-indigo-600 text-white' : 'hover:bg-slate-50'}`}
+                             >
+                               {m}월
+                             </button>
+                           ))}
+                         </motion.div>
+                       )}
+                     </AnimatePresence>
+                   </div>
                    <input 
                      type="file" 
                      ref={fileInputRef} 
@@ -508,7 +601,7 @@ const ChildrenPage = () => {
                     <tbody className="divide-y divide-slate-50">
                       {children.map(child => {
                         const days = Array.from({ length: 31 }, (_, i) => {
-                          const date = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(i+1).padStart(2, '0')}`;
+                          const date = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(i+1).padStart(2, '0')}`;
                           return child.attendance?.[date];
                         });
                         const presentCount = days.filter(d => d?.status === 'PRESENT').length;
@@ -754,16 +847,24 @@ const ChildrenPage = () => {
                          <div className="absolute top-6 right-10 text-[10px] font-black text-slate-300 uppercase tracking-widest italic">데이터베이스 동기화: 활성화</div>
                          
                          {detailTab === 'info' && (
-                           <div className="grid grid-cols-2 gap-12 animate-in fade-in slide-in-from-bottom-8">
-                              <div className="space-y-4 col-span-2 border-b border-slate-100 pb-8"><h5 className="text-[12px] font-black text-slate-900 uppercase tracking-[0.4em] m-0 flex items-center gap-3"><ShieldCheck className="w-5 h-5 text-emerald-500"/> 개인 신원 및 법적 식별 정보 ({selectedYear})</h5></div>
-                              <div className="space-y-3"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">성별 / 생년월일</label><div className="flex gap-4"><input type="text" readOnly value={selectedChild.gender} className="w-24 bg-white border border-slate-100 rounded-2xl py-6 px-4 font-black text-center shadow-inner" /><input type="text" readOnly value={selectedChild.birth} className="flex-1 bg-white border border-slate-100 rounded-2xl py-6 px-10 font-black shadow-inner" /></div></div>
-                              <div className="space-y-3"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">RFID 보안 태그 ID</label><div className="flex gap-2">
-                                <input type="text" readOnly value={selectedChild.displayId || 'N/A'} className="flex-1 bg-slate-100 text-slate-500 border-none rounded-2xl py-6 px-10 font-black tracking-widest" placeholder="관리번호" />
-                                <input type="text" readOnly value={selectedChild.cardId} className="flex-1 bg-slate-900 text-indigo-400 border-none rounded-2xl py-6 px-10 font-black tracking-widest shadow-2xl" placeholder="하드웨어 ID" />
+                           <div
+                             className="relative grid grid-cols-2 gap-12 animate-in fade-in slide-in-from-bottom-8 overflow-hidden rounded-[3rem] border border-sky-100/80 p-10"
+                             style={{
+                               backgroundImage: `linear-gradient(180deg, rgba(248,252,253,0.74) 0%, rgba(248,252,253,0.88) 32%, rgba(248,252,253,0.96) 100%), url(${starInfoBg})`,
+                               backgroundSize: 'cover',
+                               backgroundPosition: 'center',
+                             }}
+                           >
+                              <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,rgba(121,182,255,0.16),transparent_38%)] pointer-events-none" />
+                              <div className="space-y-4 col-span-2 border-b border-white/70 pb-8 relative z-10"><h5 className="text-[12px] font-black text-slate-900 uppercase tracking-[0.4em] m-0 flex items-center gap-3"><ShieldCheck className="w-5 h-5 text-sky-500"/> 개인 신원 및 법적 식별 정보 ({selectedYear})</h5></div>
+                              <div className="space-y-3 relative z-10"><label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">성별 / 생년월일</label><div className="flex gap-4"><input type="text" readOnly value={selectedChild.gender} className="w-24 bg-white/92 border border-white rounded-2xl py-6 px-4 font-black text-center shadow-inner" /><input type="text" readOnly value={selectedChild.birth} className="flex-1 bg-white/92 border border-white rounded-2xl py-6 px-10 font-black shadow-inner" /></div></div>
+                              <div className="space-y-3 relative z-10"><label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">RFID 보안 태그 ID</label><div className="flex gap-2">
+                                <input type="text" readOnly value={selectedChild.displayId || 'N/A'} className="flex-1 bg-white/88 text-slate-500 border border-white rounded-2xl py-6 px-10 font-black tracking-widest shadow-inner" placeholder="관리번호" />
+                                <input type="text" readOnly value={selectedChild.cardId} className="flex-1 bg-slate-900/92 text-sky-300 border-none rounded-2xl py-6 px-10 font-black tracking-widest shadow-2xl" placeholder="하드웨어 ID" />
                               </div></div>
-                              <div className="space-y-3"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">주 보호자 / 당시 학년</label><input type="text" readOnly value={`${currentYearData?.guardian || '없음'} (${currentYearData?.grade || '?'}학년)`} className="w-full bg-white border border-slate-100 rounded-2xl py-6 px-10 font-black shadow-inner" /></div>
-                              <div className="space-y-3"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">비상 연락처 체계</label><input type="text" readOnly value={currentYearData?.contact || '정보 없음'} className="w-full bg-white border border-slate-100 rounded-2xl py-6 px-10 font-black shadow-inner" /></div>
-                              <div className="space-y-3 col-span-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">실거주지 매핑 주소</label><input type="text" readOnly value={currentYearData?.address || '데이터 없음'} className="w-full bg-white border border-slate-100 rounded-2xl py-6 px-10 font-black shadow-inner" /></div>
+                              <div className="space-y-3 relative z-10"><label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">주 보호자 / 당시 학년</label><input type="text" readOnly value={`${currentYearData?.guardian || '없음'} (${currentYearData?.grade || '?'}학년)`} className="w-full bg-white/92 border border-white rounded-2xl py-6 px-10 font-black shadow-inner" /></div>
+                              <div className="space-y-3 relative z-10"><label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">비상 연락처 체계</label><input type="text" readOnly value={currentYearData?.contact || '정보 없음'} className="w-full bg-white/92 border border-white rounded-2xl py-6 px-10 font-black shadow-inner" /></div>
+                              <div className="space-y-3 col-span-2 relative z-10"><label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">실거주지 매핑 주소</label><input type="text" readOnly value={currentYearData?.address || '데이터 없음'} className="w-full bg-white/92 border border-white rounded-2xl py-6 px-10 font-black shadow-inner" /></div>
                            </div>
                          )}
 

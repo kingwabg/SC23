@@ -1,0 +1,24 @@
+<svg width="1440" height="900" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1440" height="900" fill="#F7FCFF"/>
+  <rect x="0" y="0" width="1440" height="96" fill="#FFFFFF" fill-opacity="0.86"/>
+  <circle cx="92" cy="48" r="24" fill="#7FD6C2"/>
+  <rect x="132" y="32" width="220" height="14" rx="7" fill="#17313D"/>
+  <rect x="132" y="54" width="156" height="10" rx="5" fill="#6D8790"/>
+  <rect x="1110" y="28" width="112" height="40" rx="20" fill="#DFF7F1"/>
+  <rect x="1240" y="28" width="112" height="40" rx="20" fill="#DDEFFF"/>
+  <rect x="72" y="148" width="652" height="460" rx="44" fill="#E8F8FF"/>
+  <rect x="764" y="148" width="604" height="460" rx="44" fill="#CFEFEA"/>
+  <rect x="792" y="176" width="548" height="404" rx="32" fill="#7FD6C2"/>
+  <rect x="112" y="206" width="180" height="20" rx="10" fill="#63B7DA"/>
+  <rect x="112" y="254" width="478" height="34" rx="17" fill="#17313D"/>
+  <rect x="112" y="304" width="412" height="34" rx="17" fill="#17313D"/>
+  <rect x="112" y="368" width="512" height="18" rx="9" fill="#6A7F89"/>
+  <rect x="112" y="398" width="468" height="18" rx="9" fill="#6A7F89"/>
+  <rect x="112" y="454" width="176" height="54" rx="27" fill="#7FD6C2"/>
+  <rect x="308" y="454" width="176" height="54" rx="27" fill="#FFFFFF"/>
+  <rect x="72" y="650" width="304" height="176" rx="32" fill="#FFFFFF"/>
+  <rect x="396" y="650" width="304" height="176" rx="32" fill="#FFFFFF"/>
+  <rect x="720" y="650" width="304" height="176" rx="32" fill="#FFFFFF"/>
+  <rect x="1044" y="650" width="324" height="176" rx="32" fill="#7FD6C2"/>
+  <text x="72" y="124" fill="#17313D" font-size="28" font-family="Arial, sans-serif" font-weight="700">Option D  Sky Mint</text>
+</svg>
