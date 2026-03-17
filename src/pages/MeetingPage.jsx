@@ -31,9 +31,51 @@ import {
 import SunEditor from 'suneditor-react';
 import 'suneditor/dist/css/suneditor.min.css';
 import ko from 'suneditor/src/lang/ko';
+import { authApi } from '../utils/apiClient';
 
 // Handle ESM/CJS default export mismatch if necessary
 const Editor = SunEditor.default || SunEditor;
+
+const cloneData = (value) => JSON.parse(JSON.stringify(value));
+
+const FALLBACK_MEETINGS = [
+  {
+    id: 6,
+    year: 2026,
+    date: '2026.03.20',
+    type: 'LOG',
+    title: '시설 운영일지 - 3월 20일 목요일',
+    writer: '최하은',
+    status: '작성중',
+    startTime: '10:00',
+    endTime: '19:00',
+    approval: {
+      manager: { name: '최하은', confirmed: false, date: null },
+      director: { name: '김민수', confirmed: false, date: null }
+    },
+    stats: {
+      children: {
+        male: { pre: 0, elem: 2, mid: 2, high: 0, extra: 5, total: 9 },
+        female: { pre: 0, elem: 14, mid: 2, high: 0, extra: 9, total: 25 }
+      },
+      attendance: { limit: 40, current: 34, present: 32, official: 1, alt: 0, absent: 1, extra: 0 },
+      meals: { morning: 0, lunch: 0, dinner: 32 },
+      staff: { total: 3, teachers: 2, instructors: 1, extra: 0 }
+    },
+    content: '<h3>시설 운영일지 (3월 20일)</h3><p>금일은 학기중 운영 시간표에 맞춰 정상 운영되었습니다.</p>'
+  }
+];
+
+const loadLegacyMeetings = () => {
+  try {
+    const saved = localStorage.getItem('operationMeetingsData');
+    if (!saved) return null;
+    const parsed = JSON.parse(saved);
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : null;
+  } catch (error) {
+    return null;
+  }
+};
 
 const MeetingPage = () => {
   const [selectedYear, setSelectedYear] = useState(2026);
@@ -59,46 +101,56 @@ const MeetingPage = () => {
   }, []);
 
   // 샘플 데이터 구조 - 결재 및 집계 데이터 확장
-  const [meetings, setMeetings] = useState(() => {
-    const saved = localStorage.getItem('operationMeetingsData');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (parsed.length > 0) return parsed;
-    }
-    return [
-      { 
-        id: 6, year: 2026, date: '2026.03.20', type: 'LOG', 
-        title: '시설 운영일지 - 3월 20일 목요일', writer: '최하은', 
-        status: '작성중', // 작성중, 확정, 최종확정
-        startTime: '10:00', endTime: '19:00',
-        approval: {
-          manager: { name: '최하은', confirmed: false, date: null },
-          director: { name: '김민수', confirmed: false, date: null }
-        },
-        stats: {
-          children: {
-            male: { pre: 0, elem: 2, mid: 2, high: 0, extra: 5, total: 9 },
-            female: { pre: 0, elem: 14, mid: 2, high: 0, extra: 9, total: 25 }
-          },
-          attendance: { limit: 40, current: 34, present: 32, official: 1, alt: 0, absent: 1, extra: 0 },
-          meals: { morning: 0, lunch: 0, dinner: 32 },
-          staff: { total: 3, teachers: 2, instructors: 1, extra: 0 }
-        },
-        content: '<h3>시설 운영일지 (3월 20일)</h3><p>금일은 학기중 운영 시간표에 맞춰 정상 운영되었습니다.</p>' 
+  const [meetings, setMeetings] = useState(() => cloneData(loadLegacyMeetings() || FALLBACK_MEETINGS));
+  const [meetingsSyncReady, setMeetingsSyncReady] = useState(false);
+
+  useEffect(() => {
+    const hydrateMeetings = async () => {
+      const legacyMeetings = loadLegacyMeetings();
+      try {
+        const data = await authApi('/api/meetings');
+        const serverMeetings = Array.isArray(data.meetings) ? data.meetings : [];
+
+        if (serverMeetings.length > 0) {
+          setMeetings(cloneData(serverMeetings));
+        } else {
+          const seedMeetings = cloneData(legacyMeetings || FALLBACK_MEETINGS);
+          setMeetings(seedMeetings);
+          await authApi('/api/meetings/bulk', {
+            method: 'PUT',
+            body: JSON.stringify({ meetings: seedMeetings }),
+          });
+        }
+      } catch (error) {
+        setMeetings(cloneData(legacyMeetings || FALLBACK_MEETINGS));
+      } finally {
+        setMeetingsSyncReady(true);
       }
-    ];
-  });
+    };
+
+    hydrateMeetings();
+  }, []);
 
   useEffect(() => {
     if (!selectedLogId && meetings.length > 0) {
       const firstLog = meetings.find(m => m.type === 'LOG' && m.year === selectedYear);
       if (firstLog) setSelectedLogId(firstLog.id);
     }
-  }, [selectedYear]);
+  }, [meetings, selectedLogId, selectedYear]);
 
   useEffect(() => {
     localStorage.setItem('operationMeetingsData', JSON.stringify(meetings));
-  }, [meetings]);
+    if (!meetingsSyncReady) return;
+
+    const timeoutId = setTimeout(() => {
+      authApi('/api/meetings/bulk', {
+        method: 'PUT',
+        body: JSON.stringify({ meetings }),
+      }).catch(() => {});
+    }, 700);
+
+    return () => clearTimeout(timeoutId);
+  }, [meetings, meetingsSyncReady]);
 
   const categories = [
     { id: 'ALL', label: '전체 기록', icon: ClipboardList },
@@ -370,7 +422,7 @@ const MeetingPage = () => {
     alert('최종확정되었습니다. 공식 결재 직인과 헤더가 본문에 자동 교체/삽입되었습니다. 이제 인쇄가 가능합니다.');
   };
 
-  const handleAddNew = () => {
+  const handleAddNew = async () => {
     const newId = Math.max(0, ...meetings.map(m => m.id)) + 1;
     const newLog = {
       id: newId, year: selectedYear,
@@ -388,17 +440,32 @@ const MeetingPage = () => {
       },
       content: ''
     };
-    setMeetings([newLog, ...meetings]);
-    setSelectedLogId(newId);
+    try {
+      await authApi('/api/meetings', {
+        method: 'POST',
+        body: JSON.stringify({ meeting: newLog }),
+      });
+      setMeetings(prev => [newLog, ...prev]);
+      setSelectedLogId(newId);
+    } catch (error) {
+      alert('신규 기록 생성에 실패했습니다.');
+    }
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('정말 삭제하시겠습니까?')) {
-      const newMeetings = meetings.filter(m => m.id !== id);
-      setMeetings(newMeetings);
-      if (selectedLogId === id) {
-        const nextLog = newMeetings.find(m => m.type === 'LOG' && m.year === selectedYear);
-        setSelectedLogId(nextLog ? nextLog.id : null);
+      try {
+        await authApi(`/api/meetings/${id}`, {
+          method: 'DELETE',
+        });
+        const newMeetings = meetings.filter(m => m.id !== id);
+        setMeetings(newMeetings);
+        if (selectedLogId === id) {
+          const nextLog = newMeetings.find(m => m.type === 'LOG' && m.year === selectedYear);
+          setSelectedLogId(nextLog ? nextLog.id : null);
+        }
+      } catch (error) {
+        alert('기록 삭제에 실패했습니다.');
       }
     }
   };
@@ -445,53 +512,81 @@ const MeetingPage = () => {
     </div>
   );
 
+  const selectedStatusTone =
+    selectedLog?.status === '최종확정'
+      ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
+      : selectedLog?.status === '확정'
+        ? 'bg-indigo-50 text-indigo-600 border-indigo-100'
+        : 'bg-slate-100 text-slate-500 border-slate-200';
+
+  const mobileSummaryCards = [
+    {
+      label: '출석',
+      value: `${selectedLog?.stats?.attendance?.present ?? 0}명`,
+      hint: `현원 ${selectedLog?.stats?.attendance?.current ?? 0}명`,
+      tone: 'from-indigo-600 to-cyan-500'
+    },
+    {
+      label: '급식',
+      value: `${selectedLog?.stats?.meals?.dinner ?? 0}명`,
+      hint: '석식 기준',
+      tone: 'from-amber-500 to-orange-500'
+    },
+    {
+      label: '종사자',
+      value: `${selectedLog?.stats?.staff?.total ?? 0}명`,
+      hint: `교사 ${selectedLog?.stats?.staff?.teachers ?? 0}명`,
+      tone: 'from-emerald-600 to-teal-500'
+    }
+  ];
+
   return (
     <div className="font-['Outfit'] space-y-6 max-w-[1600px] mx-auto p-2">
       {/* 프리미엄 헤더 영역 */}
-      <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-2xl shadow-indigo-900/5 space-y-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-           <div className="flex items-center gap-5">
-              <div className="w-16 h-16 bg-slate-900 rounded-[2rem] flex items-center justify-center shadow-2xl rotate-3">
+      <div className="bg-white p-5 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-slate-100 shadow-2xl shadow-indigo-900/5 space-y-6 md:space-y-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-6">
+           <div className="flex items-center gap-4 md:gap-5">
+              <div className="w-14 h-14 md:w-16 md:h-16 bg-slate-900 rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-center shadow-2xl rotate-3">
                  <ClipboardList className="w-8 h-8 text-indigo-400" />
               </div>
               <div>
-                 <h2 className="text-4xl font-black text-slate-900 m-0 italic tracking-tighter uppercase">Corporate Archive</h2>
-                 <p className="text-[10px] font-black text-slate-400 m-0 uppercase tracking-[0.5em] mt-1">통합 운영 기록 시스템</p>
+                 <h2 className="text-2xl md:text-4xl font-black text-slate-900 m-0 italic tracking-tighter uppercase">Corporate Archive</h2>
+                 <p className="text-[10px] font-black text-slate-400 m-0 uppercase tracking-[0.35em] md:tracking-[0.5em] mt-1">통합 운영 기록 시스템</p>
               </div>
            </div>
            
-           <div className="flex gap-4">
-              <div className="relative w-80">
-                 <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+           <div className="flex w-full md:w-auto flex-col sm:flex-row gap-3 md:gap-4">
+              <div className="relative w-full md:w-80">
+                 <Search className="absolute left-4 md:left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                  <input 
                    type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                    placeholder="문서 검색..." 
-                   className="w-full pl-14 pr-8 py-5 bg-slate-50 border border-slate-100 rounded-[1.5rem] text-xs font-bold outline-none focus:ring-4 focus:ring-indigo-500/5 transition-all" 
+                   className="w-full pl-12 md:pl-14 pr-5 md:pr-8 py-4 md:py-5 bg-slate-50 border border-slate-100 rounded-[1.25rem] md:rounded-[1.5rem] text-xs font-bold outline-none focus:ring-4 focus:ring-indigo-500/5 transition-all" 
                  />
               </div>
-              <button onClick={handleAddNew} className="px-10 py-5 bg-indigo-600 text-white rounded-[1.5rem] shadow-2xl shadow-indigo-600/20 hover:bg-black font-black text-[12px] transition-all uppercase tracking-widest active:scale-95">
+              <button onClick={handleAddNew} className="px-6 md:px-10 py-4 md:py-5 bg-indigo-600 text-white rounded-[1.25rem] md:rounded-[1.5rem] shadow-2xl shadow-indigo-600/20 hover:bg-black font-black text-[12px] transition-all uppercase tracking-widest active:scale-95">
                  <Plus className="w-5 h-5 inline mr-2" /> 신규 기록
               </button>
            </div>
         </div>
 
-        <div className="flex flex-col md:flex-row items-center justify-between border-t border-slate-50 pt-8 gap-6">
-           <div className="flex bg-slate-100 p-1.5 rounded-[1.5rem] gap-1 shadow-inner">
+        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between border-t border-slate-50 pt-6 md:pt-8 gap-4 md:gap-6">
+           <div className="flex bg-slate-100 p-1.5 rounded-[1.5rem] gap-1 shadow-inner overflow-x-auto w-full md:w-auto">
               {categories.map(cat => (
                 <button 
                   key={cat.id} onClick={() => setActiveCategory(cat.id)}
-                  className={`flex items-center gap-3 px-8 py-3.5 rounded-2xl text-[11px] font-black transition-all ${activeCategory === cat.id ? 'bg-white text-indigo-600 shadow-xl' : 'text-slate-400 hover:text-slate-600'}`}
+                  className={`flex items-center justify-center gap-3 px-5 md:px-8 py-3.5 rounded-2xl text-[11px] font-black transition-all whitespace-nowrap ${activeCategory === cat.id ? 'bg-white text-indigo-600 shadow-xl' : 'text-slate-400 hover:text-slate-600'}`}
                 >
                    <cat.icon className="w-4 h-4" /> {cat.label}
                 </button>
               ))}
            </div>
 
-           <div className="flex bg-indigo-50/50 p-1.5 rounded-[1.5rem] gap-2 border border-indigo-100/50">
+           <div className="flex bg-indigo-50/50 p-1.5 rounded-[1.5rem] gap-2 border border-indigo-100/50 overflow-x-auto">
              {[2024, 2025, 2026].map(year => (
                <button 
                  key={year} onClick={() => setSelectedYear(year)} 
-                 className={`px-8 py-3.5 rounded-2xl text-[11px] font-black transition-all ${selectedYear === year ? 'bg-indigo-600 text-white shadow-xl' : 'text-indigo-300 hover:text-indigo-400'}`}
+                 className={`px-6 md:px-8 py-3.5 rounded-2xl text-[11px] font-black transition-all whitespace-nowrap ${selectedYear === year ? 'bg-indigo-600 text-white shadow-xl' : 'text-indigo-300 hover:text-indigo-400'}`}
                >
                  {year}년도
                </button>
@@ -501,7 +596,111 @@ const MeetingPage = () => {
       </div>
 
       {activeCategory === 'LOG' ? (
-        <div className="grid grid-cols-12 gap-8 pt-4">
+        <>
+        <div className="space-y-4 pt-1 md:hidden">
+           <div className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-xl shadow-indigo-900/5">
+              <div className="flex items-start justify-between gap-4">
+                 <div>
+                    <span className={`inline-flex rounded-full border px-3 py-1 text-[10px] font-black ${selectedStatusTone}`}>{selectedLog?.status || '선택 없음'}</span>
+                    <h3 className="mt-3 text-2xl font-black tracking-tight text-slate-900">{selectedLog?.title || '운영일지를 선택해 주세요'}</h3>
+                    <p className="mt-2 text-sm font-medium text-slate-500">
+                      {selectedLog ? `${selectedLog.date} · ${selectedLog.startTime} ~ ${selectedLog.endTime}` : '아래 카드에서 문서를 선택하면 상세 내용을 바로 볼 수 있습니다.'}
+                    </p>
+                 </div>
+                 <button onClick={handleAddNew} className="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-600/20">
+                    <Plus className="h-5 w-5" />
+                 </button>
+              </div>
+
+              <div className="mt-5 grid grid-cols-3 gap-3">
+                {mobileSummaryCards.map((card) => (
+                  <div key={card.label} className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-3">
+                    <div className={`mb-3 h-2 w-12 rounded-full bg-gradient-to-r ${card.tone}`} />
+                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400">{card.label}</p>
+                    <p className="mt-2 text-lg font-black tracking-tight text-slate-900">{card.value}</p>
+                    <p className="mt-1 text-[11px] font-medium text-slate-500">{card.hint}</p>
+                  </div>
+                ))}
+              </div>
+
+              {selectedLog && (
+                <div className="mt-5 space-y-3">
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div className="rounded-2xl bg-slate-50 p-3">
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">담당자</p>
+                      <p className="mt-2 font-black text-slate-900">{selectedLog.writer}</p>
+                    </div>
+                    <div className="rounded-2xl bg-slate-50 p-3">
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">운영 구분</p>
+                      <p className="mt-2 font-black text-slate-900">{getPeriodLabel(selectedLog.startTime, selectedLog.endTime)}</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button onClick={runAutoAggregate} className="rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-black text-white shadow-lg shadow-emerald-500/20">
+                      <RotateCcw className="mr-2 inline h-4 w-4" />
+                      데이터 집계
+                    </button>
+                    <button onClick={handleConfirm} disabled={selectedLog?.approval?.manager?.confirmed} className="rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-black text-white disabled:bg-slate-200 disabled:text-slate-400">
+                      <CheckCircle2 className="mr-2 inline h-4 w-4" />
+                      담당 확정
+                    </button>
+                  </div>
+                </div>
+              )}
+           </div>
+
+           <div className="space-y-3">
+             {filteredMeetings.map((m) => (
+               <button
+                 key={m.id}
+                 onClick={() => setSelectedLogId(m.id)}
+                 className={`w-full rounded-[1.75rem] border p-4 text-left transition-all ${selectedLogId === m.id ? 'border-indigo-200 bg-indigo-600 text-white shadow-xl shadow-indigo-600/20' : 'border-slate-200 bg-white text-slate-700 shadow-sm shadow-slate-200/70'}`}
+               >
+                 <div className="flex items-start justify-between gap-3">
+                   <div>
+                     <span className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-black ${m.status === '최종확정' ? 'bg-emerald-500 text-white' : m.status === '확정' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                       {m.status}
+                     </span>
+                     <h4 className="mt-3 text-base font-black leading-tight">{m.title}</h4>
+                   </div>
+                   <button
+                     onClick={(e) => { e.stopPropagation(); handleDelete(m.id); }}
+                     className={`rounded-xl p-2 ${selectedLogId === m.id ? 'bg-white/10 text-white' : 'bg-slate-50 text-slate-400'}`}
+                   >
+                     <Trash2 className="h-4 w-4" />
+                   </button>
+                 </div>
+                 <div className={`mt-3 flex items-center justify-between text-xs font-bold ${selectedLogId === m.id ? 'text-white/70' : 'text-slate-400'}`}>
+                   <span>{m.date}</span>
+                   <span>{m.writer}</span>
+                 </div>
+               </button>
+             ))}
+           </div>
+
+           {selectedLog && (
+             <div className="rounded-[2rem] border border-slate-100 bg-white p-4 shadow-xl shadow-indigo-900/5">
+               <div className="flex items-center justify-between gap-3">
+                 <div>
+                   <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">문서 본문</p>
+                   <h4 className="mt-2 text-lg font-black text-slate-900">모바일 편집 보기</h4>
+                 </div>
+                 <button onClick={handleFinalConfirm} disabled={selectedLog?.status === '최종확정'} className="rounded-2xl bg-slate-900 px-4 py-3 text-sm font-black text-white disabled:bg-slate-200">
+                   최종확정
+                 </button>
+               </div>
+               <div className="mt-4 max-h-[420px] overflow-y-auto rounded-[1.5rem] bg-slate-50 p-4 text-sm leading-7 text-slate-600">
+                 {selectedLog.content ? (
+                   <div dangerouslySetInnerHTML={{ __html: selectedLog.content }} />
+                 ) : (
+                   <p className="font-medium text-slate-400">아직 작성된 본문이 없습니다.</p>
+                 )}
+               </div>
+             </div>
+           )}
+        </div>
+
+        <div className="hidden md:grid grid-cols-12 gap-8 pt-4">
            {/* 운영일지 목록 */}
            <div className="col-span-12 lg:col-span-3">
               <div className="bg-white rounded-[3rem] border border-slate-100 shadow-2xl h-[950px] overflow-hidden flex flex-col relative">
@@ -741,6 +940,7 @@ const MeetingPage = () => {
               </div>
            </div>
         </div>
+        </>
       ) : (
         <div className="p-20 text-center opacity-20">
            <ClipboardList className="w-24 h-24 mx-auto mb-4" />

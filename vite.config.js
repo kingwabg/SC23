@@ -18,4 +18,16 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+          motion: ['framer-motion'],
+          editor: ['suneditor', 'suneditor-react'],
+          utils: ['axios', 'xlsx', 'clsx', 'tailwind-merge'],
+        },
+      },
+    },
+  },
 })
