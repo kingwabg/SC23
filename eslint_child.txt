@@ -1,6 +1,0 @@
-
-C:\Users\juna.DESKTOP-PPGTQQM\.antigravity\sc2\src\pages\ChildrenPage.jsx
-  943:34  error  Parsing error: Unexpected token `}`. Did you mean `&rbrace;` or `{"}"}`?
-
-??1 problem (1 error, 0 warnings)
-

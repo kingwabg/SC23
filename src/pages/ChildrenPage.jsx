@@ -29,93 +29,12 @@ import {
   Timer
 } from 'lucide-react';
 
-const FALLBACK_CHILDREN = [
-  {
-    id: 1, name: '김민수', birth: '2011-05-12', gender: '남', photo: null, enrollment: '2018-03-02', cardId: 'E7FDCD66',
-    yearlyData: {
-      2018: { school: '숲속초등학교', grade: 1, address: '서울시 강남구 A단지', guardian: '김철수', contact: '010-1111-1111' },
-      2019: { school: '숲속초등학교', grade: 2, address: '서울시 강남구 A단지', guardian: '김철수', contact: '010-1111-1111' },
-      2020: { school: '숲속초등학교', grade: 3, address: '서울시 강남구 B빌라', guardian: '김철수', contact: '010-2222-2222' },
-      2021: { school: '숲속초등학교', grade: 4, address: '서울시 강남구 B빌라', guardian: '김철수', contact: '010-2222-2222' },
-      2022: { school: '숲속초등학교', grade: 5, address: '서울시 서초구 C아파트', guardian: '김철수', contact: '010-3333-3333' },
-      2023: { school: '숲속초등학교', grade: 6, address: '서울시 서초구 C아파트', guardian: '김철수', contact: '010-3333-3333' },
-      2024: { school: '숲속중학교', grade: '중1', address: '서울시 서초구 D단지', guardian: '김철수', contact: '010-4444-4444' },
-      2025: { school: '숲속중학교', grade: '중2', address: '서울시 서초구 D단지', guardian: '김철수', contact: '010-4444-4444' },
-      2026: { school: '숲속중학교', grade: '중3', address: '서울시 서초구 D단지', guardian: '김철수', contact: '010-1234-5678' }
-    },
-    logs: {
-      2018: { observation: [{ date: '2018-03-12', content: '1학년 입학! 너무 귀엽고 씩씩함.' }], h1: { date: '2018-05-10', content: '적응 아주 빠름' }, h2: { date: '2018-11-20', content: '친구들과 잘 어울림' }, guardian: [] },
-      2026: { observation: [{ date: '2026-03-10', content: '중3 사춘기 없이 성숙함. 진로 고민 중.' }], h1: { date: '2026-03-15', content: '진로 집중 상담' }, h2: null, guardian: [] }
-    },
-    attendance: {}
-  },
-  {
-    id: 2, name: '이영희', birth: '2018-11-20', gender: '여', photo: null, enrollment: '2025-03-02', cardId: 'A1B2C3D4',
-    yearlyData: {
-      2025: { school: '산새초등학교', grade: 1, address: '서울시 서초구 서초대로', guardian: '박영순', contact: '010-9999-8888' },
-      2026: { school: '숲속초등학교', grade: 2, address: '서울시 서초구 서초대로', guardian: '박영순', contact: '010-4321-8765' }
-    },
-    logs: { 2025: { observation: [], h1: { date: '2025-05-02', content: '입소 초기 상담' }, h2: null, guardian: [] }, 2026: { observation: [], h1: null, h2: null, guardian: [] } },
-    attendance: {}
-  },
-  {
-    id: 3, name: '박지훈', birth: '2019-02-15', gender: '남', photo: null, enrollment: '2026-03-02', cardId: 'BG774211',
-    yearlyData: { 2026: { school: '푸른들초등학교', grade: 1, address: '서울시 송파구 잠실동', guardian: '박철웅', contact: '010-5555-5555' } },
-    logs: { 2026: { observation: [], h1: null, h2: null, guardian: [] } },
-    attendance: {}
-  },
-  {
-    id: 4,
-    name: '정우성',
-    birth: '2018-05-20',
-    gender: '남',
-    photo: null,
-    enrollment: '2026-03-02',
-    displayId: 'NF561136',
-    cardId: '37B0B566',
-    yearlyData: { 2026: { school: '숲속초등학교', grade: 2, address: '서울시 서초구', guardian: '정철학', contact: '010-8888-8888' } },
-    logs: { 2026: { observation: [], h1: null, h2: null, guardian: [] } },
-    attendance: {}
-  }
-];
-
-const isValidChildrenDataset = (items) => (
-  Array.isArray(items) &&
-  (items.length === 0 || (items[0].yearlyData && (items[0].yearlyData[2018] || items[0].yearlyData[2026])))
-);
-
-const loadLegacyChildren = () => {
-  const saved = localStorage.getItem('forestChildrenList');
-  if (!saved) return null;
-
-  try {
-    const parsed = JSON.parse(saved);
-    return isValidChildrenDataset(parsed) ? parsed : null;
-  } catch {
-    return null;
-  }
-};
-
-const loadLegacyScanLogs = () => {
-  const saved = localStorage.getItem('forestScanLogs');
-  if (!saved) return [];
-
-  try {
-    return JSON.parse(saved);
-  } catch {
-    return [];
-  }
-};
-
-const cloneData = (value) => JSON.parse(JSON.stringify(value));
-
 const ChildrenPage = () => {
   // --- 글로벌 시스템 상태 ---
   const userRole = localStorage.getItem('userRole') || 'ADMIN';
   const [selectedYear, setSelectedYear] = useState(2026);
   const [activeTab, setActiveTab] = useState('active'); 
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter] = useState('ALL');
   const [selectedChildId, setSelectedChildId] = useState(null);
   const [detailTab, setDetailTab] = useState('info');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -203,19 +122,7 @@ const ChildrenPage = () => {
 
   useEffect(() => {
     localStorage.setItem('forestChildrenList', JSON.stringify(children));
-    if (!childrenSyncReady) return;
-
-    const timeoutId = setTimeout(() => {
-      authApi('/api/children/bulk', {
-        method: 'PUT',
-        body: JSON.stringify({ children }),
-      }).catch((err) => {
-        console.error('아동 목록 서버 동기화 실패:', err);
-      });
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [children, childrenSyncReady]);
+  }, [children]);
 
   const selectedChild = useMemo(() => children.find(c => c.id === selectedChildId), [children, selectedChildId]);
   
@@ -225,19 +132,12 @@ const ChildrenPage = () => {
   }, [selectedChild, selectedYear]);
 
   const filteredChildren = useMemo(() => {
-    const today = new Date().toISOString().split('T')[0];
     return children.filter(c => {
       const matchesSearch = c.name.includes(searchQuery);
       const hasDataThisYear = !!c.yearlyData?.[selectedYear];
-      const todayStatus = c.attendance?.[today]?.status;
-      const matchesStatus =
-        statusFilter === 'ALL' ||
-        (statusFilter === 'PRESENT' && todayStatus === 'PRESENT') ||
-        (statusFilter === 'ABSENT' && todayStatus === 'ABSENT') ||
-        (statusFilter === 'UNMARKED' && !todayStatus);
-      return matchesSearch && hasDataThisYear && matchesStatus;
+      return matchesSearch && hasDataThisYear;
     });
-  }, [children, searchQuery, selectedYear, statusFilter]);
+  }, [children, searchQuery, selectedYear]);
 
   const currentYearLogs = useMemo(() => {
     if (!selectedChild) return null;
@@ -300,15 +200,15 @@ const ChildrenPage = () => {
           </div>
         </div>
 
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-center gap-4">
            {/* 내비게이션 탭 */}
-           <div className="flex w-full gap-1 rounded-2xl bg-slate-100 p-1.5 md:w-auto">
+           <div className="flex bg-slate-100 p-1.5 rounded-2xl gap-1">
              {[
                { id: 'active', label: '아동 목록/관리', icon: Users, key: 'children_view' },
                { id: 'ledger', label: '출결대장', icon: FileSpreadsheet, key: 'attendance_view' },
                { id: 'scan', label: 'RFID 스캔', icon: Fingerprint, key: 'rfid_access' }
              ].filter(t => can(t.key)).map(t => (
-               <button key={t.id} onClick={() => { setActiveTab(t.id); setSelectedChildId(null); }} className={`flex flex-1 items-center justify-center gap-2.5 px-4 py-2.5 rounded-xl text-[11px] font-black transition-all md:flex-none md:px-6 md:py-2 ${activeTab === t.id ? 'bg-indigo-600 text-white shadow-xl' : 'text-slate-500 hover:text-slate-900'}`}>
+               <button key={t.id} onClick={() => { setActiveTab(t.id); setSelectedChildId(null); }} className={`flex items-center gap-2.5 px-6 py-2 rounded-xl text-[11px] font-black transition-all ${activeTab === t.id ? 'bg-indigo-600 text-white shadow-xl' : 'text-slate-500 hover:text-slate-900'}`}>
                  <t.icon className="w-4 h-4" />
                  {t.label}
                </button>
@@ -330,12 +230,12 @@ const ChildrenPage = () => {
           className="flex-1 overflow-y-auto p-8"
         >
           <div className="max-w-7xl mx-auto space-y-8">
-             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+             <div className="flex justify-between items-end">
                 <div>
                    <h3 className="text-3xl font-black text-slate-900 tracking-tighter m-0 uppercase italic">기관 아동 명부 <span className="text-indigo-600">.</span></h3>
                    <p className="text-xs font-bold text-slate-400 m-0 uppercase tracking-widest mt-1">{selectedYear}년도 데이터베이스에 {filteredChildren.length}명의 아동이 검색되었습니다.</p>
                 </div>
-                <div className="relative w-full md:w-80">
+                <div className="relative w-80">
                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                    <input 
                      type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
@@ -345,45 +245,7 @@ const ChildrenPage = () => {
                 </div>
              </div>
 
-             <div className="grid gap-4 md:hidden">
-                {filteredChildren.map(child => {
-                  const yearData = child.yearlyData?.[selectedYear] || {};
-                  return (
-                    <button
-                      key={`mobile-${child.id}`}
-                      onClick={() => setSelectedChildId(child.id)}
-                      className="rounded-[1.8rem] border border-slate-100 bg-white p-4 text-left shadow-[0_18px_45px_rgba(148,163,184,0.14)] transition hover:border-indigo-200 hover:bg-indigo-50/30"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex min-w-0 items-center gap-3">
-                          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
-                            {child.photo ? <img src={child.photo} className="h-full w-full object-cover" /> : <User className="w-5 h-5 text-slate-200" />}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="truncate text-base font-black text-slate-900">{child.name}</p>
-                            <p className="truncate text-[10px] font-black uppercase tracking-[0.24em] text-indigo-400">{child.cardId}</p>
-                          </div>
-                        </div>
-                        <span className="rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-indigo-600">
-                          {yearData.grade || '?'}학년
-                        </span>
-                      </div>
-                      <div className="mt-4 grid gap-3 text-left">
-                        <div className="rounded-xl bg-slate-50 px-3 py-2">
-                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">학교</p>
-                          <p className="mt-1 text-sm font-bold text-slate-700">{yearData.school || '미지정'}</p>
-                        </div>
-                        <div className="rounded-xl bg-slate-50 px-3 py-2">
-                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">보호자</p>
-                          <p className="mt-1 text-sm font-bold text-slate-700">{yearData.guardian || '없음'}</p>
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-             </div>
-
-             <div className="hidden md:block bg-white rounded-[3rem] border border-slate-100 shadow-2xl overflow-hidden">
+             <div className="bg-white rounded-[3rem] border border-slate-100 shadow-2xl overflow-hidden">
                 <table className="w-full text-left text-sm">
                    <thead className="bg-[#0f172a] text-slate-400 font-black uppercase tracking-[0.3em] text-[10px]">
                       <tr>
@@ -525,15 +387,6 @@ const ChildrenPage = () => {
                             <button onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} className="p-5 bg-white border border-slate-200 rounded-[2rem] shadow-sm hover:shadow-xl transition-all text-slate-400">
                                {isSidebarCollapsed ? <ChevronRight className="w-6 h-6" /> : <ChevronLeft className="w-6 h-6" />}
                             </button>
-                            {can('children_delete') && (
-                              <button
-                                type="button"
-                                onClick={handleDeleteChild}
-                                className="px-8 py-5 bg-rose-50 text-rose-600 rounded-[2rem] font-black text-[11px] uppercase tracking-[0.2em] border border-rose-100 shadow-lg hover:bg-rose-100 transition-all"
-                              >
-                                아동 삭제
-                              </button>
-                            )}
                             <button className="px-12 py-6 bg-slate-900 text-white rounded-[2.5rem] font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl hover:bg-black transition-all">레포트 내보내기</button>
                          </div>
                       </div>
@@ -571,8 +424,8 @@ const ChildrenPage = () => {
                          )}
 
                          {detailTab === 'obs' && (
-                            <div className="space-y-12 animate-in fade-in slide-in-from-right-12">
-                               <div className="flex justify-between items-center border-b border-slate-100 pb-8">
+                           <div className="space-y-12 animate-in fade-in slide-in-from-right-12">
+                              <div className="flex justify-between items-center border-b border-slate-100 pb-8">
                                  <div className="flex items-center gap-4">
                                     <div className="w-12 h-12 bg-indigo-900 rounded-2xl flex items-center justify-center text-indigo-400 shadow-xl"><BookOpen className="w-6 h-6" /></div>
                                     <div>
@@ -580,26 +433,10 @@ const ChildrenPage = () => {
                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest m-0 mt-1">{selectedYear}년도 기간에 총 {currentYearLogs.observation?.length}건의 기록이 발견되었습니다.</p>
                                     </div>
                                  </div>
-                                 <button
-                                   type="button"
-                                   onClick={handleSaveObservation}
-                                   disabled={isSavingObservation}
-                                   className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl shadow-indigo-200 disabled:bg-slate-300"
-                                 >
-                                   {isSavingObservation ? '저장 중...' : '관찰일지 저장'}
-                                 </button>
-                               </div>
-                               <div className="rounded-[2.5rem] border border-indigo-100 bg-indigo-50/40 p-6">
-                                 <p className="text-[10px] font-black uppercase tracking-[0.25em] text-indigo-500">New Observation</p>
-                                 <textarea
-                                   value={observationDraft}
-                                   onChange={(e) => setObservationDraft(e.target.value)}
-                                   placeholder="오늘의 행동 변화, 관계, 정서 상태를 기록하세요."
-                                   className="mt-4 min-h-[140px] w-full rounded-[1.5rem] border border-white bg-white/90 px-5 py-4 text-sm font-bold text-slate-700 outline-none shadow-inner"
-                                 />
-                               </div>
-                               <div className="space-y-6">
-                                  {currentYearLogs.observation?.length > 0 ? (
+                                 <button className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl shadow-indigo-200">새 기록 작성</button>
+                              </div>
+                              <div className="space-y-6">
+                                 {currentYearLogs.observation?.length > 0 ? (
                                    currentYearLogs.observation.map((log, idx) => (
                                      <div key={idx} className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-xl flex gap-10 group hover:border-indigo-500 transition-all border-l-8 border-l-indigo-600">
                                         <div className="w-28 shrink-0 text-center flex flex-col items-center justify-center border-r border-slate-50 pr-10">
@@ -617,108 +454,27 @@ const ChildrenPage = () => {
                          )}
 
                           {detailTab === 'consult' && (
-                            <div className="grid grid-cols-1 gap-8 animate-in fade-in slide-in-from-right-12 md:grid-cols-2 md:gap-12">
+                            <div className="grid grid-cols-2 gap-12 animate-in fade-in slide-in-from-right-12">
                                {[
                                  { key: 'h1', label: '상반기 전문 상담', period: '1월 - 6월', data: currentYearLogs.h1, color: 'emerald' },
                                  { key: 'h2', label: '하반기 전문 상담', period: '7월 - 12월', data: currentYearLogs.h2, color: 'blue' }
                                ].map(h => (
-                                 <div key={h.key} className={`p-8 md:p-12 rounded-[4rem] border-4 shadow-2xl flex flex-col justify-between min-h-[440px] transition-all relative overflow-hidden ${h.data ? `bg-${h.color}-50 border-${h.color}-500 shadow-${h.color}-900/10` : 'bg-white border-dashed border-slate-200 opacity-60'}`}>
+                                 <div key={h.key} className={`p-12 rounded-[4rem] border-4 shadow-2xl flex flex-col justify-between min-h-[440px] transition-all relative overflow-hidden ${h.data ? `bg-${h.color}-50 border-${h.color}-500 shadow-${h.color}-900/10` : 'bg-white border-dashed border-slate-200 opacity-60'}`}>
                                     <div className="absolute top-0 right-0 w-48 h-48 bg-slate-900/5 rounded-full blur-3xl -translate-y-24 translate-x-24" />
                                     <div className="space-y-4 relative z-10">
                                        <div className="flex justify-between items-center"><span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-white px-4 py-1.5 rounded-full shadow-sm">{h.period} 필수 기록</span>{h.data && <CheckCircle2 className={`w-8 h-8 text-${h.color}-500`} />}</div>
                                        <h5 className="text-3xl font-black text-slate-900 m-0 uppercase tracking-tighter leading-tight">{h.label}</h5>
                                        <p className="text-[10px] font-bold text-slate-400 m-0 uppercase tracking-widest italic-none">기관 준수 프로토콜: 필수 작성</p>
                                     </div>
-                                    <div className="bg-white/80 p-6 rounded-[2rem] border border-slate-100 shadow-inner flex-1 my-8 space-y-4">
-                                       <p className="text-sm font-bold text-slate-500">
-                                         {h.data ? `최근 저장일: ${h.data.date}` : '상담 내역이 아직 없습니다. 아래에 새 기록을 작성하세요.'}
-                                       </p>
-                                       <textarea
-                                         value={consultDrafts[h.key] || ''}
-                                         onChange={(e) => setConsultDrafts((prev) => ({ ...prev, [h.key]: e.target.value }))}
-                                         placeholder="상담 목표, 주요 대화 내용, 후속 조치를 입력하세요."
-                                         className="min-h-[180px] w-full rounded-[1.5rem] border border-slate-100 bg-white px-5 py-4 text-sm font-bold text-slate-700 outline-none"
-                                       />
+                                    <div className="bg-white/80 p-8 rounded-[2rem] italic-none font-bold text-base text-slate-600 border border-slate-100 shadow-inner flex-1 my-8">
+                                       {h.data ? h.data.content : "상담 내역이 감지되지 않았습니다. 규정 준수를 위해 기록 작성이 필요합니다."}
                                     </div>
-                                    <button
-                                      type="button"
-                                      onClick={() => handleSaveConsult(h.key)}
-                                      disabled={isSavingConsult[h.key]}
-                                      className={`w-full py-6 rounded-3xl font-black text-[12px] uppercase tracking-[0.2em] relative z-10 transition-all ${h.data ? `bg-slate-900 text-white shadow-xl` : 'bg-slate-200 text-slate-500 hover:bg-slate-900 hover:text-white'} disabled:bg-slate-300`}
-                                    >
-                                       {isSavingConsult[h.key] ? '저장 중...' : (h.data ? '상담 기록 저장' : '새 상담 기록 저장')}
+                                    <button className={`w-full py-6 rounded-3xl font-black text-[12px] uppercase tracking-[0.2em] relative z-10 transition-all ${h.data ? `bg-slate-900 text-white shadow-xl` : 'bg-slate-200 text-slate-500 hover:bg-slate-900 hover:text-white'}`}>
+                                       {h.data ? '기록 열람 및 수정' : '새 상담 기록 시작'}
                                     </button>
                                  </div>
-                                ))}
-                             </div>
-                           )}
-
-                         {detailTab === 'guardian' && (
-                           <div className="space-y-8 animate-in fade-in slide-in-from-right-12">
-                             <div className="flex flex-col gap-4 rounded-[3rem] border border-amber-100 bg-[linear-gradient(135deg,#fffdf7,#ffffff)] p-6 shadow-xl shadow-amber-100/40 md:flex-row md:items-start md:justify-between md:p-8">
-                               <div>
-                                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-500">Guardian Channel</p>
-                                 <h4 className="mt-2 text-2xl font-black tracking-tight text-slate-900">보호자 상담 기록</h4>
-                                 <p className="mt-2 text-sm font-medium text-slate-500">
-                                   보호자와의 통화, 방문 상담, 요청사항 및 후속 조치 내용을 연도별로 보관합니다.
-                                 </p>
-                               </div>
-                               <button
-                                 type="button"
-                                 onClick={handleSaveGuardianConsult}
-                                 disabled={isSavingGuardian}
-                                 className="inline-flex items-center justify-center rounded-2xl bg-amber-500 px-5 py-3 text-[11px] font-black uppercase tracking-[0.2em] text-white shadow-xl shadow-amber-200 disabled:bg-slate-300"
-                               >
-                                 {isSavingGuardian ? '저장 중...' : '보호자 상담 저장'}
-                               </button>
-                             </div>
-
-                             <div className="rounded-[3rem] border border-slate-100 bg-white p-6 shadow-xl md:p-8">
-                               <div className="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)]">
-                                 <div className="space-y-2">
-                                   <label className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400">상담 일자</label>
-                                   <input
-                                     type="date"
-                                     value={guardianDraft.date}
-                                     onChange={(e) => setGuardianDraft((prev) => ({ ...prev, date: e.target.value }))}
-                                     className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-black text-slate-700 outline-none"
-                                   />
-                                 </div>
-                                 <div className="space-y-2">
-                                   <label className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400">상담 내용</label>
-                                   <textarea
-                                     value={guardianDraft.content}
-                                     onChange={(e) => setGuardianDraft((prev) => ({ ...prev, content: e.target.value }))}
-                                     placeholder="상담 배경, 보호자 의견, 센터 대응, 후속 조치를 기록하세요."
-                                     className="min-h-[180px] w-full rounded-[1.75rem] border border-slate-200 bg-slate-50 px-5 py-4 text-sm font-bold text-slate-700 outline-none"
-                                   />
-                                 </div>
-                               </div>
-                             </div>
-
-                             <div className="space-y-4">
-                               {(currentYearLogs.guardian || []).length > 0 ? (
-                                 currentYearLogs.guardian.map((log, idx) => (
-                                   <div key={`${log.date}-${idx}`} className="rounded-[2.5rem] border border-slate-100 bg-white p-6 shadow-lg">
-                                     <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                                       <div>
-                                         <p className="text-[10px] font-black uppercase tracking-[0.25em] text-amber-500">Guardian Consult</p>
-                                         <h5 className="mt-2 text-lg font-black text-slate-900">{log.date}</h5>
-                                       </div>
-                                       <span className="rounded-full bg-amber-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-amber-600">
-                                         보호자 상담
-                                       </span>
-                                     </div>
-                                     <p className="mt-4 whitespace-pre-wrap text-sm font-bold leading-7 text-slate-600">{log.content}</p>
-                                   </div>
-                                 ))
-                               ) : (
-                                 <div className="rounded-[2.5rem] border border-dashed border-slate-300 bg-white px-6 py-20 text-center text-sm font-black text-slate-300">
-                                   등록된 보호자 상담 기록이 없습니다.
-                                 </div>
-                               )}
-                             </div>
-                           </div>
+                               ))}
+                            </div>
                          )}
                       </div>
                    </div>
