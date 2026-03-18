@@ -34,6 +34,13 @@
       "expiresAt": 1774363675000,
       "revoked": false,
       "issuedAt": 1773758875932
+    },
+    {
+      "sid": "2af1cd9596ee11e41863a505a6082926019ae2ae323ba9f9",
+      "userId": "admin",
+      "expiresAt": 1774451472000,
+      "revoked": false,
+      "issuedAt": 1773846672788
     }
   ]
 }

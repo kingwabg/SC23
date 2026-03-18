@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, 
@@ -28,13 +29,9 @@ import {
   Stamp,
   CheckSquare
 } from 'lucide-react';
-import SunEditor from 'suneditor-react';
-import 'suneditor/dist/css/suneditor.min.css';
-import ko from 'suneditor/src/lang/ko';
+import LexicalApp from '../components/LexicalEditor/App';
+import '../components/LexicalEditor/index.css';
 import { authApi } from '../utils/apiClient';
-
-// Handle ESM/CJS default export mismatch if necessary
-const Editor = SunEditor.default || SunEditor;
 
 const cloneData = (value) => JSON.parse(JSON.stringify(value));
 
@@ -83,6 +80,7 @@ const MeetingPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLogId, setSelectedLogId] = useState(null);
   const [checkedLogs, setCheckedLogs] = useState([]);
+  const [tableContextMenu, setTableContextMenu] = useState({ visible: false, x: 0, y: 0, cell: null });
   const editorRef = useRef();
   
   // Load staff and children for auto-aggregation
@@ -540,8 +538,127 @@ const MeetingPage = () => {
     }
   ];
 
+  // 커스텀 표 컨텍스트 메뉴 액션
+  const generateEmptyRow = (referenceTr) => {
+    const newTr = document.createElement('tr');
+    Array.from(referenceTr.children).forEach(c => {
+       const td = document.createElement(c.tagName);
+       td.innerHTML = '<br>';
+       td.style.border = '1px solid #ced4da';
+       td.style.padding = '5px';
+       newTr.appendChild(td);
+    });
+    return newTr;
+  };
+
+  const handleTableContextMenuAction = (action, color = null) => {
+    if (!tableContextMenu.cell) return;
+    const { cell } = tableContextMenu;
+    const tr = cell.closest('tr');
+    const table = cell.closest('table');
+    const tbody = cell.closest('tbody');
+    if (!tr || !table || !tbody) return;
+    
+    const cellIndex = Array.from(tr.children).indexOf(cell);
+    
+    let changed = false;
+
+    if (action === 'insertRowAbove') {
+      tr.parentNode.insertBefore(generateEmptyRow(tr), tr);
+      changed = true;
+    } else if (action === 'insertRowBelow') {
+      const newTr = generateEmptyRow(tr);
+      if (tr.nextSibling) tr.parentNode.insertBefore(newTr, tr.nextSibling);
+      else tr.parentNode.appendChild(newTr);
+      changed = true;
+    } else if (action === 'insertColLeft' || action === 'insertColRight') {
+      Array.from(tbody.children).forEach(row => {
+        const newTd = document.createElement(cell.tagName);
+        newTd.innerHTML = '<br>';
+        newTd.style.border = '1px solid #ced4da';
+        newTd.style.padding = '5px';
+        const targetTd = row.children[cellIndex];
+        if (action === 'insertColLeft') {
+          if (targetTd) row.insertBefore(newTd, targetTd);
+          else row.appendChild(newTd);
+        } else {
+          if (targetTd && targetTd.nextSibling) row.insertBefore(newTd, targetTd.nextSibling);
+          else row.appendChild(newTd);
+        }
+      });
+      changed = true;
+    } else if (action === 'deleteRow') {
+      tr.remove();
+      changed = true;
+    } else if (action === 'deleteCol') {
+      Array.from(tbody.children).forEach(row => {
+         if (row.children[cellIndex]) row.children[cellIndex].remove();
+      });
+      changed = true;
+    } else if (action === 'deleteTable') {
+      table.remove();
+      changed = true;
+    } else if (action === 'bgColor' && color) {
+      if (cell.tagName === 'TH') {
+          cell.style.backgroundColor = color;
+      } else {
+          cell.style.backgroundColor = color;
+      }
+      changed = true;
+    }
+
+    if (changed && editorRef.current) {
+      // 강제로 onChange 이벤트를 발생시켜 본문 업데이트
+      const currentContent = editorRef.current.getContents();
+      updateLogData(selectedLogId, 'content', currentContent);
+    }
+    setTableContextMenu({ visible: false, x: 0, y: 0, cell: null });
+  };
+
+  // 팝업 메뉴 외부 클릭 시 닫기
+  useEffect(() => {
+    const handleGlobalClick = () => setTableContextMenu(prev => prev.visible ? { ...prev, visible: false } : prev);
+    document.addEventListener('click', handleGlobalClick);
+    return () => document.removeEventListener('click', handleGlobalClick);
+  }, []);
+
   return (
     <div className="font-['Outfit'] space-y-6 max-w-[1600px] mx-auto p-2">
+      {/* Table Context Menu Portal */}
+      {tableContextMenu.visible && createPortal(
+        <div 
+          onClick={(e) => e.stopPropagation()}
+          className="fixed bg-white border border-slate-200 shadow-xl rounded-xl p-2 z-50 flex flex-col gap-1 w-48 text-[13px] font-['Malgun_Gothic',sans-serif]"
+          style={{ top: Math.min(tableContextMenu.y, window.innerHeight - 300), left: Math.min(tableContextMenu.x, window.innerWidth - 200) }}
+        >
+          <button onClick={() => handleTableContextMenuAction('insertRowAbove')} className="text-left px-3 py-2 hover:bg-slate-100 rounded-lg text-slate-700">위로 행 삽입</button>
+          <button onClick={() => handleTableContextMenuAction('insertRowBelow')} className="text-left px-3 py-2 hover:bg-slate-100 rounded-lg text-slate-700">아래로 행 삽입</button>
+          <button onClick={() => handleTableContextMenuAction('insertColLeft')} className="text-left px-3 py-2 hover:bg-slate-100 rounded-lg text-slate-700">왼쪽 열 삽입</button>
+          <button onClick={() => handleTableContextMenuAction('insertColRight')} className="text-left px-3 py-2 hover:bg-slate-100 rounded-lg text-slate-700">오른쪽 열 삽입</button>
+          <div className="h-px bg-slate-100 my-1" />
+          <button onClick={() => handleTableContextMenuAction('deleteRow')} className="text-left px-3 py-2 hover:bg-rose-50 text-rose-600 rounded-lg transition-colors">행 삭제</button>
+          <button onClick={() => handleTableContextMenuAction('deleteCol')} className="text-left px-3 py-2 hover:bg-rose-50 text-rose-600 rounded-lg transition-colors">열 삭제</button>
+          <button onClick={() => handleTableContextMenuAction('deleteTable')} className="text-left px-3 py-2 hover:bg-rose-50 text-rose-600 rounded-lg font-bold transition-colors">표 완전 삭제</button>
+          <div className="h-px bg-slate-100 my-1" />
+          <div className="px-3 py-2">
+            <span className="text-[11px] font-bold text-slate-400 mb-2 block">셀 배경색</span>
+            <div className="flex gap-1.5 flex-wrap">
+              {['transparent', '#f8fafc', '#fee2e2', '#fef3c7', '#dcfce3', '#e0e7ff', '#f3e8ff', '#ffecd2', '#b2fefa'].map(c => (
+                 <button 
+                   key={c} onClick={() => handleTableContextMenuAction('bgColor', c)}
+                   className="w-5 h-5 rounded border border-slate-200 hover:scale-110 transition-transform shadow-sm"
+                   style={{ background: c }}
+                   title={c === 'transparent' ? '배경색 지우기' : c}
+                 >
+                   {c === 'transparent' && <span className="text-slate-300 text-[10px]">&times;</span>}
+                 </button>
+              ))}
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
       {/* 프리미엄 헤더 영역 */}
       <div className="bg-white p-5 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-slate-100 shadow-2xl shadow-indigo-900/5 space-y-6 md:space-y-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-6">
@@ -914,27 +1031,14 @@ const MeetingPage = () => {
                  </div>
 
                  <div className="flex-1 p-8 bg-slate-50 relative overflow-hidden border-t border-slate-100">
-                    <Editor 
-                       key={`${selectedLogId}-${selectedLog?.status}`}
-                       getSunEditorInstance={(editor) => { editorRef.current = editor; }}
-                       lang={ko}
-                       defaultValue={selectedLog?.content || ''}
-                       onChange={(content) => updateLogData(selectedLogId, 'content', content)}
-                       setOptions={{
-                          height: 'auto',
-                          minHeight: '600px',
-                          buttonList: [
-                             ['undo', 'redo'],
-                             ['font', 'fontSize', 'formatBlock'],
-                             ['bold', 'underline', 'italic', 'strike'],
-                             ['fontColor', 'hiliteColor'],
-                             ['align', 'list', 'lineHeight'],
-                             ['table', 'link', 'image'],
-                             ['fullScreen', 'showBlocks', 'codeView', 'preview', 'print']
-                          ],
-                          defaultStyle: "font-family: '맑은고딕', sans-serif; font-size: 16px;"
+                    <LexicalApp 
+                       key={`${selectedLogId}-${selectedLog?.status}`} 
+                       initialHtml={selectedLog?.content || ''}
+                       onChangeHtml={(htmlContent) => {
+                           setMeetings(prev => prev.map(m => 
+                               m.id === selectedLogId ? {...m, content: htmlContent} : m
+                           ));
                        }}
-                       width="100%"
                     />
                  </div>
               </div>

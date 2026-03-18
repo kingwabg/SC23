@@ -568,8 +568,8 @@ const StaffPage = () => {
           <div className="flex items-center gap-3">
              <div className="w-12 h-12 bg-indigo-900 rounded-2xl flex items-center justify-center shadow-lg"><Briefcase className="w-6 h-6 text-indigo-400" /></div>
              <div>
-                <h2 className="text-2xl font-black text-slate-900 tracking-tighter uppercase italic m-0">Staff Management <span className="text-[10px] not-italic bg-indigo-600 text-white px-3 py-1 rounded-full uppercase tracking-widest font-black">Admin Mode</span></h2>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-1 m-0">Personnel Attendance & Record System</p>
+                <h2 className="text-2xl font-black text-slate-900 tracking-tighter uppercase italic m-0">종사자 관리 <span className="text-[10px] not-italic bg-indigo-600 text-white px-3 py-1 rounded-full uppercase tracking-widest font-black">관리자 모드</span></h2>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-1 m-0">종사자 출결 및 인사 기록 시스템</p>
              </div>
           </div>
           <div className="flex flex-wrap gap-1">
@@ -605,10 +605,10 @@ const StaffPage = () => {
            <div className="bg-slate-900 rounded-[2rem] p-6 text-white shadow-xl relative overflow-hidden border-b-4 border-emerald-500">
               <div className="relative z-10 flex items-center justify-between">
                  <div className="space-y-1">
-                    <div className="flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-emerald-400" /><h3 className="text-xl font-black tracking-tighter uppercase m-0 text-white">System Authority Matrix</h3></div>
+                    <div className="flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-emerald-400" /><h3 className="text-xl font-black tracking-tighter uppercase m-0 text-white">시스템 권한 매트릭스</h3></div>
                     <p className="text-[10px] font-bold text-slate-400 m-0 italic-none">직급 및 개별 종사자의 접근 권한을 실시간으로 관리합니다. 변경사항은 즉시 반영됩니다.</p>
                  </div>
-                 <div className="px-5 py-2 bg-white/10 rounded-xl border border-white/10 font-black text-xs tracking-widest uppercase text-white">Target Role: NON_STAFF</div>
+                 <div className="px-5 py-2 bg-white/10 rounded-xl border border-white/10 font-black text-xs tracking-widest uppercase text-white">대상 권한: 일반 사용자</div>
               </div>
            </div>
 
@@ -617,7 +617,7 @@ const StaffPage = () => {
                <form onSubmit={handleCreateSystemUser} className="bg-white rounded-[1.5rem] border border-slate-100 shadow-lg p-5 space-y-4">
                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                    <h4 className="text-xs font-black uppercase tracking-widest text-slate-600">계정 생성</h4>
-                   <span className="text-[10px] font-black text-slate-400 uppercase">Admin API</span>
+                   <span className="text-[10px] font-black text-slate-400 uppercase">관리자 API</span>
                  </div>
                  <input
                    type="text"
@@ -645,8 +645,8 @@ const StaffPage = () => {
                    onChange={(e) => setNewSystemUser((prev) => ({ ...prev, role: e.target.value }))}
                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-sm font-black outline-none"
                  >
-                   <option value="NON_STAFF">NON_STAFF</option>
-                   <option value="ADMIN">ADMIN</option>
+                   <option value="NON_STAFF">일반 사용자</option>
+                   <option value="ADMIN">관리자</option>
                  </select>
                  <button
                    type="submit"
@@ -732,13 +732,13 @@ const StaffPage = () => {
                  {migrationSummary && (
                    <div className="grid gap-3 md:grid-cols-4 xl:grid-cols-7">
                      {[
-                       { label: 'children', value: migrationSummary.children },
-                       { label: 'scanLogs', value: migrationSummary.scanLogs },
-                       { label: 'staff', value: migrationSummary.staff },
-                       { label: 'meetings', value: migrationSummary.meetings },
-                       { label: 'programs', value: migrationSummary.programs },
-                       { label: 'events', value: migrationSummary.events },
-                       { label: 'calendarUrl', value: migrationSummary.calendarUrlUpdated ? 'updated' : 'skip' },
+                       { label: '아동', value: migrationSummary.children },
+                       { label: '스캔 로그', value: migrationSummary.scanLogs },
+                       { label: '종사자', value: migrationSummary.staff },
+                       { label: '회의록', value: migrationSummary.meetings },
+                       { label: '프로그램', value: migrationSummary.programs },
+                       { label: '일정', value: migrationSummary.events },
+                       { label: '캘린더 URL', value: migrationSummary.calendarUrlUpdated ? '업데이트' : '건너뜀' },
                      ].map((item) => (
                        <div key={item.label} className="rounded-xl border border-amber-100 bg-white px-4 py-3">
                          <p className="text-[10px] font-black uppercase tracking-widest text-amber-500">{item.label}</p>
@@ -854,7 +854,7 @@ const StaffPage = () => {
 
            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-white rounded-[1.5rem] border border-slate-100 shadow-lg p-5 space-y-4">
-                 <div className="flex items-center gap-3 border-b border-slate-50 pb-3 uppercase tracking-widest font-black text-[9px] text-slate-400"><LayoutDashboard className="w-4 h-4" /> Main Menu Access</div>
+                 <div className="flex items-center gap-3 border-b border-slate-50 pb-3 uppercase tracking-widest font-black text-[9px] text-slate-400"><LayoutDashboard className="w-4 h-4" /> 메인 메뉴 접근 권한</div>
                  <div className="grid grid-cols-1 gap-1.5">
                     {[
                       { key: 'dashboard', label: '대시보드' },
@@ -877,10 +877,10 @@ const StaffPage = () => {
               </div>
 
               <div className="bg-white rounded-[1.5rem] border border-slate-100 shadow-lg p-5 space-y-4">
-                 <div className="flex items-center gap-3 border-b border-slate-50 pb-3 uppercase tracking-widest font-black text-[9px] text-slate-400"><Users className="w-4 h-4" /> Children & Attendance</div>
+                 <div className="flex items-center gap-3 border-b border-slate-50 pb-3 uppercase tracking-widest font-black text-[9px] text-slate-400"><Users className="w-4 h-4" /> 아동 및 출결 권한</div>
                  <div className="space-y-3">
                     <div className="p-4 bg-slate-900 rounded-xl space-y-3">
-                       <h6 className="text-[8px] font-black text-blue-400 uppercase tracking-widest">Children Records</h6>
+                       <h6 className="text-[8px] font-black text-blue-400 uppercase tracking-widest">아동 기록 권한</h6>
                        <div className="grid grid-cols-2 gap-2">
                           {[{key:'children_view', label:'조회'}, {key:'children_create', label:'신규'}, {key:'children_edit', label:'수정'}, {key:'children_delete', label:'삭제'}].map(p => (
                             <div key={p.key} onClick={() => togglePermission('NON_STAFF', p.key)} className={`px-2 py-1.5 rounded-lg border flex items-center justify-between cursor-pointer transition-all ${permissions.NON_STAFF[p.key] ? 'border-blue-500 bg-blue-500/20 text-white' : 'border-slate-800 text-slate-600'}`}>
@@ -891,7 +891,7 @@ const StaffPage = () => {
                        </div>
                     </div>
                     <div className="p-4 bg-indigo-50 rounded-xl space-y-3 border border-indigo-100">
-                       <h6 className="text-[8px] font-black text-indigo-600 uppercase tracking-widest">Attendance Ops</h6>
+                       <h6 className="text-[8px] font-black text-indigo-600 uppercase tracking-widest">출결 관리 권한</h6>
                        <div className="grid grid-cols-2 gap-2">
                           {[{key:'attendance_view', label:'대장조회'}, {key:'attendance_edit', label:'상태편집'}, {key:'attendance_excel', label:'엑셀작업'}, {key:'rfid_access', label:'RFID처리'}].map(p => (
                             <div key={p.key} onClick={() => togglePermission('NON_STAFF', p.key)} className={`px-2 py-1.5 rounded-lg border flex items-center justify-between cursor-pointer transition-all ${permissions.NON_STAFF[p.key] ? 'border-indigo-600 bg-white text-indigo-600 shadow-sm' : 'border-slate-200 text-slate-300'}`}>
@@ -905,10 +905,10 @@ const StaffPage = () => {
               </div>
 
               <div className="bg-white rounded-[1.5rem] border border-slate-100 shadow-lg p-5 space-y-4">
-                 <div className="flex items-center gap-3 border-b border-slate-50 pb-3 uppercase tracking-widest font-black text-[9px] text-slate-400"><Settings2 className="w-4 h-4" /> Other Modules</div>
+                 <div className="flex items-center gap-3 border-b border-slate-50 pb-3 uppercase tracking-widest font-black text-[9px] text-slate-400"><Settings2 className="w-4 h-4" /> 기타 모듈 권한</div>
                  <div className="space-y-3">
                     <div className="p-4 bg-emerald-50 rounded-xl space-y-3 border border-emerald-100">
-                       <h6 className="text-[8px] font-black text-emerald-600 uppercase tracking-widest">Staff Management</h6>
+                       <h6 className="text-[8px] font-black text-emerald-600 uppercase tracking-widest">종사자 관리 권한</h6>
                        <div className="grid grid-cols-1 gap-1.5">
                           {[{key:'staff_view', label:'종사자 리스트'}, {key:'staff_attendance', label:'종사자 출결대장'}, {key:'staff_permissions', label:'권한 매트릭스 설정'}].map(p => (
                             <div key={p.key} onClick={() => togglePermission('NON_STAFF', p.key)} className={`px-3 py-1.5 rounded-lg border flex items-center justify-between cursor-pointer transition-all ${permissions.NON_STAFF[p.key] ? 'border-emerald-500 bg-white text-emerald-600 shadow-sm' : 'border-slate-200 text-slate-300'}`}>
@@ -919,7 +919,7 @@ const StaffPage = () => {
                        </div>
                     </div>
                     <div className="p-4 bg-amber-50 rounded-xl space-y-3 border border-amber-100">
-                       <h6 className="text-[8px] font-black text-amber-600 uppercase tracking-widest">Calendar Options</h6>
+                       <h6 className="text-[8px] font-black text-amber-600 uppercase tracking-widest">캘린더 권한</h6>
                        <div className="grid grid-cols-2 gap-2">
                           {[{key:'calendar_google', label:'구글 연동'}, {key:'calendar_local', label:'기관 일정'}, {key:'calendar_sync', label:'연동 설정'}].map(p => (
                             <div key={p.key} onClick={() => togglePermission('NON_STAFF', p.key)} className={`px-2 py-1.5 rounded-lg border flex items-center justify-between cursor-pointer transition-all ${permissions.NON_STAFF[p.key] ? 'border-amber-500 bg-white text-amber-600 shadow-sm' : 'border-slate-200 text-slate-300'}`}>
@@ -930,7 +930,7 @@ const StaffPage = () => {
                        </div>
                     </div>
                     <div className="p-4 bg-rose-50 rounded-xl space-y-3 border border-rose-100">
-                       <h6 className="text-[8px] font-black text-rose-600 uppercase tracking-widest">Archive & Records</h6>
+                       <h6 className="text-[8px] font-black text-rose-600 uppercase tracking-widest">기록 보관 권한</h6>
                        <div className="grid grid-cols-2 gap-2">
                           {[
                             {key:'records_children', label:'아동기록'}, 
@@ -1109,7 +1109,7 @@ const StaffPage = () => {
                       <td className="px-8 py-5 text-slate-500 font-black">{s.type}</td>
                       <td className="px-8 py-5 text-slate-500 font-black">{s.contact}</td>
                       <td className="px-8 py-5 text-slate-400 font-black">{activeTab === 'terminated' ? s.termination : s.joinDate}</td>
-                      <td className="px-8 py-5 text-right"><button className="px-8 py-3 bg-slate-900 text-white rounded-2xl text-[10px] font-black opacity-0 group-hover:opacity-100 transition-all uppercase tracking-[0.2rem] shadow-xl">Open File</button></td>
+                      <td className="px-8 py-5 text-right"><button className="px-8 py-3 bg-slate-900 text-white rounded-2xl text-[10px] font-black opacity-0 group-hover:opacity-100 transition-all uppercase tracking-[0.2rem] shadow-xl">상세 열기</button></td>
                     </tr>
                   ))
                 ) : (
@@ -1183,7 +1183,7 @@ const StaffPage = () => {
                        </div>
 
                        <div className="bg-slate-50 p-8 rounded-[2.5rem] border border-slate-100 space-y-4">
-                          <h6 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Attendance & RFID (출결)</h6>
+                         <h6 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">출결 및 RFID 권한</h6>
                           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                              {[
                                { key: 'attendance_view', label: '대장 조회' },
@@ -1219,7 +1219,7 @@ const StaffPage = () => {
                     종사자 삭제
                   </button>
                   <button type="submit" className="flex-1 py-6 bg-slate-900 text-white rounded-[1.5rem] font-black text-xs uppercase tracking-[0.5em] shadow-2xl hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-4">
-                    <Save className="w-5 h-5 text-emerald-400" /> 개별 권한 및 정보 저장 (Commit)
+                    <Save className="w-5 h-5 text-emerald-400" /> 개별 권한 및 정보 저장
                   </button>
                 </div>
               </form>

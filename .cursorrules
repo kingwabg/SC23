@@ -1,0 +1,9 @@
+[Git Workflow Rules]
+Always run `git branch` to verify the current branch before modifying files.
+NEVER push, commit, or write code directly on the `main` branch.
+All new work must be isolated in a dedicated branch (e.g., feature/task-name).
+
+[Operational Protocol]
+1. Step-by-step Verification: Process exactly one task at a time. Stop and request explicit user permission before proceeding to the next task.
+2. Pre-task Clearance: Before any coding begins, check the branch. If on `main`, halt and ask the user for a new branch name to checkout.
+3. Mandatory Notification: Upon completing ANY task or milestone, YOU MUST trigger the Telegram notification script (mcp-telegram.mjs) or an inline HTTP call to the Telegram API to alert the user that the task is finished, without exception.
