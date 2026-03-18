@@ -13,17 +13,10 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.1",
-    "axios": "^1.13.6",
-    "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
-    "cors": "^2.8.6",
-    "express": "^5.2.1",
     "framer-motion": "^12.36.0",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.577.0",
-    "node-cron": "^4.2.1",
-    "pg": "^8.20.0",
-    "puppeteer": "^24.39.1",
     "react": "^19.2.4",
     "react-daum-postcode": "^4.0.0",
     "react-dom": "^19.2.4",
@@ -37,7 +30,7 @@
     "@eslint/js": "^9.39.4",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^5.1.0",
+    "@vitejs/plugin-react": "^6.0.0",
     "autoprefixer": "^10.4.27",
     "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^7.0.1",
@@ -45,6 +38,6 @@
     "globals": "^17.4.0",
     "postcss": "^8.5.8",
     "tailwindcss": "^4.2.1",
-    "vite": "^7.3.1"
+    "vite": "^8.0.0"
   }
 }

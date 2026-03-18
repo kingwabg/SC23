@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #79b6ff;
-  --color-secondary: #e7f0ff;
-  --color-accent: #f0cc6a;
+  --color-primary: #3b82f6;
+  --color-secondary: #6366f1;
+  --color-accent: #f59e0b;
 }
 
 :root {
@@ -13,8 +13,8 @@
   font-size: 14px; /* Reduced from default 16px */
 
   color-scheme: light;
-  color: #1c2f49;
-  background-color: #fbfbf7;
+  color: #1e293b;
+  background-color: #f1f5f9;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;

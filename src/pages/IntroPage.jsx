@@ -14,63 +14,57 @@ const IntroPage = () => {
         backgroundPosition: 'center',
       }}
     >
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.28)_0%,rgba(2,6,23,0.56)_24%,rgba(2,6,23,0.82)_62%,rgba(2,6,23,0.94)_100%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(96,165,250,0.28),transparent_35%)]" />
+      {/* Background Overlay for better text readability */}
+      <div className="absolute inset-0 bg-black/20" />
 
-      <div className="relative z-10 flex min-h-screen flex-col px-5 pb-8 pt-[max(1.5rem,env(safe-area-inset-top))] md:px-12 md:pb-10">
-        <div className="flex items-center justify-between">
-          <div className="rounded-full border border-white/12 bg-white/8 px-4 py-2 text-[11px] font-black uppercase tracking-[0.28em] text-white/84 backdrop-blur-md">
-            Forest Workspace
-          </div>
-          <div className="hidden items-center gap-2 rounded-full border border-white/12 bg-white/8 px-4 py-2 text-xs font-bold text-white/70 backdrop-blur-md md:flex">
-            <Sparkles className="h-4 w-4 text-amber-300" />
-            One Experience for Web & App
-          </div>
+      {/* Top Left Logo / Text */}
+      <div className="absolute top-10 left-12 z-10 flex items-center gap-3">
+        <div className="text-white font-black text-2xl tracking-tighter drop-shadow-md flex items-center">
+          <span className="text-3xl italic font-serif tracking-widest mr-3 font-medium opacity-90 text-yellow-400 drop-shadow-lg">Active</span> 
+          <span>2026 서창방문의해</span>
         </div>
 
-        <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-between gap-8 py-8 md:py-12">
-          <div className="max-w-3xl">
-            <p className="mb-4 text-[11px] font-black uppercase tracking-[0.35em] text-blue-200 md:text-xs">
-              Active 2026 Seochang
-            </p>
-            <h1 className="max-w-4xl text-4xl font-black leading-[1.02] tracking-tight text-white md:text-6xl lg:text-7xl">
-              모바일과 웹이
-              <br />
-              하나처럼 이어지는
-              <br />
-              <span className="bg-gradient-to-r from-blue-200 via-white to-amber-200 bg-clip-text text-transparent">
-                아이숲 워크스페이스
-              </span>
-            </h1>
-            <p className="mt-5 max-w-2xl text-sm font-medium leading-6 text-white/72 md:mt-7 md:text-lg md:leading-8">
-              기관 운영, 일정, 기록, 권한 관리를 앱처럼 빠르게 연결한 첫 진입 화면입니다.
-              지금은 웹 기반으로 동작하지만, 모바일 앱 셸과 같은 흐름으로 확장할 수 있게 맞춰 두었습니다.
-            </p>
+      {/* Main Interactive Blocks - Right aligned, vertically stacked */}
+      <div className="absolute right-[5%] md:right-[10%] top-1/2 -translate-y-1/2 flex flex-col gap-6 w-full max-w-[480px] z-10 px-4 md:px-0">
+        
+        {/* Block 1: Office Room (Staff Only) */}
+        <button 
+          onClick={() => navigate('/login')}
+          className="group relative overflow-hidden backdrop-blur-[15px] bg-[#3a3520]/60 hover:bg-[#4a4220]/70 transition-all duration-300 border border-white/20 rounded-[2rem] p-8 md:p-10 flex items-center justify-between shadow-2xl hover:shadow-yellow-500/30 text-left"
+        >
+          <div className="flex flex-col gap-3 relative z-10">
+            <span className="text-yellow-400/90 font-bold text-[11px] tracking-[0.2em] uppercase">Seochang Portal</span>
+            <span className="text-white font-black text-3xl md:text-4xl drop-shadow-lg tracking-tight">서창 업무방</span>
+            <div className="mt-4 flex items-center text-yellow-200/50 group-hover:text-yellow-300 transition-colors">
+              <span className="text-[12px] mr-2 font-black uppercase tracking-widest">입장하기</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
+            </div>
           </div>
+          <div className="relative z-10 bg-yellow-500/20 p-5 rounded-full border border-yellow-400/30 group-hover:scale-110 group-hover:bg-yellow-500/30 transition-all">
+            <Briefcase className="w-14 h-14 md:w-16 md:h-16 text-yellow-300 drop-shadow-lg" strokeWidth={1.5} />
+          </div>
+        </button>
 
-          <div className="grid gap-4 md:grid-cols-2 md:gap-6">
-            <button
-              onClick={() => navigate('/login')}
-              className="group relative overflow-hidden rounded-[2rem] border border-white/16 bg-[linear-gradient(135deg,rgba(15,23,42,0.74),rgba(30,41,59,0.68),rgba(37,99,235,0.42))] p-6 text-left shadow-[0_28px_70px_rgba(2,6,23,0.38)] backdrop-blur-xl transition-all hover:-translate-y-1 hover:shadow-[0_32px_80px_rgba(37,99,235,0.24)] md:p-8"
-            >
-              <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/8 blur-2xl transition group-hover:bg-blue-200/14" />
-              <div className="relative z-10 flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-[11px] font-black uppercase tracking-[0.28em] text-blue-200">Internal Groupware</p>
-                  <h2 className="mt-3 text-2xl font-black tracking-tight text-white md:text-3xl">업무방 입장</h2>
-                  <p className="mt-3 max-w-sm text-sm leading-6 text-white/68">
-                    관리자 로그인, 권한 관리, 운영 기록, 출결과 일정까지 하나의 워크스페이스에서 이어집니다.
-                  </p>
-                </div>
-                <div className="rounded-[1.6rem] border border-white/16 bg-white/10 p-4 transition group-hover:scale-105 group-hover:bg-white/14">
-                  <Briefcase className="h-8 w-8 text-blue-100 md:h-10 md:w-10" strokeWidth={1.6} />
-                </div>
-              </div>
-              <div className="relative z-10 mt-8 flex items-center text-sm font-black uppercase tracking-[0.2em] text-white/82">
-                시작하기
-                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-2" />
-              </div>
-            </button>
+        {/* Block 2: Visit Seochang (Public) */}
+        <button 
+          onClick={() => navigate('/visit')}
+          className="group relative overflow-hidden backdrop-blur-[15px] bg-[#2a3a2a]/60 hover:bg-[#354f35]/70 transition-all duration-300 border border-white/20 rounded-[2rem] p-8 md:p-10 flex items-center justify-between shadow-2xl hover:shadow-emerald-500/30 text-left cursor-pointer"
+        >
+          <div className="flex flex-col gap-2 relative z-10">
+            <span className="text-emerald-400/90 font-bold text-[11px] tracking-[0.2em] uppercase">Visit Seochang</span>
+            <span className="text-white font-black text-3xl md:text-4xl drop-shadow-lg leading-[1.15] tracking-tight">
+              2026<br/>
+              서창방문의해
+            </span>
+            <div className="mt-4 flex items-center text-emerald-200/50 group-hover:text-emerald-300 transition-colors">
+              <span className="text-[12px] mr-2 font-black uppercase tracking-widest">구경하기</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
+            </div>
+          </div>
+          <div className="relative z-10 bg-emerald-500/20 p-5 rounded-full border border-emerald-400/30 group-hover:scale-110 group-hover:bg-emerald-500/30 transition-all mt-4">
+            <MapIcon className="w-14 h-14 md:w-16 md:h-16 text-emerald-300 drop-shadow-lg" strokeWidth={1.5} />
+          </div>
+        </button>
 
             <button
               onClick={() => navigate('/visit')}

@@ -1,8 +1,5 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
-import * as XLSX from 'xlsx';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import starInfoBg from '../assets/star-info-bg.webp';
-import { authApi } from '../utils/apiClient';
 import { 
   Users, 
   Search, 
@@ -116,7 +113,6 @@ const ChildrenPage = () => {
   // --- 글로벌 시스템 상태 ---
   const userRole = localStorage.getItem('userRole') || 'ADMIN';
   const [selectedYear, setSelectedYear] = useState(2026);
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [activeTab, setActiveTab] = useState('active'); 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter] = useState('ALL');
@@ -124,26 +120,6 @@ const ChildrenPage = () => {
   const [detailTab, setDetailTab] = useState('info');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isYearPickerOpen, setIsYearPickerOpen] = useState(false);
-  const [isMonthPickerOpen, setIsMonthPickerOpen] = useState(false);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [newChild, setNewChild] = useState({ name: '', gender: '남', birth: '', school: '', grade: 1, address: '', guardian: '', contact: '', cardId: '' });
-  const [childInfoDraft, setChildInfoDraft] = useState({
-    gender: '남',
-    birth: '',
-    displayId: '',
-    cardId: '',
-    guardian: '',
-    grade: '',
-    contact: '',
-    address: '',
-  });
-  const [isSavingChildInfo, setIsSavingChildInfo] = useState(false);
-  const [observationDraft, setObservationDraft] = useState('');
-  const [isSavingObservation, setIsSavingObservation] = useState(false);
-  const [consultDrafts, setConsultDrafts] = useState({ h1: '', h2: '' });
-  const [isSavingConsult, setIsSavingConsult] = useState({ h1: false, h2: false });
-  const [guardianDraft, setGuardianDraft] = useState({ date: new Date().toISOString().split('T')[0], content: '' });
-  const [isSavingGuardian, setIsSavingGuardian] = useState(false);
 
   // 초1 -> 중3까지의 긴 추적을 위한 연도 범위 (15년)
   const years = useMemo(() => Array.from({ length: 15 }, (_, i) => 2015 + i).reverse(), []);
@@ -173,59 +149,57 @@ const ChildrenPage = () => {
   const can = (perm) => userRole === 'ADMIN' || permissions.NON_STAFF[perm];
 
   // --- 데이터 유지 및 테스트 세트 ---
-  const [children, setChildren] = useState(() => cloneData(loadLegacyChildren() || FALLBACK_CHILDREN));
-
-  // --- RFID 스캔 및 단말기 로그 상태 ---
-  const [scanLogs, setScanLogs] = useState(() => loadLegacyScanLogs());
-  const [childrenSyncReady, setChildrenSyncReady] = useState(false);
-
-  const [lastScannedChild, setLastScannedChild] = useState(null);
-
-  const patchChildOnServer = async (childId, updates) => {
-    await authApi(`/api/children/${childId}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ updates }),
-    });
-  };
-
-  useEffect(() => {
-    const hydrateChildren = async () => {
-      const legacyChildren = loadLegacyChildren();
-      const legacyScanLogs = loadLegacyScanLogs();
-
-      try {
-        const data = await authApi('/api/children');
-        const serverChildren = Array.isArray(data.children) ? data.children : [];
-        const serverScanLogs = Array.isArray(data.scanLogs) ? data.scanLogs : [];
-
-        if (serverChildren.length > 0) {
-          setChildren(serverChildren);
-          setScanLogs(serverScanLogs);
-        } else {
-          const seedChildren = cloneData(legacyChildren || FALLBACK_CHILDREN);
-          const seedScanLogs = cloneData(legacyScanLogs);
-          setChildren(seedChildren);
-          setScanLogs(seedScanLogs);
-          await authApi('/api/children/bulk', {
-            method: 'PUT',
-            body: JSON.stringify({ children: seedChildren }),
-          });
-          await authApi('/api/children/scan-logs', {
-            method: 'PUT',
-            body: JSON.stringify({ scanLogs: seedScanLogs }),
-          });
-        }
-      } catch (err) {
-        console.error('아동 데이터를 서버에서 불러오지 못했습니다.', err);
-        setChildren(cloneData(legacyChildren || FALLBACK_CHILDREN));
-        setScanLogs(cloneData(legacyScanLogs));
-      } finally {
-        setChildrenSyncReady(true);
+  const [children, setChildren] = useState(() => {
+    const saved = localStorage.getItem('forestChildrenList');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // 기존 구조에 장기 히스토리 데이터가 없는 경우 새로고침
+      if (parsed.length > 0 && (!parsed[0].yearlyData || !parsed[0].yearlyData[2018])) {
+        localStorage.removeItem('forestChildrenList');
+      } else {
+        return parsed;
       }
-    };
-
-    hydrateChildren();
-  }, []);
+    }
+    return [
+      { 
+        id: 1, name: '김민수', birth: '2011-05-12', gender: '남', photo: null, enrollment: '2018-03-02', cardId: 'E7FDCD66',
+        // 9년 장기 히스토리 (초1 -> 중3)
+        yearlyData: {
+          2018: { school: '숲속초등학교', grade: 1, address: '서울시 강남구 A단지', guardian: '김철수', contact: '010-1111-1111' },
+          2019: { school: '숲속초등학교', grade: 2, address: '서울시 강남구 A단지', guardian: '김철수', contact: '010-1111-1111' },
+          2020: { school: '숲속초등학교', grade: 3, address: '서울시 강남구 B빌라', guardian: '김철수', contact: '010-2222-2222' },
+          2021: { school: '숲속초등학교', grade: 4, address: '서울시 강남구 B빌라', guardian: '김철수', contact: '010-2222-2222' },
+          2022: { school: '숲속초등학교', grade: 5, address: '서울시 서초구 C아파트', guardian: '김철수', contact: '010-3333-3333' },
+          2023: { school: '숲속초등학교', grade: 6, address: '서울시 서초구 C아파트', guardian: '김철수', contact: '010-3333-3333' },
+          2024: { school: '숲속중학교', grade: '중1', address: '서울시 서초구 D단지', guardian: '김철수', contact: '010-4444-4444' },
+          2025: { school: '숲속중학교', grade: '중2', address: '서울시 서초구 D단지', guardian: '김철수', contact: '010-4444-4444' },
+          2026: { school: '숲속중학교', grade: '중3', address: '서울시 서초구 D단지', guardian: '김철수', contact: '010-1234-5678' }
+        },
+        logs: { 
+          2018: { observation: [{ date: '2018-03-12', content: '1학년 입학! 너무 귀엽고 씩씩함.' }], h1: { date: '2018-05-10', content: '적응 아주 빠름' }, h2: { date: '2018-11-20', content: '친구들과 잘 어울림' }, guardian: [] },
+          2026: { observation: [{ date: '2026-03-10', content: '중3 사춘기 없이 성숙함. 진로 고민 중.' }], h1: { date: '2026-03-15', content: '진로 집중 상담' }, h2: null, guardian: [] }
+        },
+        attendance: {}
+      },
+      { 
+        id: 2, name: '이영희', birth: '2018-11-20', gender: '여', photo: null, enrollment: '2025-03-02', cardId: 'A1B2C3D4',
+        yearlyData: {
+          2025: { school: '산새초등학교', grade: 1, address: '서울시 서초구 서초대로', guardian: '박영순', contact: '010-9999-8888' },
+          2026: { school: '숲속초등학교', grade: 2, address: '서울시 서초구 서초대로', guardian: '박영순', contact: '010-4321-8765' }
+        },
+        logs: { 2025: { observation: [], h1: { date: '2025-05-02', content: '입소 초기 상담' }, h2: null, guardian: [] }, 2026: { observation: [], h1: null, h2: null, guardian: [] } },
+        attendance: {}
+      },
+      {
+        id: 3, name: '박지훈', birth: '2019-02-15', gender: '남', photo: null, enrollment: '2026-03-02', cardId: 'BG774211',
+        yearlyData: {
+          2026: { school: '푸른들초등학교', grade: 1, address: '서울시 송파구 잠실동', guardian: '박철웅', contact: '010-5555-5555' }
+        },
+        logs: { 2026: { observation: [], h1: null, h2: null, guardian: [] } },
+        attendance: {}
+      }
+    ];
+  });
 
   useEffect(() => {
     localStorage.setItem('forestChildrenList', JSON.stringify(children));
@@ -242,191 +216,6 @@ const ChildrenPage = () => {
 
     return () => clearTimeout(timeoutId);
   }, [children, childrenSyncReady]);
-
-  useEffect(() => {
-    localStorage.setItem('forestScanLogs', JSON.stringify(scanLogs));
-    if (!childrenSyncReady) return;
-
-    const timeoutId = setTimeout(() => {
-      authApi('/api/children/scan-logs', {
-        method: 'PUT',
-        body: JSON.stringify({ scanLogs }),
-      }).catch((err) => {
-        console.error('스캔 로그 서버 동기화 실패:', err);
-      });
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [scanLogs, childrenSyncReady]);
-
-  // 중계 서버로부터 데이터 실시간 동기화
-  useEffect(() => {
-    if (!childrenSyncReady) return undefined;
-
-    const fetchAttendance = async () => {
-      try {
-        const response = await fetch('http://localhost:5005/api/attendance');
-        const externalData = await response.json();
-        
-        // 가져온 데이터를 바탕으로 내부 상태 업데이트
-        externalData.forEach(item => {
-          if (item.time && item.time !== '-') {
-            // 이미 스캔 로그에 있는지 확인 (이름과 시간 기준)
-            const isAlreadyProcessed = scanLogs.some(log => 
-              log.name === item.name && 
-              new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) === item.time
-            );
-
-            if (!isAlreadyProcessed) {
-              const child = children.find(c => c.name === item.name);
-              if (child) {
-                // 수동으로 로그와 출결 업데이트 (handleTerminalScan은 시간을 현재로 잡으므로 별도 처리)
-                const newLog = {
-                  id: Date.now() + Math.random(),
-                  terminalId: '900446',
-                  cardId: child.cardId,
-                  name: child.name,
-                  timestamp: new Date(`${new Date().toISOString().split('T')[0]}T${item.time}`).toISOString(),
-                  status: 'SUCCESS'
-                };
-                setScanLogs(prev => [newLog, ...prev].slice(0, 50));
-                
-                const today = new Date().toISOString().split('T')[0];
-                const updatedAttendance = { ...child.attendance, [today]: { status: 'PRESENT', time: item.time } };
-                setChildren(prev => prev.map(c => (
-                  c.id === child.id
-                    ? { ...c, attendance: updatedAttendance }
-                    : c
-                )));
-                patchChildOnServer(child.id, { attendance: updatedAttendance }).catch((error) => {
-                  console.error('중계 출결 서버 반영 실패:', error);
-                });
-              }
-            }
-          }
-        });
-      } catch (err) {
-        console.log('중계 서버 연결 대기 중...');
-      }
-    };
-
-    const interval = setInterval(fetchAttendance, 60000);
-    fetchAttendance();
-    return () => clearInterval(interval);
-  }, [children, scanLogs, childrenSyncReady]); // scanLogs도 의존성에 추가하여 중복 체크 반영
-
-  // 전역 키보드 리스너 (USB형 단말기/Keyboard Wedge 방식 대응)
-  useEffect(() => {
-    let buffer = '';
-    let lastKeyTime = Date.now();
-
-    const handleKeyDown = (e) => {
-      const currentTime = Date.now();
-      
-      // 타이핑 속도가 매우 빠르면 단말기 스캔으로 간주 (일반적인 RFID 리더기 동작)
-      if (currentTime - lastKeyTime > 50) {
-        buffer = '';
-      }
-
-      if (e.key === 'Enter') {
-        if (buffer.length >= 4) { // 최소 ID 길이
-          handleTerminalScan(buffer.toUpperCase());
-        }
-        buffer = '';
-      } else if (e.key.length === 1) {
-        buffer += e.key;
-      }
-
-      lastKeyTime = currentTime;
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [children]); // children 데이터가 변경될 때마다 리스너 갱신
-
-  // 단말기(900446) 스캔 처리 함수
-  const handleTerminalScan = async (cardId) => {
-    const child = children.find(c => c.cardId === cardId);
-    const newLog = {
-      id: Date.now(),
-      terminalId: '900446',
-      cardId: cardId,
-      name: child ? child.name : '미등록 카드',
-      timestamp: new Date().toISOString(),
-      status: child ? 'SUCCESS' : 'UNKNOWN'
-    };
-
-    setScanLogs(prev => [newLog, ...prev].slice(0, 50)); // 최근 50개 유지
-    
-    if (child) {
-      setLastScannedChild(child);
-      // 알림창 3초 후 제거
-      setTimeout(() => setLastScannedChild(null), 3000);
-      
-      // 출결 데이터 업데이트 (예시: 오늘 날짜 출결 true)
-      const today = new Date().toISOString().split('T')[0];
-      const updatedAttendance = {
-        ...child.attendance,
-        [today]: { status: 'PRESENT', time: new Date().toLocaleTimeString() }
-      };
-
-      setChildren(prev => prev.map(c => (
-        c.id === child.id
-          ? { ...c, attendance: updatedAttendance }
-          : c
-      )));
-
-      try {
-        await patchChildOnServer(child.id, { attendance: updatedAttendance });
-      } catch (error) {
-        console.error('RFID 출결 서버 반영 실패:', error);
-      }
-    }
-  };
-
-  const handleAddChild = async () => {
-    if (!newChild.name || !newChild.cardId) {
-      alert('아동 이름과 카드 번호는 필수입니다.');
-      return;
-    }
-
-    const id = Date.now();
-    const childData = {
-      id,
-      name: newChild.name,
-      birth: newChild.birth,
-      gender: newChild.gender,
-      photo: null,
-      enrollment: new Date().toISOString().split('T')[0],
-      cardId: newChild.cardId,
-      yearlyData: {
-        [selectedYear]: {
-          school: newChild.school,
-          grade: parseInt(newChild.grade),
-          address: newChild.address,
-          guardian: newChild.guardian,
-          contact: newChild.contact
-        }
-      },
-      logs: {
-        [selectedYear]: { observation: [], h1: null, h2: null, guardian: [] }
-      },
-      attendance: {}
-    };
-
-    try {
-      await authApi('/api/children', {
-        method: 'POST',
-        body: JSON.stringify({ child: childData }),
-      });
-      setChildren(prev => [...prev, childData]);
-      setIsAddModalOpen(false);
-      setNewChild({ name: '', gender: '남', birth: '', school: '', grade: 1, address: '', guardian: '', contact: '', cardId: '' });
-    } catch (error) {
-      console.error('아동 등록 실패:', error);
-      alert('아동 정보를 서버에 저장하지 못했습니다.');
-    }
-  };
 
   const selectedChild = useMemo(() => children.find(c => c.id === selectedChildId), [children, selectedChildId]);
   
@@ -454,322 +243,6 @@ const ChildrenPage = () => {
     if (!selectedChild) return null;
     return selectedChild.logs?.[selectedYear] || { observation: [], h1: null, h2: null, guardian: [] };
   }, [selectedChild, selectedYear]);
-
-  useEffect(() => {
-    if (!selectedChild) return;
-    setChildInfoDraft({
-      gender: selectedChild.gender || '남',
-      birth: selectedChild.birth || '',
-      displayId: selectedChild.displayId || '',
-      cardId: selectedChild.cardId || '',
-      guardian: currentYearData?.guardian || '',
-      grade: currentYearData?.grade || '',
-      contact: currentYearData?.contact || '',
-      address: currentYearData?.address || '',
-    });
-  }, [selectedChild, currentYearData, selectedYear]);
-
-  useEffect(() => {
-    setObservationDraft('');
-    setConsultDrafts({
-      h1: currentYearLogs?.h1?.content || '',
-      h2: currentYearLogs?.h2?.content || '',
-    });
-    setGuardianDraft({
-      date: new Date().toISOString().split('T')[0],
-      content: '',
-    });
-  }, [currentYearLogs, selectedChildId, selectedYear]);
-
-  const fileInputRef = useRef(null);
-
-  const handleChildInfoSave = async () => {
-    if (!selectedChild) return;
-
-    const nextYearlyData = {
-      ...(selectedChild.yearlyData || {}),
-      [selectedYear]: {
-        ...(selectedChild.yearlyData?.[selectedYear] || {}),
-        guardian: childInfoDraft.guardian,
-        grade: childInfoDraft.grade,
-        contact: childInfoDraft.contact,
-        address: childInfoDraft.address,
-      },
-    };
-
-    const updates = {
-      gender: childInfoDraft.gender,
-      birth: childInfoDraft.birth,
-      displayId: childInfoDraft.displayId || undefined,
-      cardId: childInfoDraft.cardId,
-      yearlyData: nextYearlyData,
-    };
-
-    setIsSavingChildInfo(true);
-    try {
-      await patchChildOnServer(selectedChild.id, updates);
-      setChildren((prev) => prev.map((child) => (
-        child.id === selectedChild.id
-          ? {
-            ...child,
-            ...updates,
-          }
-          : child
-      )));
-      alert('아동 기본 정보가 서버에 저장되었습니다.');
-    } catch (error) {
-      console.error('아동 상세정보 저장 실패:', error);
-      alert('아동 정보를 저장하지 못했습니다.');
-    } finally {
-      setIsSavingChildInfo(false);
-    }
-  };
-
-  const handleDeleteChild = async () => {
-    if (!selectedChild) return;
-    if (!can('children_delete')) {
-      alert('아동 삭제 권한이 없습니다.');
-      return;
-    }
-
-    const confirmed = window.confirm(`${selectedChild.name} 아동 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`);
-    if (!confirmed) return;
-
-    try {
-      await authApi(`/api/children/${selectedChild.id}`, {
-        method: 'DELETE',
-      });
-
-      setChildren((prev) => prev.filter((child) => child.id !== selectedChild.id));
-      setSelectedChildId(null);
-      alert('아동 데이터가 삭제되었습니다.');
-    } catch (error) {
-      console.error('아동 삭제 실패:', error);
-      alert('아동 데이터를 삭제하지 못했습니다.');
-    }
-  };
-
-  const handleSaveObservation = async () => {
-    if (!selectedChild) return;
-    const content = observationDraft.trim();
-    if (!content) {
-      alert('관찰일지 내용을 입력해주세요.');
-      return;
-    }
-
-    const nextLogs = {
-      ...(selectedChild.logs || {}),
-      [selectedYear]: {
-        ...(selectedChild.logs?.[selectedYear] || { observation: [], h1: null, h2: null, guardian: [] }),
-        observation: [
-          ...(selectedChild.logs?.[selectedYear]?.observation || []),
-          { date: new Date().toISOString().split('T')[0], content },
-        ],
-      },
-    };
-
-    setIsSavingObservation(true);
-    try {
-      await patchChildOnServer(selectedChild.id, { logs: nextLogs });
-      setChildren((prev) => prev.map((child) => (
-        child.id === selectedChild.id ? { ...child, logs: nextLogs } : child
-      )));
-      setObservationDraft('');
-      alert('관찰일지가 저장되었습니다.');
-    } catch (error) {
-      console.error('관찰일지 저장 실패:', error);
-      alert('관찰일지를 저장하지 못했습니다.');
-    } finally {
-      setIsSavingObservation(false);
-    }
-  };
-
-  const handleSaveConsult = async (key) => {
-    if (!selectedChild) return;
-    const content = (consultDrafts[key] || '').trim();
-    if (!content) {
-      alert('상담 내용을 입력해주세요.');
-      return;
-    }
-
-    const nextLogs = {
-      ...(selectedChild.logs || {}),
-      [selectedYear]: {
-        ...(selectedChild.logs?.[selectedYear] || { observation: [], h1: null, h2: null, guardian: [] }),
-        [key]: {
-          date: new Date().toISOString().split('T')[0],
-          content,
-        },
-      },
-    };
-
-    setIsSavingConsult((prev) => ({ ...prev, [key]: true }));
-    try {
-      await patchChildOnServer(selectedChild.id, { logs: nextLogs });
-      setChildren((prev) => prev.map((child) => (
-        child.id === selectedChild.id ? { ...child, logs: nextLogs } : child
-      )));
-      alert('상담 기록이 저장되었습니다.');
-    } catch (error) {
-      console.error('상담 기록 저장 실패:', error);
-      alert('상담 기록을 저장하지 못했습니다.');
-    } finally {
-      setIsSavingConsult((prev) => ({ ...prev, [key]: false }));
-    }
-  };
-
-  const handleSaveGuardianConsult = async () => {
-    if (!selectedChild) return;
-    const content = guardianDraft.content.trim();
-    if (!content) {
-      alert('보호자 상담 내용을 입력해주세요.');
-      return;
-    }
-
-    const nextLogs = {
-      ...(selectedChild.logs || {}),
-      [selectedYear]: {
-        ...(selectedChild.logs?.[selectedYear] || { observation: [], h1: null, h2: null, guardian: [] }),
-        guardian: [
-          ...(selectedChild.logs?.[selectedYear]?.guardian || []),
-          {
-            date: guardianDraft.date,
-            content,
-          },
-        ],
-      },
-    };
-
-    setIsSavingGuardian(true);
-    try {
-      await patchChildOnServer(selectedChild.id, { logs: nextLogs });
-      setChildren((prev) => prev.map((child) => (
-        child.id === selectedChild.id ? { ...child, logs: nextLogs } : child
-      )));
-      setGuardianDraft({
-        date: new Date().toISOString().split('T')[0],
-        content: '',
-      });
-      alert('보호자 상담 기록이 저장되었습니다.');
-    } catch (error) {
-      console.error('보호자 상담 저장 실패:', error);
-      alert('보호자 상담 기록을 저장하지 못했습니다.');
-    } finally {
-      setIsSavingGuardian(false);
-    }
-  };
-
-  const handleAttendanceImport = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      try {
-        const data = new Uint8Array(evt.target.result);
-        const workbook = XLSX.read(data, { type: 'array', codepage: 65001 }); // UTF-8로 시도
-        const sheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[sheetName];
-        const jsonRows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
-
-        if (jsonRows.length < 2) return;
-
-        let newChildren = [...children];
-        let currentYearMonth = null;
-        let isDataSection = false;
-        let importedCount = 0;
-        let newChildrenAdded = 0;
-
-        jsonRows.forEach((row) => {
-          if (!row || row.length === 0) return;
-
-          // 문자열 정규화 및 트림 함수
-          const clean = (val) => String(val || '').trim().normalize('NFC');
-
-          // 월 정보 행 찾기 (예: ,일자,2026년02월,,,,)
-          const dateCell = clean(row[2]);
-          if (clean(row[1]) === '일자' && dateCell) {
-            const match = dateCell.match(/(\d{4})년(\d{1,2})월/);
-            if (match) {
-              currentYearMonth = { year: match[1], month: match[2].padStart(2, '0') };
-            }
-            isDataSection = false;
-          }
-
-          // 데이터 시작 행 찾기 (번호,이름,학교,1일,2일...)
-          if (clean(row[0]) === '번호' && clean(row[1]) === '이름') {
-            isDataSection = true;
-            return;
-          }
-
-          // 데이터 섹션 처리
-          if (isDataSection && currentYearMonth && row[1]) {
-            const name = clean(row[1]);
-            if (name === '이름' || name === '') return;
-
-            // 아동 찾기 또는 생성
-            let childIndex = newChildren.findIndex(c => clean(c.name) === name);
-            if (childIndex === -1) {
-              // 아동이 없으면 자동 등록
-              const newId = Date.now() + Math.random();
-              const newChildData = {
-                id: newId,
-                name: name,
-                birth: '',
-                gender: clean(row[38]) || '미지정', // 성별 열 (인덱스 보정 필요할 수 있음)
-                cardId: `IMP_${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
-                yearlyData: {
-                  [currentYearMonth.year]: {
-                    school: clean(row[2]) || '',
-                    grade: 1,
-                    address: '',
-                    guardian: '',
-                    contact: ''
-                  }
-                },
-                logs: {
-                  [currentYearMonth.year]: { observation: [], h1: null, h2: null, guardian: [] }
-                },
-                attendance: {}
-              };
-              newChildren.push(newChildData);
-              childIndex = newChildren.length - 1;
-              newChildrenAdded++;
-            }
-
-            // 1일부터 31일까지 출결 확인 (인덱스 3 ~ 33)
-            for (let day = 1; day <= 31; day++) {
-              const status = clean(row[day + 2]);
-              const dateKey = `${currentYearMonth.year}-${currentYearMonth.month}-${String(day).padStart(2, '0')}`;
-              
-              if (['출석', '출', 'O', 'V', '1'].includes(status)) {
-                newChildren[childIndex].attendance[dateKey] = {
-                  status: 'PRESENT',
-                  time: '09:00:00',
-                  memo: 'CSV 통합 임포트'
-                };
-                importedCount++;
-              } else if (['결석', 'X', '0'].includes(status)) {
-                newChildren[childIndex].attendance[dateKey] = {
-                  status: 'ABSENT',
-                  time: '-',
-                  memo: 'CSV 통합 임포트'
-                };
-              }
-            }
-          }
-        });
-
-        setChildren(newChildren);
-        alert(`${newChildrenAdded}명의 아동을 새로 등록하고, ${importedCount}건의 출결 기록을 통합했습니다.`);
-      } catch (err) {
-        console.error(err);
-        alert('파일을 읽는 중 오류가 발생했습니다. CSV 형식을 확인해 주세요.');
-      }
-    };
-    reader.readAsArrayBuffer(file);
-    e.target.value = null;
-  };
 
   return (
     <div className="font-['Outfit'] min-h-screen bg-[#f8fafc] flex flex-col">
@@ -832,7 +305,8 @@ const ChildrenPage = () => {
            <div className="flex w-full gap-1 rounded-2xl bg-slate-100 p-1.5 md:w-auto">
              {[
                { id: 'active', label: '아동 목록/관리', icon: Users, key: 'children_view' },
-               { id: 'ledger', label: '출결대장', icon: FileSpreadsheet, key: 'attendance_view' }
+               { id: 'ledger', label: '출결대장', icon: FileSpreadsheet, key: 'attendance_view' },
+               { id: 'scan', label: 'RFID 스캔', icon: Fingerprint, key: 'rfid_access' }
              ].filter(t => can(t.key)).map(t => (
                <button key={t.id} onClick={() => { setActiveTab(t.id); setSelectedChildId(null); }} className={`flex flex-1 items-center justify-center gap-2.5 px-4 py-2.5 rounded-xl text-[11px] font-black transition-all md:flex-none md:px-6 md:py-2 ${activeTab === t.id ? 'bg-indigo-600 text-white shadow-xl' : 'text-slate-500 hover:text-slate-900'}`}>
                  <t.icon className="w-4 h-4" />
@@ -841,159 +315,24 @@ const ChildrenPage = () => {
              ))}
            </div>
            {can('children_create') && (
-             <button 
-               onClick={() => setIsAddModalOpen(true)}
-               className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 text-[11px] font-black uppercase tracking-widest text-white shadow-xl transition-all hover:bg-emerald-700 md:w-auto"
-             >
+             <button className="px-6 py-3 bg-emerald-600 text-white rounded-xl shadow-xl hover:bg-emerald-700 font-black text-[11px] flex items-center gap-2 uppercase tracking-widest transition-all">
                <Plus className="w-4 h-4" /> 신규 아동 등록
              </button>
            )}
         </div>
       </div>
 
-
       <div className="flex-1 flex overflow-hidden relative">
-        {/* 출결대장 뷰 */}
-        {activeTab === 'ledger' && (
-          <div className="flex-1 overflow-y-auto bg-white p-4 md:p-12 flex flex-col">
-            <div className="max-w-7xl mx-auto w-full space-y-10">
-              <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <FileSpreadsheet className="w-5 h-5 text-indigo-600" />
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Attendance Registry</span>
-                  </div>
-                  <h3 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tighter uppercase italic">
-                    {selectedMonth}월 출결 현황 대장 <span className="text-indigo-600">.</span>
-                  </h3>
-                </div>
-                 <div className="flex flex-wrap gap-3 md:gap-4">
-                   <div className="relative">
-                     <button 
-                       onClick={() => setIsMonthPickerOpen(!isMonthPickerOpen)}
-                       className="px-6 py-3 bg-white border border-slate-200 rounded-xl font-black text-[11px] flex items-center gap-2"
-                     >
-                       {selectedMonth}월 <ChevronDown className="w-4 h-4" />
-                     </button>
-                     <AnimatePresence>
-                       {isMonthPickerOpen && (
-                         <motion.div 
-                           initial={{ opacity: 0, scale: 0.95 }}
-                           animate={{ opacity: 1, scale: 1 }}
-                           exit={{ opacity: 0, scale: 0.95 }}
-                           className="absolute top-full right-0 mt-2 bg-white border border-slate-100 rounded-2xl shadow-2xl z-50 p-2 grid grid-cols-3 gap-1 w-48"
-                         >
-                           {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
-                             <button 
-                               key={m} 
-                               onClick={() => { setSelectedMonth(m); setIsMonthPickerOpen(false); }}
-                               className={`p-2 rounded-lg text-xs font-black transition-all ${selectedMonth === m ? 'bg-indigo-600 text-white' : 'hover:bg-slate-50'}`}
-                             >
-                               {m}월
-                             </button>
-                           ))}
-                         </motion.div>
-                       )}
-                     </AnimatePresence>
-                   </div>
-                   <input 
-                     type="file" 
-                     ref={fileInputRef} 
-                     onChange={handleAttendanceImport} 
-                     className="hidden" 
-                     accept=".xlsx, .xls, .csv" 
-                   />
-                   <button 
-                     onClick={() => fileInputRef.current.click()}
-                     className="px-6 py-3 bg-indigo-50 text-indigo-600 rounded-xl font-black text-[11px] uppercase tracking-widest border border-indigo-100 hover:bg-indigo-100 transition-all"
-                   >
-                     데이터 가져오기
-                   </button>
-                   <button className="px-6 py-3 bg-slate-100 text-slate-900 rounded-xl font-black text-[11px] uppercase tracking-widest">인쇄</button>
-                   <button className="px-6 py-3 bg-slate-900 text-white rounded-xl font-black text-[11px] uppercase tracking-widest shadow-xl">EXCEL</button>
-                 </div>
-              </div>
-
-              <div className="bg-white rounded-[4rem] border border-slate-100 shadow-2xl overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse min-w-[1200px]">
-                    <thead>
-                      <tr className="bg-[#0f172a] text-slate-400">
-                        <th className="px-10 py-8 font-black uppercase tracking-widest text-[10px] sticky left-0 z-20 bg-[#0f172a]">전체 아동 성명</th>
-                        {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
-                          <th key={day} className="px-2 py-8 text-center font-black text-[10px] w-12">{day}</th>
-                        ))}
-                        <th className="px-8 py-8 text-center font-black uppercase text-[10px] bg-slate-800 text-indigo-400">합계</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-50">
-                      {children.map(child => {
-                        const days = Array.from({ length: 31 }, (_, i) => {
-                          const date = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(i+1).padStart(2, '0')}`;
-                          return child.attendance?.[date];
-                        });
-                        const presentCount = days.filter(d => d?.status === 'PRESENT').length;
-
-                        return (
-                          <tr key={child.id} className="hover:bg-indigo-50/30 transition-all">
-                            <td className="px-10 py-6 font-black text-slate-900 sticky left-0 bg-white z-10">{child.name}</td>
-                            {days.map((day, i) => (
-                              <td key={i} className="px-1 py-6 text-center border-r border-slate-50">
-                                {day?.status === 'PRESENT' ? (
-                                  <div className="flex flex-col items-center gap-1 group/day">
-                                    <div className="w-7 h-7 bg-emerald-500 rounded-xl flex items-center justify-center text-white text-[10px] font-black shadow-lg shadow-emerald-500/20 group-hover/day:scale-125 transition-all">출</div>
-                                    <span className="text-[7px] font-black text-slate-400 tracking-tighter">{day.time?.slice(0,5)}</span>
-                                  </div>
-                                ) : (
-                                  <div className="w-2 h-2 bg-slate-100 rounded-full mx-auto" />
-                                )}
-                              </td>
-                            ))}
-                            <td className="px-8 py-6 text-center bg-indigo-50/50">
-                              <span className="text-base font-black text-indigo-600 italic">{presentCount}</span>
-                              <span className="text-[9px] font-bold text-slate-400 ml-1">Days</span>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* 실시간 스캔 알림 (피드백) */}
-        <AnimatePresence>
-          {lastScannedChild && (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.8, y: 50 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.8, y: 20 }}
-              className="fixed bottom-12 right-12 z-[1000] flex items-center gap-6 bg-slate-900 text-white p-8 rounded-[3rem] shadow-3xl border border-white/10"
-            >
-              <div className="w-20 h-20 rounded-[2rem] border-4 border-indigo-500/30 overflow-hidden shadow-2xl relative">
-                {lastScannedChild.photo ? <img src={lastScannedChild.photo} className="w-full h-full object-cover" /> : <User className="w-8 h-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-slate-700" />}
-              </div>
-              <div className="space-y-1 pr-8">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl font-black italic">{lastScannedChild.name}</span>
-                  <span className="px-2 py-0.5 bg-emerald-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest shadow-xl shadow-emerald-500/20">Checked IN</span>
-                </div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em] m-0">단말기 900446 인증 성공</p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
         {/* 아동 테이블 목록 (초기 화면) */}
-        {activeTab === 'active' && !selectedChildId && (
-          <div className="flex-1 overflow-y-auto p-4 md:p-8">
+        <motion.div 
+          animate={{ x: selectedChildId ? -100 : 0, opacity: selectedChildId ? 0 : 1 }}
+          style={{ display: selectedChildId ? 'none' : 'block' }}
+          className="flex-1 overflow-y-auto p-8"
+        >
           <div className="max-w-7xl mx-auto space-y-8">
              <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                 <div>
-                   <h3 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tighter m-0 uppercase italic">기관 아동 명부 <span className="text-indigo-600">.</span></h3>
+                   <h3 className="text-3xl font-black text-slate-900 tracking-tighter m-0 uppercase italic">기관 아동 명부 <span className="text-indigo-600">.</span></h3>
                    <p className="text-xs font-bold text-slate-400 m-0 uppercase tracking-widest mt-1">{selectedYear}년도 데이터베이스에 {filteredChildren.length}명의 아동이 검색되었습니다.</p>
                 </div>
                 <div className="relative w-full md:w-80">
@@ -1088,8 +427,7 @@ const ChildrenPage = () => {
                 </table>
              </div>
           </div>
-        </div>
-        )}
+        </motion.div>
 
         {/* 상세 뷰 레이아웃 (아동 선택 시 표시) */}
         {selectedChildId && (
@@ -1222,111 +560,13 @@ const ChildrenPage = () => {
                          <div className="absolute top-6 right-10 text-[10px] font-black text-slate-300 uppercase tracking-widest italic">데이터베이스 동기화: 활성화</div>
                          
                          {detailTab === 'info' && (
-                           <div
-                             className="relative grid grid-cols-1 gap-8 animate-in fade-in slide-in-from-bottom-8 overflow-hidden rounded-[3rem] border border-sky-100/80 p-6 md:grid-cols-2 md:gap-12 md:p-10"
-                             style={{
-                               backgroundImage: `linear-gradient(180deg, rgba(248,252,253,0.74) 0%, rgba(248,252,253,0.88) 32%, rgba(248,252,253,0.96) 100%), url(${starInfoBg})`,
-                               backgroundSize: 'cover',
-                               backgroundPosition: 'center',
-                             }}
-                           >
-                              <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,rgba(121,182,255,0.16),transparent_38%)] pointer-events-none" />
-                              <div className="relative z-10 col-span-1 flex flex-col gap-4 border-b border-white/70 pb-6 md:col-span-2 md:flex-row md:items-center md:justify-between md:pb-8">
-                                <h5 className="text-[12px] font-black text-slate-900 uppercase tracking-[0.4em] m-0 flex items-center gap-3">
-                                  <ShieldCheck className="w-5 h-5 text-sky-500" />
-                                  개인 신원 및 법적 식별 정보 ({selectedYear})
-                                </h5>
-                                <button
-                                  type="button"
-                                  onClick={handleChildInfoSave}
-                                  disabled={isSavingChildInfo}
-                                  className="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-5 py-3 text-[11px] font-black uppercase tracking-[0.2em] text-white shadow-xl transition-all hover:bg-black disabled:bg-slate-300"
-                                >
-                                  {isSavingChildInfo ? '저장 중...' : '기본정보 저장'}
-                                </button>
-                              </div>
-
-                              <div className="space-y-3 relative z-10">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">성별 / 생년월일</label>
-                                <div className="flex gap-4">
-                                  <select
-                                    value={childInfoDraft.gender}
-                                    onChange={(e) => setChildInfoDraft((prev) => ({ ...prev, gender: e.target.value }))}
-                                    className="w-28 bg-white/92 border border-white rounded-2xl py-6 px-4 font-black text-center shadow-inner outline-none"
-                                  >
-                                    <option value="남">남</option>
-                                    <option value="여">여</option>
-                                  </select>
-                                  <input
-                                    type="date"
-                                    value={childInfoDraft.birth}
-                                    onChange={(e) => setChildInfoDraft((prev) => ({ ...prev, birth: e.target.value }))}
-                                    className="flex-1 bg-white/92 border border-white rounded-2xl py-6 px-6 font-black shadow-inner outline-none"
-                                  />
-                                </div>
-                              </div>
-
-                              <div className="space-y-3 relative z-10">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">RFID 보안 태그 ID</label>
-                                <div className="flex gap-2">
-                                  <input
-                                    type="text"
-                                    value={childInfoDraft.displayId}
-                                    onChange={(e) => setChildInfoDraft((prev) => ({ ...prev, displayId: e.target.value }))}
-                                    className="flex-1 bg-white/88 text-slate-500 border border-white rounded-2xl py-6 px-6 font-black tracking-widest shadow-inner outline-none"
-                                    placeholder="관리번호"
-                                  />
-                                  <input
-                                    type="text"
-                                    value={childInfoDraft.cardId}
-                                    onChange={(e) => setChildInfoDraft((prev) => ({ ...prev, cardId: e.target.value.toUpperCase() }))}
-                                    className="flex-1 bg-slate-900/92 text-sky-300 border-none rounded-2xl py-6 px-6 font-black tracking-widest shadow-2xl outline-none"
-                                    placeholder="하드웨어 ID"
-                                  />
-                                </div>
-                              </div>
-
-                              <div className="space-y-3 relative z-10">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">주 보호자 / 당시 학년</label>
-                                <div className="flex gap-4">
-                                  <input
-                                    type="text"
-                                    value={childInfoDraft.guardian}
-                                    onChange={(e) => setChildInfoDraft((prev) => ({ ...prev, guardian: e.target.value }))}
-                                    className="flex-1 bg-white/92 border border-white rounded-2xl py-6 px-6 font-black shadow-inner outline-none"
-                                    placeholder="보호자 이름"
-                                  />
-                                  <input
-                                    type="text"
-                                    value={childInfoDraft.grade}
-                                    onChange={(e) => setChildInfoDraft((prev) => ({ ...prev, grade: e.target.value }))}
-                                    className="w-28 bg-white/92 border border-white rounded-2xl py-6 px-4 font-black text-center shadow-inner outline-none"
-                                    placeholder="학년"
-                                  />
-                                </div>
-                              </div>
-
-                              <div className="space-y-3 relative z-10">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">비상 연락처 체계</label>
-                                <input
-                                  type="text"
-                                  value={childInfoDraft.contact}
-                                  onChange={(e) => setChildInfoDraft((prev) => ({ ...prev, contact: e.target.value }))}
-                                  className="w-full bg-white/92 border border-white rounded-2xl py-6 px-6 font-black shadow-inner outline-none"
-                                  placeholder="010-0000-0000"
-                                />
-                              </div>
-
-                              <div className="space-y-3 col-span-1 relative z-10 md:col-span-2">
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">실거주지 매핑 주소</label>
-                                <input
-                                  type="text"
-                                  value={childInfoDraft.address}
-                                  onChange={(e) => setChildInfoDraft((prev) => ({ ...prev, address: e.target.value }))}
-                                  className="w-full bg-white/92 border border-white rounded-2xl py-6 px-6 font-black shadow-inner outline-none"
-                                  placeholder="실거주 주소 입력"
-                                />
-                              </div>
+                           <div className="grid grid-cols-2 gap-12 animate-in fade-in slide-in-from-bottom-8">
+                              <div className="space-y-4 col-span-2 border-b border-slate-100 pb-8"><h5 className="text-[12px] font-black text-slate-900 uppercase tracking-[0.4em] m-0 flex items-center gap-3"><ShieldCheck className="w-5 h-5 text-emerald-500"/> 개인 신원 및 법적 식별 정보 ({selectedYear})</h5></div>
+                              <div className="space-y-3"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">성별 / 생년월일</label><div className="flex gap-4"><input type="text" readOnly value={selectedChild.gender} className="w-24 bg-white border border-slate-100 rounded-2xl py-6 px-4 font-black text-center shadow-inner" /><input type="text" readOnly value={selectedChild.birth} className="flex-1 bg-white border border-slate-100 rounded-2xl py-6 px-10 font-black shadow-inner" /></div></div>
+                              <div className="space-y-3"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">RFID 보안 태그 ID</label><input type="text" readOnly value={selectedChild.cardId} className="w-full bg-slate-900 text-indigo-400 border-none rounded-2xl py-6 px-10 font-black tracking-widest shadow-2xl" /></div>
+                              <div className="space-y-3"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">주 보호자 / 당시 학년</label><input type="text" readOnly value={`${currentYearData?.guardian || '없음'} (${currentYearData?.grade || '?'}학년)`} className="w-full bg-white border border-slate-100 rounded-2xl py-6 px-10 font-black shadow-inner" /></div>
+                              <div className="space-y-3"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">비상 연락처 체계</label><input type="text" readOnly value={currentYearData?.contact || '정보 없음'} className="w-full bg-white border border-slate-100 rounded-2xl py-6 px-10 font-black shadow-inner" /></div>
+                              <div className="space-y-3 col-span-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">실거주지 매핑 주소</label><input type="text" readOnly value={currentYearData?.address || '데이터 없음'} className="w-full bg-white border border-slate-100 rounded-2xl py-6 px-10 font-black shadow-inner" /></div>
                            </div>
                          )}
 
@@ -1510,95 +750,6 @@ const ChildrenPage = () => {
           </div>
         )}
       </div>
-
-      {/* 신규 아동 등록 모달 */}
-      <AnimatePresence>
-        {isAddModalOpen && (
-          <div className="fixed inset-0 z-[2000] flex items-center justify-center p-8">
-            <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setIsAddModalOpen(false)}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
-            />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white w-full max-w-2xl rounded-[3rem] shadow-3xl relative z-10 overflow-hidden"
-            >
-              <div className="p-10 bg-slate-900 text-white flex justify-between items-center">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-emerald-500 rounded-2xl"><Plus className="w-6 h-6 text-white" /></div>
-                  <div>
-                    <h3 className="text-2xl font-black italic uppercase tracking-tighter m-0">신규 아동 시스템 등록</h3>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest m-0 mt-1">RFID 카드 연동 및 기본 정보 입력</p>
-                  </div>
-                </div>
-                <button onClick={() => setIsAddModalOpen(false)} className="p-2 hover:bg-white/10 rounded-xl transition-all"><X className="w-6 h-6" /></button>
-              </div>
-
-              <div className="p-12 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">성명 (필수)</label>
-                    <input type="text" value={newChild.name} onChange={e => setNewChild({...newChild, name: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all" placeholder="이름 입력" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">RFID 카드 ID (필수)</label>
-                    <input type="text" value={newChild.cardId} onChange={e => setNewChild({...newChild, cardId: e.target.value.toUpperCase()})} className="w-full bg-slate-900 text-emerald-400 border-none rounded-2xl py-4 px-6 font-black tracking-widest outline-none focus:ring-4 focus:ring-emerald-500/20 transition-all" placeholder="예: E7FDCD66" />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">성별</label>
-                    <div className="flex gap-2">
-                      {['남', '여'].map(g => (
-                        <button key={g} onClick={() => setNewChild({...newChild, gender: g})} className={`flex-1 py-4 rounded-2xl font-black transition-all ${newChild.gender === g ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-slate-400'}`}>{g}</button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">생년월일</label>
-                    <input type="date" value={newChild.birth} onChange={e => setNewChild({...newChild, birth: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all" />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">학교 정보 / 학년</label>
-                  <div className="flex gap-4">
-                    <input type="text" value={newChild.school} onChange={e => setNewChild({...newChild, school: e.target.value})} className="flex-[2] bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none placeholder:font-bold" placeholder="학교명" />
-                    <select value={newChild.grade} onChange={e => setNewChild({...newChild, grade: e.target.value})} className="flex-1 bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none">
-                      {[1,2,3,4,5,6].map(g => <option key={g} value={g}>{g}학년</option>)}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">보호자 성함</label>
-                    <input type="text" value={newChild.guardian} onChange={e => setNewChild({...newChild, guardian: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none" placeholder="보호자 성명" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">연락처</label>
-                    <input type="text" value={newChild.contact} onChange={e => setNewChild({...newChild, contact: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none" placeholder="010-0000-0000" />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">실거주 주소</label>
-                  <input type="text" value={newChild.address} onChange={e => setNewChild({...newChild, address: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none" placeholder="상세 주소 입력" />
-                </div>
-              </div>
-
-              <div className="p-10 bg-slate-50 border-t border-slate-100 flex gap-4">
-                <button onClick={() => setIsAddModalOpen(false)} className="flex-1 py-5 bg-white border border-slate-200 text-slate-500 rounded-3xl font-black text-[12px] uppercase tracking-widest shadow-sm hover:bg-slate-100 transition-all">취소</button>
-                <button onClick={handleAddChild} className="flex-[2] py-5 bg-emerald-600 text-white rounded-3xl font-black text-[12px] uppercase tracking-widest shadow-2xl shadow-emerald-600/20 hover:bg-emerald-700 transition-all">아동 정보 저장 및 카드 연동</button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };
