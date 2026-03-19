@@ -50,7 +50,7 @@ type PointerPosition = {
 type PointerDraggingDirection = 'right' | 'bottom';
 
 const MIN_ROW_HEIGHT = 33;
-const MIN_COLUMN_WIDTH = 92;
+const MIN_COLUMN_WIDTH = 30;
 const ACTIVE_RESIZER_COLOR = '#76b6ff';
 
 function TableCellResizer({editor}: {editor: LexicalEditor}): JSX.Element {
@@ -97,7 +97,7 @@ function TableCellResizer({editor}: {editor: LexicalEditor}): JSX.Element {
         }
 
         const numColumns = tableNode.getColumnCount();
-        const columnWidth = MIN_COLUMN_WIDTH;
+        const columnWidth = Math.max(Math.floor(750 / numColumns), MIN_COLUMN_WIDTH);
 
         tableNode.setColWidths(Array(numColumns).fill(columnWidth));
         return tableNode;

@@ -1,4 +1,74 @@
 {
-  "staff": [],
-  "updatedAt": null
+  "staff": [
+    {
+      "id": 1,
+      "name": "김민수",
+      "role": "시설장",
+      "type": "정규직",
+      "birth": "1975.03.15",
+      "email": "minsu@forest.com",
+      "status": "재직",
+      "address": "서울시 강남구...",
+      "contact": "010-1111-2222",
+      "joinDate": "2022.01.01",
+      "permissions": {
+        "rfid_access": true,
+        "children_edit": true,
+        "children_list": true,
+        "children_scan": true,
+        "children_view": true,
+        "attendance_edit": true,
+        "attendance_view": true,
+        "children_create": true,
+        "children_delete": true,
+        "children_ledger": true,
+        "attendance_excel": true
+      },
+      "attendanceData": {
+        "2026-02-01": "출근",
+        "2026-02-02": "출근",
+        "2026-02-03": "출근"
+      }
+    },
+    {
+      "id": 2,
+      "name": "이영희",
+      "role": "생활복지사",
+      "type": "정규직",
+      "birth": "1988.11.20",
+      "email": "yh@forest.com",
+      "status": "재직",
+      "address": "서울시 서초구...",
+      "contact": "010-3333-4444",
+      "joinDate": "2023.05.10",
+      "permissions": {
+        "children_list": false,
+        "children_scan": true,
+        "children_ledger": true
+      },
+      "attendanceData": {
+        "2026-02-01": "출근",
+        "2026-02-02": "출근"
+      }
+    },
+    {
+      "id": 3,
+      "name": "박철수",
+      "role": "조리원",
+      "type": "계약직",
+      "birth": "1965.07.05",
+      "email": "cs@forest.com",
+      "status": "재직",
+      "address": "서울시 송파구...",
+      "contact": "010-5555-6666",
+      "joinDate": "2024.02.15",
+      "permissions": {
+        "children_list": false,
+        "children_scan": true,
+        "children_ledger": false
+      },
+      "attendanceData": {}
+    }
+  ],
+  "updatedAt": "2026-03-19T16:36:05.349Z"
 }

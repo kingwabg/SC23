@@ -226,23 +226,17 @@ const MeetingPage = () => {
     const periodLabel = getPeriodLabel(log.startTime, log.endTime);
     
     return `
-        <!-- 날짜 및 작성자 표 -->
-        <table align="center" border="1" cellspacing="0" cellpadding="0" style="margin-bottom: 15px; border-collapse: collapse; font-size: 13px; width: 100%; text-align: center; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;">
+        <!-- 통합 운영 집계 표 -->
+        <table align="center" border="1" cellspacing="0" cellpadding="0" style="margin: 0 auto; border-collapse: collapse; font-size: 13px; text-align: center; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; table-layout: fixed; width: max-content;">
           <tbody>
             <tr>
-              <td style="border: 1px solid rgb(221,221,221); background-color: rgb(245,245,245); padding: 8px; width: 15%; text-align: center; font-weight: bold;">일자</td>
-              <td style="border: 1px solid rgb(221,221,221); padding: 8px; width: 20%; text-align: center;">${log.date}</td>
-              <td style="border: 1px solid rgb(221,221,221); background-color: rgb(245,245,245); padding: 8px; width: 15%; text-align: center; font-weight: bold;">운영시간</td>
-              <td style="border: 1px solid rgb(221,221,221); padding: 8px; width: 30%; text-align: center;">${log.startTime} ~ ${log.endTime} (${periodLabel})</td>
-              <td style="border: 1px solid rgb(221,221,221); background-color: rgb(245,245,245); padding: 8px; width: 10%; text-align: center; font-weight: bold;">담당자</td>
-              <td style="border: 1px solid rgb(221,221,221); padding: 8px; width: 10%; text-align: center;">${log.writer}</td>
+              <td colspan="2" style="border: 1px solid rgb(221,221,221); background-color: rgb(245,245,245); padding: 8px; text-align: center; font-weight: bold;">일자</td>
+              <td colspan="3" style="border: 1px solid rgb(221,221,221); padding: 8px; text-align: center;">${log.date}</td>
+              <td colspan="2" style="border: 1px solid rgb(221,221,221); background-color: rgb(245,245,245); padding: 8px; text-align: center; font-weight: bold;">운영시간</td>
+              <td colspan="3" style="border: 1px solid rgb(221,221,221); padding: 8px; text-align: center;">${log.startTime} ~ ${log.endTime} (${periodLabel})</td>
+              <td colspan="2" style="border: 1px solid rgb(221,221,221); background-color: rgb(245,245,245); padding: 8px; text-align: center; font-weight: bold;">담당자</td>
+              <td colspan="2" style="border: 1px solid rgb(221,221,221); padding: 8px; text-align: center;">${log.writer}</td>
             </tr>
-          </tbody>
-        </table>
-
-        <!-- 통계 집계 표 -->
-        <table align="center" border="1" cellspacing="0" cellpadding="0" style="border-collapse: collapse; font-size: 13px; width: 100%; text-align: center; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;">
-          <tbody>
           <tr>
             <td rowspan="3" style="border: 1px solid rgb(221,221,221); background-color: rgb(245,245,245); padding: 8px; width: 10%; text-align: center;">아동현황<br>(취학구분)</td>
             <td style="border: 1px solid rgb(221,221,221); background-color: rgb(245,245,245); padding: 8px; text-align: center;">성별</td>
@@ -255,7 +249,7 @@ const MeetingPage = () => {
             <td style="border: 1px solid rgb(221,221,221); background-color: rgb(245,245,245); padding: 8px; text-align: center;">계</td>
             <td rowspan="3" style="border: 1px solid rgb(221,221,221); background-color: rgb(245,245,245); padding: 8px; width: 10%; text-align: center;">급식현황</td>
             <td style="border: 1px solid rgb(221,221,221); background-color: rgb(245,245,245); padding: 8px; text-align: center;">조식</td>
-            <td style="border: 1px solid rgb(221,221,221); padding: 8px; color: blue; font-weight: bold; text-align: center;">${s.meals.morning} 명</td>
+            <td colspan="3" style="border: 1px solid rgb(221,221,221); padding: 8px; color: blue; font-weight: bold; text-align: center;">${s.meals.morning} 명</td>
           </tr>
           <tr>
             <td style="border: 1px solid rgb(221,221,221); background-color: rgb(245,245,245); padding: 8px; text-align: center;">남</td>
@@ -267,7 +261,7 @@ const MeetingPage = () => {
             <td style="border: 1px solid rgb(221,221,221); padding: 8px; text-align: center;">${s.children.male.extra}</td>
             <td style="border: 1px solid rgb(221,221,221); padding: 8px; font-weight: bold; text-align: center;">${s.children.male.total}</td>
             <td style="border: 1px solid rgb(221,221,221); background-color: rgb(245,245,245); padding: 8px; text-align: center;">중식</td>
-            <td style="border: 1px solid rgb(221,221,221); padding: 8px; color: blue; font-weight: bold; text-align: center;">${s.meals.lunch} 명</td>
+            <td colspan="3" style="border: 1px solid rgb(221,221,221); padding: 8px; color: blue; font-weight: bold; text-align: center;">${s.meals.lunch} 명</td>
           </tr>
           <tr>
             <td style="border: 1px solid rgb(221,221,221); background-color: rgb(245,245,245); padding: 8px; text-align: center;">여</td>
@@ -279,7 +273,7 @@ const MeetingPage = () => {
             <td style="border: 1px solid rgb(221,221,221); padding: 8px; text-align: center;">${s.children.female.extra}</td>
             <td style="border: 1px solid rgb(221,221,221); padding: 8px; font-weight: bold; text-align: center;">${s.children.female.total}</td>
             <td style="border: 1px solid rgb(221,221,221); background-color: rgb(245,245,245); padding: 8px; text-align: center;">석식</td>
-            <td style="border: 1px solid rgb(221,221,221); padding: 8px; color: blue; font-weight: bold; text-align: center;">${s.meals.dinner} 명</td>
+            <td colspan="3" style="border: 1px solid rgb(221,221,221); padding: 8px; color: blue; font-weight: bold; text-align: center;">${s.meals.dinner} 명</td>
           </tr>
           <tr>
             <td rowspan="2" style="border: 1px solid rgb(221,221,221); background-color: rgb(245,245,245); padding: 8px; text-align: center;">아동출석<br>(출석구분)</td>
@@ -498,7 +492,59 @@ const MeetingPage = () => {
 
   const handleBatchPrint = () => {
     if (checkedLogs.length === 0) return;
-    alert(`선택한 ${checkedLogs.length}개의 기록을 인쇄 대기열에 추가했습니다.`);
+    
+    const logsToPrint = meetings.filter(m => checkedLogs.includes(m.id));
+    let printContent = '';
+    
+    logsToPrint.forEach((log, index) => {
+      const signatureHtml = generateOfficialSignatureHeaderHtml(log);
+      const innerContent = log.content || '<p style="text-align:center; padding: 50px; color:#999;">작성된 본문이 없습니다.</p>';
+      
+      printContent += `
+        <div style="font-family: 'Malgun Gothic', sans-serif; width: 100%; max-width: 800px; margin: 0 auto;">
+          ${signatureHtml}
+          <br/>
+          <div style="font-size: 14px; line-height: 1.6;">${innerContent}</div>
+        </div>
+      `;
+      if (index < logsToPrint.length - 1) {
+         printContent += '<div style="page-break-after: always;"></div>';
+      }
+    });
+
+    import('print-js').then((module) => {
+      const printJS = module.default;
+      printJS({
+        printable: printContent,
+        type: 'raw-html',
+        documentTitle: '운영일지 모음',
+        style: `
+          @media print {
+            body { 
+              -webkit-print-color-adjust: exact !important; 
+              print-color-adjust: exact !important; 
+              padding: 0 !important; 
+              margin: 0 !important;
+            }
+          }
+          table { 
+            border-collapse: collapse !important; 
+            border-spacing: 0 !important;
+            width: 100% !important; 
+            max-width: 100% !important;
+          }
+          th, td { 
+            border: 1px solid #000 !important; 
+            word-break: break-all;
+          }
+          * { box-sizing: border-box; }
+          .page-break { page-break-after: always; }
+        `
+      });
+    }).catch(err => {
+      console.error("PrintJS 패키지 로드 실패:", err);
+      alert('인쇄 모듈을 불러오는 데 실패했습니다.');
+    });
   };
 
   const updateLogData = (id, field, value) => {

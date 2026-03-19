@@ -36,6 +36,8 @@ import {
 } from '@lexical/table';
 import {
   $getChildCaret,
+  $createNodeSelection,
+  $setSelection,
   $getNearestNodeFromDOMNode,
   $getSiblingCaret,
   type EditorThemeClasses,
@@ -602,6 +604,18 @@ function TableHoverActionsV2({
     });
   };
 
+  const handleSelectTable = () => {
+    if (!hoveredTable) return;
+    editor.update(() => {
+      const tableNode = $getNearestNodeFromDOMNode(hoveredTable);
+      if ($isTableNode(tableNode)) {
+        const nodeSelection = $createNodeSelection();
+        nodeSelection.add(tableNode.getKey());
+        $setSelection(nodeSelection);
+      }
+    });
+  };
+
   return (
     <>
       <div
@@ -617,8 +631,9 @@ function TableHoverActionsV2({
         <button
           ref={dragHandleRef}
           className="floating-drag-indicator"
-          aria-label="Drag to reorder column"
+          aria-label="Drag to reorder column or click to select table"
           type="button"
+          onClick={handleSelectTable}
         />
         <DropDown
           buttonAriaLabel="Sort column"

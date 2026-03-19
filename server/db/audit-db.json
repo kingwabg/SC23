@@ -1,6 +1,4786 @@
 {
   "logs": [
     {
+      "id": "203a3c1a-4d5d-47bf-8bdc-096b4b33145d",
+      "at": "2026-03-19T16:59:19.402Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "programs",
+      "action": "BULK_SYNC",
+      "targetType": "program",
+      "targetId": "bulk",
+      "targetLabel": "programs",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "7f727595-e353-4cab-abf4-17fd0bdeae26",
+      "at": "2026-03-19T16:59:15.142Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "programs",
+      "action": "BULK_SYNC",
+      "targetType": "program",
+      "targetId": "bulk",
+      "targetLabel": "programs",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "3d44a7b5-9baf-4c91-b9e8-928ef37d5f84",
+      "at": "2026-03-19T16:58:54.085Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "programs",
+      "action": "BULK_SYNC",
+      "targetType": "program",
+      "targetId": "bulk",
+      "targetLabel": "programs",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "954f73dc-da93-4c0d-bf3a-5f16bd8694fd",
+      "at": "2026-03-19T16:58:53.468Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "programs",
+      "action": "BULK_SYNC",
+      "targetType": "program",
+      "targetId": "bulk",
+      "targetLabel": "programs",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "e79f5793-d27c-4ec2-94ba-191b5ca7d4c8",
+      "at": "2026-03-19T16:58:53.460Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "programs",
+      "action": "BULK_SYNC",
+      "targetType": "program",
+      "targetId": "bulk",
+      "targetLabel": "programs",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "59dbabd3-f0d8-4ae7-8833-57971514805f",
+      "at": "2026-03-19T16:58:49.753Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "1bb4e9b8-0610-4d70-874a-85dd7e637c27",
+      "at": "2026-03-19T16:58:07.148Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "204dfd65-17aa-4be5-ba72-5d791a501d54",
+      "at": "2026-03-19T16:51:40.155Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "906d63d3-8f9d-4dfb-abcb-6c8da695270e",
+      "at": "2026-03-19T16:47:08.303Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "828cf0e9-7d05-4ddd-abe4-5c3c144112b6",
+      "at": "2026-03-19T16:41:25.951Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "7bbdb1eb-be50-4b68-a688-3c0222224616",
+      "at": "2026-03-19T16:40:33.692Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "28d6a345-d605-4287-b18a-87b609714f54",
+      "at": "2026-03-19T16:38:21.287Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "24c74bc2-2edc-45f1-8ddb-05f206fd033e",
+      "at": "2026-03-19T16:36:09.924Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "a895bb90-d719-413f-bf31-acf6fcd3425e",
+      "at": "2026-03-19T16:36:05.352Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "staff",
+      "action": "BULK_SYNC",
+      "targetType": "staff",
+      "targetId": "bulk",
+      "targetLabel": "staff",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "b222541f-63b3-4d4a-9275-fd1fd741703d",
+      "at": "2026-03-19T16:36:05.023Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "staff",
+      "action": "BULK_SYNC",
+      "targetType": "staff",
+      "targetId": "bulk",
+      "targetLabel": "staff",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "01e1decf-8bd6-4bed-822e-1e219d8bab7f",
+      "at": "2026-03-19T16:36:05.016Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "staff",
+      "action": "BULK_SYNC",
+      "targetType": "staff",
+      "targetId": "bulk",
+      "targetLabel": "staff",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "6505245b-db28-46a5-b199-f1a04b4b40f2",
+      "at": "2026-03-19T16:22:16.257Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "737f5ff9-8500-41c3-8b38-9516775ea5a6",
+      "at": "2026-03-19T16:18:29.973Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "403ebca1-3157-4565-a5b0-a73f75620dbd",
+      "at": "2026-03-19T16:18:27.198Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "0d8c7114-58da-4f77-bd19-b26371db9eb5",
+      "at": "2026-03-19T16:18:23.546Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "1c02a61f-37c0-4bb9-bdb0-30c5c0706a35",
+      "at": "2026-03-19T16:18:22.794Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "CREATE",
+      "targetType": "meeting",
+      "targetId": "11",
+      "targetLabel": "3월 20일 운영일지",
+      "details": {
+        "meeting": {
+          "id": 11,
+          "type": "LOG",
+          "status": "작성중"
+        }
+      }
+    },
+    {
+      "id": "bc2d35e7-afab-4a8d-9bf9-8d144e5c778b",
+      "at": "2026-03-19T16:18:21.878Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "285d5d98-e842-4cd4-970a-4ba120f49e8a",
+      "at": "2026-03-19T16:18:19.681Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "7e7c9a8b-53b7-454f-a777-032c3ed929dc",
+      "at": "2026-03-19T16:18:14.025Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "6d25a759-b7f8-492f-8e6f-653fd8ca95de",
+      "at": "2026-03-19T16:18:01.162Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "503f397a-ab94-4f6b-8e4f-50e7daf0302f",
+      "at": "2026-03-19T16:17:44.202Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "7b9c7634-aa02-4042-92cc-ae20d545c248",
+      "at": "2026-03-19T16:16:32.812Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "953b97f9-5842-468d-be8e-5e5adfd985f0",
+      "at": "2026-03-19T16:15:42.473Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "503a4ff1-3b05-471c-8aec-14e867dd7d30",
+      "at": "2026-03-19T16:15:40.104Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "e132a7fd-90cd-47e8-af8a-7b49813e20ab",
+      "at": "2026-03-19T16:13:40.166Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "2d0822bc-8e38-43e3-8478-002f958c293a",
+      "at": "2026-03-19T16:13:35.082Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "f583641c-eb37-4110-960e-a225b2594c78",
+      "at": "2026-03-19T16:13:32.259Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "546cd4b3-6517-43e5-9684-79bc97d26b01",
+      "at": "2026-03-19T16:13:30.893Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "89bc2746-eea1-4969-8de2-3683a6b2dde3",
+      "at": "2026-03-19T16:13:30.085Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "7898fd0e-c67a-49a0-8b88-96e53b5067bd",
+      "at": "2026-03-19T16:13:30.078Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "DELETE",
+      "targetType": "meeting",
+      "targetId": "7",
+      "targetLabel": "3월 19일 운영일지",
+      "details": {}
+    },
+    {
+      "id": "ca6a5fd2-4da5-4064-9d31-86182da7fe26",
+      "at": "2026-03-19T16:13:26.978Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "99dc1e35-ffc6-4b41-97cc-93c0fa382f27",
+      "at": "2026-03-19T16:13:21.503Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "4290e160-ce8a-4eb2-87ac-5143c0340943",
+      "at": "2026-03-19T16:12:46.826Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "0aa4dbf7-2538-4381-a8ab-8a6d7dd8f952",
+      "at": "2026-03-19T16:12:07.261Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "6c92ffcc-a17c-4049-bdcb-c9aca4094a1b",
+      "at": "2026-03-19T16:08:03.355Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "8d12ecac-1b5f-488c-81b1-51891e26bd7f",
+      "at": "2026-03-19T12:44:35.508Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "e0c8e610-6b49-4cf7-af28-d6d7e8951942",
+      "at": "2026-03-19T12:44:32.559Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "d1cf5044-37bd-4dfc-b05b-513b375450df",
+      "at": "2026-03-19T12:40:03.962Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "1bda221d-b50b-4795-ae86-d417aad24245",
+      "at": "2026-03-19T12:40:01.392Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "c026ab06-602f-48e2-984d-62948fff1a91",
+      "at": "2026-03-19T12:40:00.103Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "3e5caf6f-5059-4c8d-98da-2afef2ffb43d",
+      "at": "2026-03-19T12:39:56.016Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "8177c9f6-ea6f-4750-9f73-912aee05b008",
+      "at": "2026-03-19T12:39:54.843Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "658e5da2-fab5-4748-9915-f9e18a642c93",
+      "at": "2026-03-19T12:39:53.403Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "d4e3a258-3f89-4b95-a974-0ab86e4f6877",
+      "at": "2026-03-19T12:39:51.164Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "ad145b9d-c6b4-4532-a479-01817440fd74",
+      "at": "2026-03-19T12:39:49.950Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "083886a6-7a04-4738-b7a7-91a61a727be9",
+      "at": "2026-03-19T12:39:33.810Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "88b39410-2793-471e-9856-246e07924c4f",
+      "at": "2026-03-19T12:39:31.317Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "d6cae217-1dd1-4069-87ac-a981a43e32e7",
+      "at": "2026-03-19T12:39:24.419Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "9cb1a107-20cd-42bd-ad5d-891c52bd3413",
+      "at": "2026-03-19T12:39:23.154Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "c7ddfa38-8050-4e46-b64e-76899585396d",
+      "at": "2026-03-19T12:38:38.947Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "1ff0fedc-3233-4f70-8b09-8617f6b6f9b6",
+      "at": "2026-03-19T12:38:13.942Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "c07833a2-d133-4c60-89c1-e92e441d7d4e",
+      "at": "2026-03-19T12:38:12.121Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "ddd548bc-dedc-47dc-b3c2-a56a6e5c8ae3",
+      "at": "2026-03-19T12:37:41.367Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "51a87714-7dfe-421a-8c0d-11d9fd83723e",
+      "at": "2026-03-19T12:37:37.834Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "20b84f57-417d-4de3-9ed8-5df2b2898e7a",
+      "at": "2026-03-19T12:37:35.969Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "bf564986-7fde-4f21-b096-c028c6f54fa5",
+      "at": "2026-03-19T12:37:33.935Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "29557b07-3219-4bd3-a7d1-bc3e7dd1a092",
+      "at": "2026-03-19T12:37:32.425Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "70f0922f-d99d-4878-8caa-52385c97c04d",
+      "at": "2026-03-19T12:37:30.234Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "bfa6e400-4d5b-4215-9c45-f67b61ec35cc",
+      "at": "2026-03-19T12:37:29.016Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "90dd98a0-4859-4a6b-a36f-04ddbadee129",
+      "at": "2026-03-19T12:37:26.179Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "69582c81-38f9-4b36-b01b-3b7800fd54ed",
+      "at": "2026-03-19T12:37:19.671Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "b356fd29-371e-4248-8380-c97bd267a865",
+      "at": "2026-03-19T12:37:18.408Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "bb4deb77-d181-4afb-bb66-0762421fd684",
+      "at": "2026-03-19T12:37:13.710Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "f133df46-141e-4ca7-a8a6-3e5689b0d31f",
+      "at": "2026-03-19T12:37:11.089Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "21d1a558-0471-4d62-a89c-33a0680c37bc",
+      "at": "2026-03-19T12:37:05.361Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "9993ed4e-7521-4248-ac86-97059e4ad516",
+      "at": "2026-03-19T12:37:02.781Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "bdf5db9e-9259-468b-93e1-131403637286",
+      "at": "2026-03-19T12:37:00.186Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "360c4859-ed35-42e5-a127-ef3c87fc64a0",
+      "at": "2026-03-19T12:36:58.743Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "e19914d4-1274-4ea4-ae8a-cabd39fae10e",
+      "at": "2026-03-19T12:36:57.839Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "ad81836b-7360-4790-afa7-527c64011c3b",
+      "at": "2026-03-19T12:36:22.832Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "ba9dc192-fa93-4d03-ad45-13cb787dd35b",
+      "at": "2026-03-19T12:36:20.588Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "90080bf3-693d-4e80-a4dd-cca70b6cdff5",
+      "at": "2026-03-19T12:36:19.506Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "2d8c7104-1fad-48d9-ad78-da37919ad493",
+      "at": "2026-03-19T12:36:15.055Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "51eb5f09-3357-4fd4-9d44-5f1a2f28b3f0",
+      "at": "2026-03-19T12:36:11.852Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "70c823d6-d738-4152-bc62-326c6d88dcf6",
+      "at": "2026-03-19T12:35:36.698Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "6a7b9250-b92c-48dc-b78f-8c90d737a395",
+      "at": "2026-03-19T12:33:44.653Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "92691766-1308-4e57-b760-1c8a56659503",
+      "at": "2026-03-19T12:33:43.624Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "429c9032-658a-4486-b4f9-3804e21f38a3",
+      "at": "2026-03-19T12:33:35.048Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "07b20ed0-bab9-431f-b8d2-0d318b4d02e5",
+      "at": "2026-03-19T12:30:06.681Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "bbca2d3c-82bd-4618-ab54-c516bfce3508",
+      "at": "2026-03-19T12:30:02.943Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "8d973d56-d376-4561-aae5-c59061971095",
+      "at": "2026-03-19T12:30:00.947Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "89eb79b1-bace-4fa9-8230-5739341d6f4f",
+      "at": "2026-03-19T12:29:59.867Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "2a2e4c8e-b9ab-4fa6-bd8d-52ca38f59eae",
+      "at": "2026-03-19T12:29:58.956Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "067a1cbc-5af8-4761-aef0-e888fcd6ff65",
+      "at": "2026-03-19T12:29:57.756Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "7e5b3dc2-37fb-4785-afa1-c57338305399",
+      "at": "2026-03-19T12:29:54.310Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "219c5771-48ef-40f3-9f81-7dd70235dfb7",
+      "at": "2026-03-19T12:29:50.350Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "aa2ca91a-b9ae-4187-9896-2f799d4835c5",
+      "at": "2026-03-19T12:29:47.704Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "29d778fb-ab46-4629-a920-1fd6ca872a9c",
+      "at": "2026-03-19T12:29:45.976Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "2a9a0a05-1314-467e-a99b-895ca1a06f5a",
+      "at": "2026-03-19T12:26:27.557Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "2d0e4005-46a2-452d-ba67-de0d40b4373f",
+      "at": "2026-03-19T12:26:26.247Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "21139f20-c815-4577-aca3-e104537453c6",
+      "at": "2026-03-19T12:26:23.244Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "2ef27445-4104-43e8-93d9-3dfde533a8ed",
+      "at": "2026-03-19T12:26:16.869Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "88942e23-44d6-4a7d-ae5a-0a1a8a87ea12",
+      "at": "2026-03-19T12:26:13.846Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "2900c42d-8506-4577-9d83-d161fa392d3a",
+      "at": "2026-03-19T12:26:12.604Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "76b1486e-fbdb-4d66-8fb8-5c8f2c7ba629",
+      "at": "2026-03-19T12:26:09.120Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "64493ed3-a235-4345-903d-2c19e41919dc",
+      "at": "2026-03-19T12:26:07.227Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "af36b428-ebfb-467c-80c3-77d3641a8940",
+      "at": "2026-03-19T12:26:05.420Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "dc16978e-e5ef-4b09-9b42-7dff5e5c8e10",
+      "at": "2026-03-19T12:26:03.560Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "6b953136-ae02-4330-9986-fe6676f64e50",
+      "at": "2026-03-19T12:26:02.336Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "ef196631-8e45-40c7-b93a-a1338ee5c360",
+      "at": "2026-03-19T12:26:01.064Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "ce92a36a-36bc-48ff-83e4-f35c76ea2512",
+      "at": "2026-03-19T12:25:58.245Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "5a758fec-1071-4bf5-8985-59ec951ed09c",
+      "at": "2026-03-19T12:25:56.617Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "12b33203-e4c4-4585-a683-999390ea8e4d",
+      "at": "2026-03-19T12:25:51.040Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "3146c8f3-58d0-46f3-8097-6bdff43f616b",
+      "at": "2026-03-19T12:25:49.395Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "8fd89805-999b-4512-a44c-58b959008166",
+      "at": "2026-03-19T12:25:45.169Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "01bec352-8e69-49cb-91fd-a26c85a16b83",
+      "at": "2026-03-19T12:25:44.215Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "c12745f5-3958-45d4-b4d4-3f873096a8f8",
+      "at": "2026-03-19T12:25:41.241Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "0924cf00-64a1-463c-b377-4f86046233aa",
+      "at": "2026-03-19T12:25:40.120Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "e7e73370-002d-4d6e-84e8-56bdae742afc",
+      "at": "2026-03-19T12:25:37.747Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "d2e524e7-8227-421c-aad2-58f1922f272b",
+      "at": "2026-03-19T12:25:35.754Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "819c7745-1d87-499f-b668-f354ce9b6351",
+      "at": "2026-03-19T12:25:34.496Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "c5a6f658-7fec-4d42-a714-5eeb4bd9d894",
+      "at": "2026-03-19T12:25:32.438Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "6744b7a9-f3da-49ee-a358-75fb3f3e7443",
+      "at": "2026-03-19T12:25:31.191Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "03df294d-093e-490c-af44-7db6bb687d85",
+      "at": "2026-03-19T12:25:25.433Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "150efc81-d89e-4a07-b36a-11babdcedacd",
+      "at": "2026-03-19T12:25:22.636Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "31e6f7e1-2871-448d-9b74-62a83a303227",
+      "at": "2026-03-19T12:25:20.437Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "16d09605-e8f0-4bcf-be1c-e3675eac5a21",
+      "at": "2026-03-19T12:23:07.190Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "1196c830-a0b6-4874-a1ab-ba3df5dc9807",
+      "at": "2026-03-19T12:23:02.258Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "8d645576-aaf8-4ed3-9e77-df611f9eda37",
+      "at": "2026-03-19T12:22:55.145Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "b4733b09-5ffe-47df-97cd-51a8db37d0e5",
+      "at": "2026-03-19T12:22:53.279Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "71a1dbfa-e478-4be3-a86b-04e72d0bb052",
+      "at": "2026-03-19T12:22:52.361Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "633e184d-7ecb-4dda-b71f-f570ce19758f",
+      "at": "2026-03-19T12:22:50.908Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "7c4e6905-31d8-4351-a3f2-cf3921ac20d3",
+      "at": "2026-03-19T12:22:44.100Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "12b5aa4f-4fb3-4691-99db-3f05bbc721d0",
+      "at": "2026-03-19T12:22:41.434Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "b651b36e-114d-4a9b-8511-8518a187a6d6",
+      "at": "2026-03-19T12:22:40.683Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "CREATE",
+      "targetType": "meeting",
+      "targetId": "10",
+      "targetLabel": "3월 19일 운영일지",
+      "details": {
+        "meeting": {
+          "id": 10,
+          "type": "LOG",
+          "status": "작성중"
+        }
+      }
+    },
+    {
+      "id": "4b96b02e-e503-4894-9622-568b7321a3b3",
+      "at": "2026-03-19T12:22:39.929Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "57debccb-90f3-4aae-8da8-9de305cd4dcd",
+      "at": "2026-03-19T12:22:31.138Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "b9a59d58-ec65-47c0-825d-e13e1922d964",
+      "at": "2026-03-19T12:22:27.607Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "6c2c98f3-aba1-4bb2-8b01-897b22c7119d",
+      "at": "2026-03-19T12:20:22.896Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "57eb5e8d-f22d-4f12-939f-d06bab67fd37",
+      "at": "2026-03-19T12:20:18.693Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "469da3eb-018e-4f55-8640-17b9e5c418f1",
+      "at": "2026-03-19T12:20:17.684Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "c2967cf8-48b4-498e-a781-15d61b67af99",
+      "at": "2026-03-19T12:20:15.267Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "400396d8-fac3-4f2f-ad8a-68bc3b053e09",
+      "at": "2026-03-19T12:20:13.761Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "ebded1a9-f4c0-4704-b79c-c7483d6867ce",
+      "at": "2026-03-19T12:20:11.964Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "8eb66dea-719e-434c-8d5e-24beff291759",
+      "at": "2026-03-19T12:20:07.660Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "976c2cd0-0220-4212-b974-a46082b88e90",
+      "at": "2026-03-19T12:20:06.205Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "c59227cc-28f0-4e4c-bfa8-bb9c3c8a9829",
+      "at": "2026-03-19T12:20:03.267Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "2fd523d4-0272-4df6-9c38-15c8d58dd8ee",
+      "at": "2026-03-19T12:20:02.322Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "67a9250a-7930-485e-84d5-60844c1df555",
+      "at": "2026-03-19T12:20:01.584Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "93ae1c94-82ba-4293-9e60-338191c2f50c",
+      "at": "2026-03-19T12:20:00.680Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "4be2f832-c418-4474-8cc3-064c6ad30e61",
+      "at": "2026-03-19T12:19:59.626Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "3130ae9f-953e-40a4-82ed-430f6d154d35",
+      "at": "2026-03-19T12:19:58.498Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "7a15b39f-b3ae-49e7-9ad6-7e168f5a2c3d",
+      "at": "2026-03-19T12:19:54.842Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "fceea7ea-3d25-4d74-88cd-6de33be1953b",
+      "at": "2026-03-19T12:19:53.733Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "fa3c3c55-d0e1-4a11-849c-8618b735baf6",
+      "at": "2026-03-19T12:19:52.353Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "0682f0e2-e0f5-468f-b79f-9452bab15b56",
+      "at": "2026-03-19T12:19:50.854Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "a12c006c-b6cf-416b-bf95-7d564014b308",
+      "at": "2026-03-19T12:19:49.952Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "f9c9703f-79e8-47a9-9258-a52458af6537",
+      "at": "2026-03-19T12:19:48.927Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "23d94d02-f8c7-4f09-aa8f-eb870710d233",
+      "at": "2026-03-19T12:19:47.394Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "9f4bb523-fe2d-40b1-9fc1-0d8b53bba430",
+      "at": "2026-03-19T12:19:44.559Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "4c0b0c71-e976-4e18-9d56-524eb7b4c0b5",
+      "at": "2026-03-19T12:19:43.121Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "08b595cb-ad44-4a19-93de-523ae18e56e1",
+      "at": "2026-03-19T12:19:40.928Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "d202d277-8c1a-48b2-9784-8282ca52ddba",
+      "at": "2026-03-19T12:19:31.882Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "7533c342-984a-48c2-a570-edf8e2897616",
+      "at": "2026-03-19T12:19:30.148Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "f5e5f08e-7177-46ca-9449-a7d6bba08da0",
+      "at": "2026-03-19T12:19:29.398Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "CREATE",
+      "targetType": "meeting",
+      "targetId": "9",
+      "targetLabel": "3월 19일 운영일지",
+      "details": {
+        "meeting": {
+          "id": 9,
+          "type": "LOG",
+          "status": "작성중"
+        }
+      }
+    },
+    {
+      "id": "b4c4dfa1-f577-498a-aaa6-58be8ced2940",
+      "at": "2026-03-19T12:19:29.062Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "739c680b-9430-4545-8403-c56f64ccb98f",
+      "at": "2026-03-19T12:19:28.223Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "c08c50bb-89c1-4e5f-af10-ec9deaad9d0a",
+      "at": "2026-03-19T12:19:21.531Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "e1d9d82b-8b5b-41b5-bf16-282a08681df1",
+      "at": "2026-03-19T12:19:19.326Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "8a1d471b-9ef2-4711-9f8e-13ea56bb7d6a",
+      "at": "2026-03-19T12:19:16.928Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "bb53cc84-72fa-4fe9-a770-3ba7fe3eb5fd",
+      "at": "2026-03-19T12:19:16.162Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "a6436391-895a-43d1-821c-880dc4ec93f4",
+      "at": "2026-03-19T12:19:14.300Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "b47ea778-dc1a-40d0-bb52-284fc0a546a2",
+      "at": "2026-03-19T12:19:13.168Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "62668129-e2d1-4775-87d9-d5636aae03e0",
+      "at": "2026-03-19T12:19:11.569Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "be7716af-0cf4-4b08-8649-be2804c0ebbc",
+      "at": "2026-03-19T12:19:09.977Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "a6b3db9b-04ce-49c7-800d-19e6aae346f0",
+      "at": "2026-03-19T12:19:05.805Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "6b9004d5-173d-4859-ac41-fc2950f39d59",
+      "at": "2026-03-19T12:19:04.061Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "787280e3-bd1b-41b2-937a-5c3b1b0a8797",
+      "at": "2026-03-19T12:19:02.574Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "68f090c2-7724-4a55-acfd-91bd19f130dd",
+      "at": "2026-03-19T12:19:00.707Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "eee97483-86c2-441a-97c4-3e4375962f6a",
+      "at": "2026-03-19T12:18:59.800Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "3373bc28-f495-457d-9432-b303a3312580",
+      "at": "2026-03-19T12:18:58.234Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "8947f649-6d6e-4461-bf4a-ea117bd3564d",
+      "at": "2026-03-19T12:18:56.069Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "5918061b-1f79-4bf2-b24d-df8822043496",
+      "at": "2026-03-19T12:18:53.400Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "d2b43103-03b3-4b6a-b1f5-e5948281533d",
+      "at": "2026-03-19T12:18:52.562Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "a84486b0-5116-416c-97df-691a6b0bcf5d",
+      "at": "2026-03-19T12:18:50.798Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "c9618fcf-0e14-4126-9e81-6f3b2ac22e0e",
+      "at": "2026-03-19T12:18:49.988Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "ce4f822a-ba2a-47b2-89e4-8606a0f799f0",
+      "at": "2026-03-19T12:18:48.351Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "2c472014-1851-4700-adbb-22a1412d0a8a",
+      "at": "2026-03-19T12:18:36.913Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "71c0bd31-a68d-466b-88db-3cfb675336c6",
+      "at": "2026-03-19T12:18:33.823Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "1e362b58-91c4-46b2-84b5-4665f8180975",
+      "at": "2026-03-19T12:18:11.102Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "9e4d672e-b2e5-4829-8648-cf0bb14769df",
+      "at": "2026-03-19T12:16:41.259Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "7384649a-66c5-45ae-aba9-a75f82ed9a88",
+      "at": "2026-03-19T12:16:39.854Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "e205ddfa-0ba5-4604-a57d-a2d3ac846c80",
+      "at": "2026-03-19T12:16:35.823Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "7e490fcf-4ae7-4a7d-98b7-9636457158d2",
+      "at": "2026-03-19T12:16:31.538Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "f9c95f7e-dc3e-4f52-b379-6d4c5ad551fe",
+      "at": "2026-03-19T12:16:29.466Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "196e9625-7af8-46b3-a84e-63144d72a214",
+      "at": "2026-03-19T12:16:28.718Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "CREATE",
+      "targetType": "meeting",
+      "targetId": "8",
+      "targetLabel": "3월 19일 운영일지",
+      "details": {
+        "meeting": {
+          "id": 8,
+          "type": "LOG",
+          "status": "작성중"
+        }
+      }
+    },
+    {
+      "id": "83feaf8d-06b8-4eec-a179-39702a3a79f9",
+      "at": "2026-03-19T12:16:27.922Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "9a746416-140b-4f17-9059-30d3bf253387",
+      "at": "2026-03-19T12:15:58.537Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "52efbc6a-3597-4ab2-af0e-4221c3afbce7",
+      "at": "2026-03-19T12:15:56.832Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "4a01c5ff-8cca-4f4c-b9d6-0f114d161b4b",
+      "at": "2026-03-19T12:15:43.839Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "c3b666db-a1ac-4cee-8314-bde2ab46802b",
+      "at": "2026-03-19T12:15:42.506Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "684b942b-d434-4ea3-a48c-1f0984fd50b9",
+      "at": "2026-03-19T12:15:40.729Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "d1eef860-3d1f-4df1-a3fa-ee91e8a97d23",
+      "at": "2026-03-19T12:12:49.515Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "afcd3ca0-400a-498b-be6f-a484c6f44608",
+      "at": "2026-03-19T12:12:02.090Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "e921df5b-29a3-43c6-8980-a9c9b80e78d8",
+      "at": "2026-03-19T12:12:00.110Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "bf286e16-8026-4431-ab1a-5051dea2879d",
+      "at": "2026-03-19T12:11:54.300Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "c467165d-d825-4f0f-b3da-29c40b8a17f6",
+      "at": "2026-03-19T12:11:52.470Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "7348566d-a0c9-4d5f-9c1a-091117529e73",
+      "at": "2026-03-19T12:11:49.817Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "830cd4f3-daf8-4614-8ab5-090fdd2ff7da",
+      "at": "2026-03-19T12:11:42.795Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "8a487c5a-c89a-4299-bb89-7884276a1c9b",
+      "at": "2026-03-19T12:11:41.618Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "567d78a0-6590-42c9-8b3f-143b6482a991",
+      "at": "2026-03-19T12:11:40.357Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "4cdd33d6-5e3e-45b5-9fa8-b66010e2f483",
+      "at": "2026-03-19T12:11:35.649Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "a90a943b-fcf4-4eaa-8555-7f58d89c8dc5",
+      "at": "2026-03-19T12:11:34.219Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "7188e24c-c342-48c6-9628-e43aa2ea738c",
+      "at": "2026-03-19T12:11:33.281Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "30864cda-adfb-4b93-ba36-6464bf5b85d6",
+      "at": "2026-03-19T12:11:30.696Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "02c25e07-7c2a-420e-b13b-b2c463d75738",
+      "at": "2026-03-19T12:11:07.723Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "53402eac-e171-4f1b-87cd-62de4d464895",
+      "at": "2026-03-19T12:11:05.555Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "42300c2b-e427-432f-802c-83e776d0974a",
+      "at": "2026-03-19T12:11:02.075Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "d90d6fb9-64df-46c9-acad-6d9a900b5996",
+      "at": "2026-03-19T12:11:01.181Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "30878742-2e56-407d-9612-93f1afcfe12f",
+      "at": "2026-03-19T12:11:00.057Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "da610872-2fc2-44cf-9c5a-a385fe9f1511",
+      "at": "2026-03-19T12:10:58.949Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "5876248f-8185-4127-856c-0a29b04610f7",
+      "at": "2026-03-19T12:10:56.511Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "da51defc-2741-4c18-a809-797b8d8d3538",
+      "at": "2026-03-19T12:10:55.773Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "c92d6e82-ba19-4525-82f5-ce8c3e37cf03",
+      "at": "2026-03-19T12:10:54.892Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "a0b84d0a-ffde-450e-adb8-62de355fbaac",
+      "at": "2026-03-19T12:10:52.238Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "790e35ce-690d-476a-8bbd-4f2d1a8e548f",
+      "at": "2026-03-19T12:10:51.428Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "a8fcb9e4-4d3c-4a56-aa10-9a1b1612dd6e",
+      "at": "2026-03-19T12:10:50.484Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "902342ac-94b9-447c-b092-bd56e4d2b2d0",
+      "at": "2026-03-19T12:10:42.728Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "aace1341-d637-4af6-ad3e-b16aa810eaed",
+      "at": "2026-03-19T12:10:36.018Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "a747398a-3e65-49af-8a02-bf99f3298e40",
+      "at": "2026-03-19T12:10:19.112Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "77677c68-d98f-474e-bc4b-59b2057a66cd",
+      "at": "2026-03-19T12:09:56.359Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "23f6ed98-6427-4445-8d45-0c1b21e2b91f",
+      "at": "2026-03-19T12:09:51.208Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "78091880-5e49-4969-9df7-f61e593e320f",
+      "at": "2026-03-19T12:09:49.998Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "791738d9-3e7a-4a3c-b504-93c6bdab763b",
+      "at": "2026-03-19T12:09:49.154Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "812bcc2b-29f0-4833-9ee0-c7e47ae9b758",
+      "at": "2026-03-19T12:09:47.377Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "5a35449d-457a-4eae-a381-53d3ffaec5ee",
+      "at": "2026-03-19T12:09:46.513Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "271fa5ea-ceac-4e81-958c-d0f493b5074e",
+      "at": "2026-03-19T12:09:43.660Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "45c8c7a1-a956-4aaf-81c7-5ab492e908b2",
+      "at": "2026-03-19T12:09:40.427Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "7de91e0d-96c5-46b2-842a-5d5893b946b3",
+      "at": "2026-03-19T12:09:38.609Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "ded6bd31-f7e0-45fe-b778-543d5067b777",
+      "at": "2026-03-19T12:09:35.145Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "86584016-c1fc-492f-a43f-35df5549adaf",
+      "at": "2026-03-19T12:09:32.395Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "f7cbd3c6-4a42-4765-9d01-9ca245753c86",
+      "at": "2026-03-19T12:09:28.292Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "1cbdbb9d-70a2-4463-bb50-b0b0a08efaa8",
+      "at": "2026-03-19T12:09:25.308Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "f5adcf83-39fc-4aea-a4f1-359d57017ad0",
+      "at": "2026-03-19T12:09:23.652Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 2
+      }
+    },
+    {
+      "id": "476e4d97-8135-440e-bcfc-b94d2c5188d4",
+      "at": "2026-03-19T12:09:22.916Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "CREATE",
+      "targetType": "meeting",
+      "targetId": "7",
+      "targetLabel": "3월 19일 운영일지",
+      "details": {
+        "meeting": {
+          "id": 7,
+          "type": "LOG",
+          "status": "작성중"
+        }
+      }
+    },
+    {
+      "id": "363c7c63-e736-4983-80e2-ca65dd483297",
+      "at": "2026-03-19T12:09:22.577Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 1
+      }
+    },
+    {
+      "id": "888ced28-ccea-4514-9f0d-df681ab0283f",
+      "at": "2026-03-19T12:09:21.536Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "DELETE",
+      "targetType": "meeting",
+      "targetId": "7",
+      "targetLabel": "3월 19일 운영일지",
+      "details": {}
+    },
+    {
+      "id": "c234c83f-5a6d-4205-a8f1-0629f30a81e7",
+      "at": "2026-03-19T12:09:20.942Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "DELETE",
+      "targetType": "meeting",
+      "targetId": "8",
+      "targetLabel": "3월 19일 운영일지",
+      "details": {}
+    },
+    {
+      "id": "f2918e9d-129e-42a0-a7fb-041ed3879203",
+      "at": "2026-03-19T12:09:20.583Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "d75a5b3d-cfe4-47a3-9f92-63fa777256a0",
+      "at": "2026-03-19T12:09:19.603Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "DELETE",
+      "targetType": "meeting",
+      "targetId": "9",
+      "targetLabel": "3월 19일 운영일지",
+      "details": {}
+    },
+    {
+      "id": "d175319e-d534-4e45-8fdb-be1e3461ce3b",
+      "at": "2026-03-19T12:09:18.788Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "346c6868-e61d-4f7e-a7e5-0d58bdb104b0",
+      "at": "2026-03-19T12:09:17.756Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "DELETE",
+      "targetType": "meeting",
+      "targetId": "10",
+      "targetLabel": "3월 19일 운영일지",
+      "details": {}
+    },
+    {
+      "id": "2282becc-988a-45e5-89a2-886a9d6c355c",
+      "at": "2026-03-19T12:09:17.157Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "61bfafa3-055e-42a5-a02b-8aecdf6a68ef",
+      "at": "2026-03-19T12:09:16.024Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "d4aca71b-cde7-4bd1-b536-1871afcb87e1",
+      "at": "2026-03-19T12:09:15.016Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "eefacd70-612b-4139-8050-90360fd11a1f",
+      "at": "2026-03-19T12:07:09.920Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "203141f5-df72-48ae-9d64-cc04fe78611b",
+      "at": "2026-03-19T12:07:05.819Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "id": "2e52a797-24bc-4199-99da-6b40cceb9fb3",
+      "at": "2026-03-19T12:07:05.058Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "CREATE",
+      "targetType": "meeting",
+      "targetId": "10",
+      "targetLabel": "3월 19일 운영일지",
+      "details": {
+        "meeting": {
+          "id": 10,
+          "type": "LOG",
+          "status": "작성중"
+        }
+      }
+    },
+    {
+      "id": "f910eba4-1c70-4ab3-9ae4-64c46b1b4cb1",
+      "at": "2026-03-19T12:07:03.110Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "58e6812b-6890-46df-bcb1-87657321d6cf",
+      "at": "2026-03-19T12:07:00.665Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "7392d66d-1bc5-4fc6-a744-0a14a4ef8005",
+      "at": "2026-03-19T12:06:55.605Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "0fb3805c-c278-4157-ad0d-64fe0a17daab",
+      "at": "2026-03-19T12:06:51.424Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "5df695d8-645a-4b9c-a1b1-51c51e22bbc4",
+      "at": "2026-03-19T12:06:49.417Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "1a85f84d-89c7-4f58-b819-680113b2127f",
+      "at": "2026-03-19T12:06:47.676Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "474c901b-3e1d-4b0b-b92a-a4d9158f2012",
+      "at": "2026-03-19T12:06:46.481Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "9c4f1b83-ab00-4124-9f75-2a9ca4772bb2",
+      "at": "2026-03-19T12:06:33.568Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "c4d80bce-1333-4140-bb91-308a4956fe11",
+      "at": "2026-03-19T12:06:32.826Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "CREATE",
+      "targetType": "meeting",
+      "targetId": "9",
+      "targetLabel": "3월 19일 운영일지",
+      "details": {
+        "meeting": {
+          "id": 9,
+          "type": "LOG",
+          "status": "작성중"
+        }
+      }
+    },
+    {
+      "id": "5cd338b2-07fe-412c-98a8-1251d5863c63",
+      "at": "2026-03-19T12:06:31.864Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "665347ef-f1ff-4c45-9c16-28ab1b6067b6",
+      "at": "2026-03-19T12:06:28.662Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "59ad4a4c-31c3-481d-b0b6-8837499b6152",
+      "at": "2026-03-19T12:06:27.629Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "DELETE",
+      "targetType": "meeting",
+      "targetId": "9",
+      "targetLabel": "3월 19일 운영일지",
+      "details": {}
+    },
+    {
+      "id": "b4b93826-ebaf-4365-98be-da558dea6959",
+      "at": "2026-03-19T12:06:26.699Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "97eb4ee0-d23b-490d-9f97-b364216eb4ac",
+      "at": "2026-03-19T12:06:25.233Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "2ac8b6e7-1088-4ed2-aa4d-8e952d5455a7",
+      "at": "2026-03-19T12:04:18.788Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "b8ca861d-cc3f-4cd5-bfb0-142a44aeda97",
+      "at": "2026-03-19T12:04:10.211Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "15ffe3de-2985-48b9-aca0-6643199c725a",
+      "at": "2026-03-19T12:04:04.359Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "876ff0cd-4090-4ab8-98cf-e096d6547ed8",
+      "at": "2026-03-19T12:04:00.824Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "id": "f5062d27-081d-4934-a1fe-af0494341cf5",
+      "at": "2026-03-19T12:04:00.086Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "CREATE",
+      "targetType": "meeting",
+      "targetId": "9",
+      "targetLabel": "3월 19일 운영일지",
+      "details": {
+        "meeting": {
+          "id": 9,
+          "type": "LOG",
+          "status": "작성중"
+        }
+      }
+    },
+    {
+      "id": "d192e273-bf89-49b2-af4c-d36b671c46ae",
+      "at": "2026-03-19T12:03:59.490Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "623e6aba-5ebc-49b1-908e-371b49a20ce8",
+      "at": "2026-03-19T12:03:52.323Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "62ab07a3-14a4-4600-a0be-97a073569317",
+      "at": "2026-03-19T12:01:44.358Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "611e73a5-e0f0-469f-879f-7804825d8119",
+      "at": "2026-03-19T12:01:43.107Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "04f73b76-4355-4d50-8a8e-b47dee400672",
+      "at": "2026-03-19T12:01:24.810Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "e46aa006-db31-45e3-ac63-46c31891f618",
+      "at": "2026-03-19T12:01:21.330Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "d66e4a0f-0f78-4262-8952-993d58bf3c44",
+      "at": "2026-03-19T12:01:16.010Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "e089f7dc-3928-457f-a323-910f99a0a758",
+      "at": "2026-03-19T12:01:11.483Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "4a82455c-392e-441f-ab01-0edcfd5a1314",
+      "at": "2026-03-19T12:01:09.931Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "038a6081-5541-46ab-9186-2289ad14744c",
+      "at": "2026-03-19T12:01:07.805Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "90ede6b0-a874-4fc6-8b20-77033958196b",
+      "at": "2026-03-19T12:01:06.641Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "af41ff8f-0eb2-4913-b03a-b197b44e8f96",
+      "at": "2026-03-19T12:01:01.746Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "b3389618-3e19-491a-b382-a076a2d6901d",
+      "at": "2026-03-19T12:00:57.970Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "4ce2d7f1-b95c-41e3-86a3-985bf0c15e82",
+      "at": "2026-03-19T12:00:51.000Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "f60438d2-4ebc-46ea-a4d4-d14434cc6bd5",
+      "at": "2026-03-19T12:00:50.062Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "c797869e-03d4-40ae-a34d-b38f259f4bdb",
+      "at": "2026-03-19T12:00:10.394Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "9b4877e4-97ec-4295-8fd8-b902ae404c8e",
+      "at": "2026-03-19T11:59:44.840Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "6caeb0d1-5e6a-4382-85e1-a18fa20a2247",
+      "at": "2026-03-19T11:59:41.622Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "e8be9a8e-a92c-4184-9222-d9cc8d902f21",
+      "at": "2026-03-19T11:59:29.935Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "82ad3e96-9c08-4d49-b9b2-becef31ce710",
+      "at": "2026-03-19T11:59:16.187Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "c30eab48-1a05-4cff-966d-0849c3fe825f",
+      "at": "2026-03-19T11:59:12.603Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "f82a7ff8-cf64-403a-a179-52fd5ec4ed7b",
+      "at": "2026-03-19T11:59:05.863Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "b75f97b5-ad9f-4f37-b801-5fe8ecc5b85e",
+      "at": "2026-03-19T11:58:57.492Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "7c969f39-6302-4996-b5c3-5e4595afba5c",
+      "at": "2026-03-19T11:58:53.991Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "a1a31b9a-db2f-4273-b80f-5cd61d19e65b",
+      "at": "2026-03-19T11:58:52.782Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "84b4cbea-fead-45f6-b35f-73a4e96e8a56",
+      "at": "2026-03-19T11:58:51.460Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "ae9dde0f-66f9-4bca-bfb7-ca8cca25823d",
+      "at": "2026-03-19T11:58:50.177Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "6ae1ba8f-48f1-4297-992c-0d1ac624a4de",
+      "at": "2026-03-19T11:58:46.803Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "66126f26-5707-43f5-aa23-d954e111e5ae",
+      "at": "2026-03-19T11:58:35.573Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "fbc28da9-5759-4c8a-a889-8991025be901",
+      "at": "2026-03-19T11:58:32.717Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "9adf1b34-e562-447b-9c45-7a5b4c3ccb82",
+      "at": "2026-03-19T11:55:35.847Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "3483f3f8-a928-41a3-815c-3ac9370dfee0",
+      "at": "2026-03-19T11:55:21.540Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "b0724988-f236-4e55-8ddd-b32e55cdc865",
+      "at": "2026-03-19T11:54:44.919Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "edb5bbd2-46a5-4aa9-870c-7d6f762af913",
+      "at": "2026-03-19T11:54:43.972Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "66413eb6-6b88-4eec-84e2-d5588873e98c",
+      "at": "2026-03-19T11:54:39.884Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "ce215926-54f6-473e-8e2f-07ceb940dbc9",
+      "at": "2026-03-19T11:54:38.601Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "f6247867-1044-4341-bd24-0d0a3256bf6b",
+      "at": "2026-03-19T11:54:36.622Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "230d8dbb-7271-4c11-beb3-2ed850d9bc26",
+      "at": "2026-03-19T11:54:31.025Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "cf2c53da-6cf5-4f53-8cff-a7ab8f871056",
+      "at": "2026-03-19T11:54:29.588Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "ab5b87d7-c9a2-4115-8632-e2cc3c9bdc9d",
+      "at": "2026-03-19T11:54:28.423Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "aea58ef9-6ed7-41f8-909b-b5bb34052b37",
+      "at": "2026-03-19T11:53:37.805Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "8bad6018-479a-4f7e-b706-e5cb190a6f02",
+      "at": "2026-03-19T11:53:29.567Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "6c5d15e9-eb13-4e2a-a178-bd1e8d23467c",
+      "at": "2026-03-19T11:53:21.579Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "f29563cb-b7ea-4379-b2ad-f882bc97ae6a",
+      "at": "2026-03-19T11:53:13.839Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "5c3684be-fb69-49d5-9985-5e667db63cf2",
+      "at": "2026-03-19T11:53:12.446Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "a1ef145a-0327-4f29-8856-ac7632c2db3e",
+      "at": "2026-03-19T11:53:09.706Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "5b20b2bd-114c-4946-91ee-0065ec6f93ae",
+      "at": "2026-03-19T11:53:01.412Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "fb9448aa-fa0a-4890-bf0e-413536998792",
+      "at": "2026-03-19T11:52:57.750Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "cd023334-0fa8-4cfb-9c15-e7991e211456",
+      "at": "2026-03-19T11:51:33.028Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "0e0bdf10-ac98-432f-b278-874ebeb3c045",
+      "at": "2026-03-19T11:50:43.033Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "12019315-2305-41de-8c1b-6a098b2e60cf",
+      "at": "2026-03-19T11:45:49.024Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "e35f04c4-993d-4e79-ad96-afb532ccbd65",
+      "at": "2026-03-19T11:45:46.358Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "d185ff3d-07c2-4746-8b21-d9680f3e24ce",
+      "at": "2026-03-19T11:45:43.264Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "3be46077-f6a7-4e9a-a07b-e8e60172f0a3",
+      "at": "2026-03-19T11:45:40.657Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "4f35545a-b7e1-4ab8-ad98-ae10f69b2e92",
+      "at": "2026-03-19T11:44:21.102Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "4eb3a864-11cd-41aa-a81d-2f95f12409c2",
+      "at": "2026-03-19T11:42:37.568Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "778ad62f-b3bf-4f69-a105-56620302bb17",
+      "at": "2026-03-19T11:21:43.581Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "8c644495-48ec-4c9d-b385-33d9af514547",
+      "at": "2026-03-19T11:21:42.491Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "c4c03e3c-88df-42ca-b333-6aea63218851",
+      "at": "2026-03-19T11:21:41.501Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "0f04e5cf-3997-42d5-9fab-5cac980d7f7d",
+      "at": "2026-03-19T11:21:40.735Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "7f0ca9aa-d520-490e-9dd0-69fdb16cea68",
+      "at": "2026-03-19T11:21:39.569Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "a7978418-0654-463c-ac8d-6954602f4d5e",
+      "at": "2026-03-19T11:21:37.993Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "6ddbc2d2-855f-490b-a230-3c627256c0b6",
+      "at": "2026-03-19T11:21:37.151Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "547b9958-4263-4033-85c7-18bf2200c366",
+      "at": "2026-03-19T11:21:36.202Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "1194faac-68d3-4915-8fc4-5d20572388b9",
+      "at": "2026-03-19T11:21:33.868Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "a69342f2-7c41-4775-9aa1-4b324e7f473b",
+      "at": "2026-03-19T11:21:26.172Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "a938b1b0-e98b-4d7b-9d4d-fbda1d27fb57",
+      "at": "2026-03-19T11:20:59.356Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
+      "id": "03e957af-c38c-431e-9d4f-f65ab0ef6436",
+      "at": "2026-03-19T11:10:48.330Z",
+      "actorId": "admin",
+      "actorRole": "ADMIN",
+      "module": "meetings",
+      "action": "BULK_SYNC",
+      "targetType": "meeting",
+      "targetId": "bulk",
+      "targetLabel": "meetings",
+      "details": {
+        "count": 3
+      }
+    },
+    {
       "id": "166f3521-d216-4083-ac4a-e019a2183555",
       "at": "2026-03-19T04:14:23.935Z",
       "actorId": "admin",
@@ -9247,1169 +14027,7 @@
       "details": {
         "count": 1
       }
-    },
-    {
-      "id": "c8e63e2f-4caf-41bc-9f47-b468489a6aa3",
-      "at": "2026-03-19T02:35:37.405Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "27937d5b-effe-464b-926f-7e2fb6dadfbc",
-      "at": "2026-03-19T02:35:34.317Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "da976b3e-92eb-4175-9886-98a8374c331e",
-      "at": "2026-03-19T02:35:31.310Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "aee70849-1f0d-471c-bd1d-e56c8b6fe1c7",
-      "at": "2026-03-19T02:35:27.593Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "163d1a12-fc09-4b51-b2b5-0d3cdc3314ae",
-      "at": "2026-03-19T02:35:24.280Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "db8f4805-ea71-4db4-a20a-aac228d2e75c",
-      "at": "2026-03-19T02:35:21.153Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "4a22ae0b-0bfb-47c2-99cd-efda482ef290",
-      "at": "2026-03-19T02:35:17.622Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "314fe119-70f6-4458-9476-b5a78904c173",
-      "at": "2026-03-19T02:35:14.851Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "4aa7a03e-e65f-4ec9-b955-a1ec198f3bf4",
-      "at": "2026-03-19T02:35:10.954Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "18c78926-3d64-4fdd-9186-132e1a1800e9",
-      "at": "2026-03-19T02:35:08.290Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "cfb8eb1d-4aff-44f1-b550-a79d47a70264",
-      "at": "2026-03-19T02:35:05.803Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "0f78bf2c-8d79-413c-80e9-b9ccca3de842",
-      "at": "2026-03-19T02:35:03.315Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "8421754e-ca44-4ffb-8777-8785c2eda915",
-      "at": "2026-03-19T02:35:00.673Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "e81e2234-3aa1-4132-bcfa-710df1772afe",
-      "at": "2026-03-19T02:34:58.306Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "1081a9c7-459c-4312-a243-c90e41a64aca",
-      "at": "2026-03-19T02:34:55.858Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "a3ef295c-fecf-4265-a16f-5b4cc2b235fc",
-      "at": "2026-03-19T02:34:53.438Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "76eba219-6fe6-49dd-9ece-3059bd293c94",
-      "at": "2026-03-19T02:34:51.264Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "5a31fcdd-d3c0-468a-8587-02f1fcacc21a",
-      "at": "2026-03-19T02:34:49.046Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "c12eb722-004f-4b22-8549-d49359e85fad",
-      "at": "2026-03-19T02:34:46.450Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "593e3788-5332-46dc-a79d-472899253ac8",
-      "at": "2026-03-19T02:34:43.587Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "76ff5b3a-f814-480d-a968-b70a45aff36a",
-      "at": "2026-03-19T02:34:41.214Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "1af5ef04-a0af-43e9-8462-7e292fd5bd4a",
-      "at": "2026-03-19T02:34:38.944Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "62455a29-c1b5-4864-a818-5cadae44d701",
-      "at": "2026-03-19T02:34:36.236Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "def507c8-f0a0-4841-b358-00639ac57874",
-      "at": "2026-03-19T02:34:33.799Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "6d5c89a0-dc19-4589-91f0-db72d93f4850",
-      "at": "2026-03-19T02:34:31.559Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "33055f40-b67f-44a0-b7ef-acd112d2cb91",
-      "at": "2026-03-19T02:34:29.328Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "31f5e8d5-c19c-4bcd-9478-ea8934d31aaa",
-      "at": "2026-03-19T02:34:27.040Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "4b212907-1f88-4ba1-9c21-a6e46adeb4b8",
-      "at": "2026-03-19T02:34:24.520Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "ed268655-66de-447e-a190-0babe1367a54",
-      "at": "2026-03-19T02:34:22.369Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "cdcf9eb2-63ba-4176-b593-6d1774f3c3d3",
-      "at": "2026-03-19T02:34:20.090Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "42dbc061-ded6-453e-b074-dffd7444c38a",
-      "at": "2026-03-19T02:34:17.237Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "d7ac1114-aba3-4d16-9bf6-1c9f9be1d574",
-      "at": "2026-03-19T02:34:14.744Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "98e9ee86-fdab-497f-881e-238154c8fb8e",
-      "at": "2026-03-19T02:34:12.587Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "a212db05-ff34-4d69-8d96-f9b8f3f45896",
-      "at": "2026-03-19T02:34:10.022Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "7949f597-6933-4e66-b2ab-e54d1ca7f724",
-      "at": "2026-03-19T02:34:07.124Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "c05d5e6f-fca9-445c-b346-2fe2994a4d09",
-      "at": "2026-03-19T02:34:03.118Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "43e8c4b4-59b7-46a6-aeaf-1d884c72b810",
-      "at": "2026-03-19T02:33:59.927Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "bd5c4da0-7ae9-4d0d-94a9-6a18f44084d7",
-      "at": "2026-03-19T02:33:55.635Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "b3119135-a221-4f67-94a0-7e221b75e3fb",
-      "at": "2026-03-19T02:33:52.682Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "b5153a6b-ca00-4589-b2f0-186106559732",
-      "at": "2026-03-19T02:33:50.252Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "fe7b9fd4-db06-4709-8c67-5cc8b3698d52",
-      "at": "2026-03-19T02:33:47.794Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "ae1d03c8-61a9-48aa-9a14-9a57d2451ea1",
-      "at": "2026-03-19T02:33:45.139Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "a63fb993-768c-4df7-927b-fbb7d01a63ae",
-      "at": "2026-03-19T02:33:42.254Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "467a8297-5635-4b6c-ac96-1b62013d1024",
-      "at": "2026-03-19T02:33:40.075Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "4e8c68af-e61a-4148-9544-e5d37428a0fd",
-      "at": "2026-03-19T02:33:37.833Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "6bede02f-3bfb-4750-a0db-55d66a890d1f",
-      "at": "2026-03-19T02:33:35.515Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "a9ce7796-b78d-497c-ae91-0bee139ee964",
-      "at": "2026-03-19T02:33:33.324Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "2ce0bfb2-2444-4ec1-8259-1dc405443adc",
-      "at": "2026-03-19T02:33:28.989Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "5d3caaa8-b940-472f-8e15-87376dedb680",
-      "at": "2026-03-19T02:33:26.679Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "10ded422-975d-49c0-9c3c-822c93ae59bf",
-      "at": "2026-03-19T02:33:24.410Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "92dba8ff-603e-4d96-b47b-e85dc5906f51",
-      "at": "2026-03-19T02:33:20.590Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "4dced33a-884c-493d-af56-0c892f089c94",
-      "at": "2026-03-19T02:33:18.495Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "e6d78ce5-e443-4823-ace9-e34455e19a3c",
-      "at": "2026-03-19T02:33:16.208Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "4f398644-8143-4166-af38-218b39219983",
-      "at": "2026-03-19T02:33:13.904Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "dd677c95-5b83-4b48-9e61-20a5e902dd92",
-      "at": "2026-03-19T02:33:11.656Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "93d69356-c910-4ff4-80a7-a4d6aace594b",
-      "at": "2026-03-19T02:33:09.393Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "4153f54d-0f12-43d4-95e1-50f6e11163e5",
-      "at": "2026-03-19T02:33:07.167Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "435284c0-0f4a-49f5-afc9-cb4acd458a5f",
-      "at": "2026-03-19T02:33:04.939Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "c06453a3-90eb-4ff4-85bc-2590a677fcf2",
-      "at": "2026-03-19T02:33:02.812Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "ef4c83cd-818e-46ec-bde9-8805151306c8",
-      "at": "2026-03-19T02:33:00.666Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "d0d95ab6-fea6-4576-a91c-5413ddddccfe",
-      "at": "2026-03-19T02:32:58.152Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "2b4bd28e-3276-4e46-9ad1-e5457a182464",
-      "at": "2026-03-19T02:32:55.931Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "d30a1289-6836-42cb-aab1-89766ef090c8",
-      "at": "2026-03-19T02:32:53.611Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "66a0c755-c7ff-4181-b1b1-df922f0439a9",
-      "at": "2026-03-19T02:32:51.377Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "da359d75-389a-4711-9e8f-3bcb203028c8",
-      "at": "2026-03-19T02:32:49.203Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "c9ba2c6c-66bd-4321-81fb-f76bcda7b5dd",
-      "at": "2026-03-19T02:32:47.046Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "660935de-cb81-4e9c-bbf9-d8e7b102a800",
-      "at": "2026-03-19T02:32:44.878Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "500a7eb8-73cf-40fe-a01a-692ac0b60660",
-      "at": "2026-03-19T02:32:42.598Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "7aa79e9c-fab6-458f-b421-6dec6ee7f4ef",
-      "at": "2026-03-19T02:32:40.411Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "357ed7a1-bd81-4ed7-a05c-f6e767f05540",
-      "at": "2026-03-19T02:32:38.375Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "f56c8ae4-8da9-49be-8e83-475280af306c",
-      "at": "2026-03-19T02:32:36.265Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "33c9ff21-fa99-4691-8806-fff0bcc35459",
-      "at": "2026-03-19T02:32:34.300Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "f9783e42-dec1-4c59-ba76-2c4986293d91",
-      "at": "2026-03-19T02:32:32.237Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "bd3f19a0-7efc-4026-97a9-3e641ff6a8f6",
-      "at": "2026-03-19T02:32:30.246Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "1f589e92-b9da-4818-b7e8-28c02b32bd23",
-      "at": "2026-03-19T02:32:28.029Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "6080f690-0112-4abb-a695-0397edc4f71d",
-      "at": "2026-03-19T02:32:26.061Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "42cfc589-594b-44fd-885e-65ee8334aacc",
-      "at": "2026-03-19T02:32:24.041Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "772ce6c8-a528-4468-aa2f-21ae712a8e8a",
-      "at": "2026-03-19T02:32:21.935Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "2b2682cb-ca02-409e-bf70-86800ad24bd6",
-      "at": "2026-03-19T02:32:19.672Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "83062af2-efde-40ac-a14e-72a9b55e2001",
-      "at": "2026-03-19T02:32:17.767Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "3dc8e27e-8ca6-4de0-aca9-b9cf56a52e5a",
-      "at": "2026-03-19T02:32:15.599Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "cc50d576-fd5d-4f74-93ad-42a625edcb52",
-      "at": "2026-03-19T02:32:12.237Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
-    },
-    {
-      "id": "de903269-e2d6-47f5-b541-f6a2accd31f3",
-      "at": "2026-03-19T02:32:12.233Z",
-      "actorId": "admin",
-      "actorRole": "ADMIN",
-      "module": "meetings",
-      "action": "BULK_SYNC",
-      "targetType": "meeting",
-      "targetId": "bulk",
-      "targetLabel": "meetings",
-      "details": {
-        "count": 1
-      }
     }
   ],
-  "updatedAt": "2026-03-19T04:14:23.935Z"
+  "updatedAt": "2026-03-19T16:59:19.402Z"
 }
