@@ -48,7 +48,7 @@ header h1 {
 }
 
 .editor-shell .editor-container {
-  background: #fff;
+  background: #f1f5f9;
   position: relative;
   display: block;
   border-bottom-left-radius: 10px;
@@ -81,6 +81,21 @@ header h1 {
   position: relative;
   resize: vertical;
   z-index: -1;
+
+  box-sizing: border-box;
+  background: #ffffff;
+  width: 21cm;
+  min-height: 29.7cm;
+  margin: 2rem auto 4rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+@media (max-width: 1025px) {
+  .editor {
+    width: 100%;
+    margin: 1rem auto;
+  }
 }
 
 .test-recorder-output {
@@ -1488,18 +1503,19 @@ button.action-button:disabled {
 
 .toolbar {
   display: flex;
+  flex-wrap: wrap;
+  row-gap: 4px;
   margin-bottom: 1px;
   background: #fff;
-  padding: 4px;
+  padding: 6px 4px;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   vertical-align: middle;
-  overflow: auto;
-  height: 36px;
+  height: auto;
+  min-height: 36px;
   position: sticky;
   top: 0;
   z-index: 20;
-  overflow-y: hidden; /* disable vertical scroll*/
 }
 
 .toolbar .toolbar-item:focus {

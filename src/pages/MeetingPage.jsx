@@ -27,7 +27,9 @@ import {
   CheckCircle2,
   AlertCircle,
   Stamp,
-  CheckSquare
+  CheckSquare,
+  Trash,
+  Palette
 } from 'lucide-react';
 import LexicalApp from '../components/LexicalEditor/App';
 import '../components/LexicalEditor/index.css';
@@ -628,32 +630,106 @@ const MeetingPage = () => {
       {tableContextMenu.visible && createPortal(
         <div 
           onClick={(e) => e.stopPropagation()}
-          className="fixed bg-white border border-slate-200 shadow-xl rounded-xl p-2 z-50 flex flex-col gap-1 w-48 text-[13px] font-['Malgun_Gothic',sans-serif]"
-          style={{ top: Math.min(tableContextMenu.y, window.innerHeight - 300), left: Math.min(tableContextMenu.x, window.innerWidth - 200) }}
+          className="fixed z-[1000] min-w-[240px] overflow-hidden rounded-[2rem] border border-white/20 bg-slate-900/90 p-2 shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in duration-200"
+          style={{ 
+            top: Math.min(tableContextMenu.y, window.innerHeight - 400), 
+            left: Math.min(tableContextMenu.x, window.innerWidth - 260) 
+          }}
         >
-          <button onClick={() => handleTableContextMenuAction('insertRowAbove')} className="text-left px-3 py-2 hover:bg-slate-100 rounded-lg text-slate-700">위로 행 삽입</button>
-          <button onClick={() => handleTableContextMenuAction('insertRowBelow')} className="text-left px-3 py-2 hover:bg-slate-100 rounded-lg text-slate-700">아래로 행 삽입</button>
-          <button onClick={() => handleTableContextMenuAction('insertColLeft')} className="text-left px-3 py-2 hover:bg-slate-100 rounded-lg text-slate-700">왼쪽 열 삽입</button>
-          <button onClick={() => handleTableContextMenuAction('insertColRight')} className="text-left px-3 py-2 hover:bg-slate-100 rounded-lg text-slate-700">오른쪽 열 삽입</button>
-          <div className="h-px bg-slate-100 my-1" />
-          <button onClick={() => handleTableContextMenuAction('deleteRow')} className="text-left px-3 py-2 hover:bg-rose-50 text-rose-600 rounded-lg transition-colors">행 삭제</button>
-          <button onClick={() => handleTableContextMenuAction('deleteCol')} className="text-left px-3 py-2 hover:bg-rose-50 text-rose-600 rounded-lg transition-colors">열 삭제</button>
-          <button onClick={() => handleTableContextMenuAction('deleteTable')} className="text-left px-3 py-2 hover:bg-rose-50 text-rose-600 rounded-lg font-bold transition-colors">표 완전 삭제</button>
-          <div className="h-px bg-slate-100 my-1" />
-          <div className="px-3 py-2">
-            <span className="text-[11px] font-bold text-slate-400 mb-2 block">셀 배경색</span>
-            <div className="flex gap-1.5 flex-wrap">
-              {['transparent', '#f8fafc', '#fee2e2', '#fef3c7', '#dcfce3', '#e0e7ff', '#f3e8ff', '#ffecd2', '#b2fefa'].map(c => (
-                 <button 
-                   key={c} onClick={() => handleTableContextMenuAction('bgColor', c)}
-                   className="w-5 h-5 rounded border border-slate-200 hover:scale-110 transition-transform shadow-sm"
-                   style={{ background: c }}
-                   title={c === 'transparent' ? '배경색 지우기' : c}
-                 >
-                   {c === 'transparent' && <span className="text-slate-300 text-[10px]">&times;</span>}
-                 </button>
-              ))}
-            </div>
+          <div className="flex flex-col gap-1">
+             <div className="px-4 py-2 flex items-center gap-2 mb-1">
+                <div className="w-6 h-6 rounded-lg bg-indigo-500/20 flex items-center justify-center">
+                   <Plus className="w-3.5 h-3.5 text-indigo-400" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">데이터 조작</span>
+             </div>
+
+             <div className="grid grid-cols-2 gap-1 px-1">
+                <button 
+                  onClick={() => handleTableContextMenuAction('insertRowAbove')} 
+                  className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-white/5 hover:bg-indigo-600 transition-all text-white group"
+                >
+                  <Plus className="w-4 h-4 text-slate-400 group-hover:text-white" />
+                  <span className="text-[10px] font-black">위 행 삽입</span>
+                </button>
+                <button 
+                  onClick={() => handleTableContextMenuAction('insertRowBelow')} 
+                  className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-white/5 hover:bg-indigo-600 transition-all text-white group"
+                >
+                  <Plus className="w-4 h-4 text-slate-400 group-hover:text-white" />
+                  <span className="text-[10px] font-black">아래 행 삽입</span>
+                </button>
+                <button 
+                  onClick={() => handleTableContextMenuAction('insertColLeft')} 
+                  className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-white/5 hover:bg-indigo-600 transition-all text-white group"
+                >
+                  <Plus className="w-4 h-4 text-slate-400 rotate-90 group-hover:text-white" />
+                  <span className="text-[10px] font-black">왼쪽 열 삽입</span>
+                </button>
+                <button 
+                  onClick={() => handleTableContextMenuAction('insertColRight')} 
+                  className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-white/5 hover:bg-indigo-600 transition-all text-white group"
+                >
+                  <Plus className="w-4 h-4 text-slate-400 rotate-90 group-hover:text-white" />
+                  <span className="text-[10px] font-black">오른쪽 열 삽입</span>
+                </button>
+             </div>
+
+             <div className="h-px bg-white/10 my-2 mx-2" />
+
+             <div className="px-4 py-2 flex items-center gap-2 mb-1">
+                <div className="w-6 h-6 rounded-lg bg-rose-500/20 flex items-center justify-center">
+                   <Palette className="w-3.5 h-3.5 text-rose-400" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">셀 배경 색상</span>
+             </div>
+
+             <div className="px-4 pb-3">
+                <div className="grid grid-cols-5 gap-2">
+                  {['transparent', '#f8fafc', '#fee2e2', '#fef3c7', '#dcfce3', '#e0e7ff', '#f3e8ff', '#ffecd2', '#b2fefa'].map(c => (
+                     <button 
+                       key={c} onClick={() => handleTableContextMenuAction('bgColor', c)}
+                       className="w-full aspect-square rounded-lg border border-white/10 hover:scale-110 hover:border-white transition-all shadow-lg flex items-center justify-center"
+                       style={{ background: c }}
+                       title={c === 'transparent' ? '배경색 제거' : c}
+                     >
+                       {c === 'transparent' && <span className="text-slate-500 text-[14px] font-black rotate-45">/</span>}
+                     </button>
+                  ))}
+                </div>
+             </div>
+
+             <div className="h-px bg-white/10 my-1 mx-2" />
+
+             <div className="p-1">
+                <button 
+                  onClick={() => handleTableContextMenuAction('deleteRow')} 
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-rose-600 transition-colors text-slate-300 hover:text-white group"
+                >
+                  <div className="w-7 h-7 bg-white/5 rounded-lg flex items-center justify-center group-hover:bg-white/20">
+                     <Trash2 className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="text-[11px] font-black">행 삭제</span>
+                </button>
+                <button 
+                  onClick={() => handleTableContextMenuAction('deleteCol')} 
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-rose-600 transition-colors text-slate-300 hover:text-white group"
+                >
+                  <div className="w-7 h-7 bg-white/5 rounded-lg flex items-center justify-center group-hover:bg-white/20">
+                     <Trash2 className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="text-[11px] font-black">열 삭제</span>
+                </button>
+                <button 
+                  onClick={() => handleTableContextMenuAction('deleteTable')} 
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-rose-500/20 bg-rose-500/10 hover:bg-rose-600 transition-all text-rose-400 hover:text-white group mt-1"
+                >
+                  <div className="w-7 h-7 bg-rose-500/20 rounded-lg flex items-center justify-center group-hover:bg-white/20">
+                     <Trash className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="text-[11px] font-black">표 전체 삭제</span>
+                </button>
+             </div>
           </div>
         </div>,
         document.body
@@ -768,11 +844,13 @@ const MeetingPage = () => {
 
            <div className="space-y-3">
              {filteredMeetings.map((m) => (
-               <button
-                 key={m.id}
-                 onClick={() => setSelectedLogId(m.id)}
-                 className={`w-full rounded-[1.75rem] border p-4 text-left transition-all ${selectedLogId === m.id ? 'border-indigo-200 bg-indigo-600 text-white shadow-xl shadow-indigo-600/20' : 'border-slate-200 bg-white text-slate-700 shadow-sm shadow-slate-200/70'}`}
-               >
+                <div
+                  key={m.id}
+                  onClick={() => setSelectedLogId(m.id)}
+                  role="button"
+                  tabIndex={0}
+                  className={`w-full cursor-pointer rounded-[1.75rem] border p-4 text-left transition-all ${selectedLogId === m.id ? 'border-indigo-200 bg-indigo-600 text-white shadow-xl shadow-indigo-600/20' : 'border-slate-200 bg-white text-slate-700 shadow-sm shadow-slate-200/70 hover:bg-slate-50'}`}
+                >
                  <div className="flex items-start justify-between gap-3">
                    <div>
                      <span className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-black ${m.status === '최종확정' ? 'bg-emerald-500 text-white' : m.status === '확정' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}`}>
@@ -791,7 +869,7 @@ const MeetingPage = () => {
                    <span>{m.date}</span>
                    <span>{m.writer}</span>
                  </div>
-               </button>
+               </div>
              ))}
            </div>
 

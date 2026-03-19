@@ -7,18 +7,19 @@
  *
  */
 .ContentEditable__root {
+  box-sizing: border-box;
+  min-height: 100%;
+  padding: 80px 60px;
   border: 0;
   font-size: 15px;
   display: block;
   position: relative;
   outline: 0;
-  padding: 8px 46px 40px;
-  min-height: 150px;
 }
+
 @media (max-width: 1025px) {
   .ContentEditable__root {
-    padding-left: 8px;
-    padding-right: 8px;
+    padding: 40px 20px;
   }
 }
 
@@ -28,17 +29,19 @@
   overflow: hidden;
   position: absolute;
   text-overflow: ellipsis;
-  top: 8px;
-  left: 46px;
-  right: 28px;
+  top: 80px;
+  left: 60px;
+  right: 60px;
   user-select: none;
   white-space: nowrap;
   display: inline-block;
   pointer-events: none;
 }
+
 @media (max-width: 1025px) {
   .ContentEditable__placeholder {
-    left: 8px;
-    right: 8px;
+    top: 40px;
+    left: 20px;
+    right: 20px;
   }
 }

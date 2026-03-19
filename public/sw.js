@@ -1,48 +1,23 @@
-const CACHE_NAME = 'aisup-groupware-v1';
-const APP_SHELL = ['/', '/login', '/manifest.webmanifest', '/favicon.svg', '/pwa-192.svg', '/pwa-512.svg'];
-
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)).then(() => self.skipWaiting())
-  );
+  // 강제로 즉시 새 서비스 워커 활성화
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
-      )
-    ).then(() => self.clients.claim())
-  );
-});
-
-self.addEventListener('message', (event) => {
-  if (event.data?.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
-});
-
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
-
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) return cachedResponse;
-
-      return fetch(event.request)
-        .then((networkResponse) => {
-          if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-            return networkResponse;
-          }
-
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
-          return networkResponse;
-        })
-        .catch(() => caches.match('/login'));
+    // 모든 캐시 삭제
+    caches.keys().then((cacheNames) => {
+      return Promise.all(cacheNames.map((name) => caches.delete(name)));
+    }).then(() => {
+      // 서비스 워커 자체 등록 해제
+      return self.registration.unregister();
+    }).then(() => {
+      return self.clients.claim();
     })
   );
+});
+
+// fetch 이벤트 무력화 (모든 요청을 네트워크로 바로 통과)
+self.addEventListener('fetch', (event) => {
+  // 아무 작업도 하지 않음
 });

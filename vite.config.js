@@ -10,11 +10,18 @@ export default defineConfig({
       '@lexical/extension': path.resolve(__dirname, './src/components/LexicalEditor/lexical-extension/index.ts'),
     },
   },
+  define: {
+    'process.env.LEXICAL_VERSION': JSON.stringify('0.41.0'),
+    'process.env': {} 
+  },
   server: {
     host: 'localhost',
     port: 5173,
     strictPort: true,
     origin: 'http://localhost:5173',
+    watch: {
+      ignored: ['**/server/db/**'],
+    },
     hmr: {
       host: 'localhost',
       port: 5173,

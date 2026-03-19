@@ -1,4 +1,197 @@
 {
-  "meetings": [],
-  "updatedAt": null
+  "meetings": [
+    {
+      "id": 8,
+      "year": 2026,
+      "date": "2026.03.19",
+      "type": "LOG",
+      "status": "작성중",
+      "title": "3월 19일 운영일지",
+      "writer": "김민수",
+      "startTime": "10:00",
+      "endTime": "19:00",
+      "approval": {
+        "manager": {
+          "name": "최하은",
+          "confirmed": false,
+          "date": null
+        },
+        "director": {
+          "name": "김민수",
+          "confirmed": false,
+          "date": null
+        }
+      },
+      "stats": {
+        "children": {
+          "male": {
+            "pre": 0,
+            "elem": 0,
+            "mid": 0,
+            "high": 0,
+            "extra": 0,
+            "total": 0
+          },
+          "female": {
+            "pre": 0,
+            "elem": 0,
+            "mid": 0,
+            "high": 0,
+            "extra": 0,
+            "total": 0
+          }
+        },
+        "attendance": {
+          "limit": 40,
+          "current": 0,
+          "present": 0,
+          "official": 0,
+          "alt": 0,
+          "absent": 0,
+          "extra": 0
+        },
+        "meals": {
+          "morning": 0,
+          "lunch": 0,
+          "dinner": 0
+        },
+        "staff": {
+          "total": 0,
+          "teachers": 0,
+          "instructors": 0,
+          "extra": 0
+        }
+      },
+      "content": ""
+    },
+    {
+      "id": 7,
+      "year": 2026,
+      "date": "2026.03.19",
+      "type": "LOG",
+      "status": "확정",
+      "title": "3월 19일 운영일지",
+      "writer": "김민수",
+      "startTime": "10:00",
+      "endTime": "19:00",
+      "approval": {
+        "manager": {
+          "name": "최하은",
+          "confirmed": true,
+          "date": "2026.03.19"
+        },
+        "director": {
+          "name": "김민수",
+          "confirmed": false,
+          "date": null
+        }
+      },
+      "stats": {
+        "children": {
+          "male": {
+            "pre": 0,
+            "elem": 2,
+            "mid": 1,
+            "high": 0,
+            "extra": 0,
+            "total": 3
+          },
+          "female": {
+            "pre": 0,
+            "elem": 1,
+            "mid": 0,
+            "high": 0,
+            "extra": 0,
+            "total": 1
+          }
+        },
+        "attendance": {
+          "limit": 40,
+          "current": 4,
+          "present": 4,
+          "official": 0,
+          "alt": 0,
+          "absent": 0,
+          "extra": 0
+        },
+        "meals": {
+          "morning": 0,
+          "lunch": 0,
+          "dinner": 4
+        },
+        "staff": {
+          "total": 3,
+          "teachers": 1,
+          "instructors": 0,
+          "extra": 1
+        }
+      },
+      "content": "<p class=\"PlaygroundEditorTheme__paragraph\"><br></p><p class=\"PlaygroundEditorTheme__paragraph\"><br></p><p class=\"PlaygroundEditorTheme__paragraph\"><br></p><p class=\"PlaygroundEditorTheme__paragraph\"><br></p>"
+    },
+    {
+      "id": 6,
+      "year": 2026,
+      "date": "2026.03.20",
+      "type": "LOG",
+      "title": "시설 운영일지 - 3월 20일 목요일",
+      "writer": "최하은",
+      "status": "작성중",
+      "startTime": "10:00",
+      "endTime": "19:00",
+      "approval": {
+        "manager": {
+          "name": "최하은",
+          "confirmed": false,
+          "date": null
+        },
+        "director": {
+          "name": "김민수",
+          "confirmed": false,
+          "date": null
+        }
+      },
+      "stats": {
+        "children": {
+          "male": {
+            "pre": 0,
+            "elem": 2,
+            "mid": 2,
+            "high": 0,
+            "extra": 5,
+            "total": 9
+          },
+          "female": {
+            "pre": 0,
+            "elem": 14,
+            "mid": 2,
+            "high": 0,
+            "extra": 9,
+            "total": 25
+          }
+        },
+        "attendance": {
+          "limit": 40,
+          "current": 34,
+          "present": 32,
+          "official": 1,
+          "alt": 0,
+          "absent": 1,
+          "extra": 0
+        },
+        "meals": {
+          "morning": 0,
+          "lunch": 0,
+          "dinner": 32
+        },
+        "staff": {
+          "total": 3,
+          "teachers": 2,
+          "instructors": 1,
+          "extra": 0
+        }
+      },
+      "content": "<h1 class=\"PlaygroundEditorTheme__h1\" style=\"text-align: right;\"><br></h1><table class=\"PlaygroundEditorTheme__table\"><colgroup><col style=\"width: 92px;\"><col style=\"width: 92px;\"><col style=\"width: 92px;\"><col style=\"width: 92px;\"><col style=\"width: 328.215px;\"></colgroup><tbody><tr><th class=\"PlaygroundEditorTheme__tableCell PlaygroundEditorTheme__tableCellHeader\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start; background-color: rgb(242, 243, 245);\"><p class=\"PlaygroundEditorTheme__paragraph\"><span style=\"white-space: pre-wrap;\">ㅁㄴㄴㅇㄴㅁ</span></p></th><th class=\"PlaygroundEditorTheme__tableCell PlaygroundEditorTheme__tableCellHeader\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start; background-color: rgb(242, 243, 245);\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></th><th class=\"PlaygroundEditorTheme__tableCell PlaygroundEditorTheme__tableCellHeader\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start; background-color: rgb(242, 243, 245);\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></th><th class=\"PlaygroundEditorTheme__tableCell PlaygroundEditorTheme__tableCellHeader\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start; background-color: rgb(242, 243, 245);\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></th><th class=\"PlaygroundEditorTheme__tableCell PlaygroundEditorTheme__tableCellHeader\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start; background-color: rgb(242, 243, 245);\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></th></tr><tr><th class=\"PlaygroundEditorTheme__tableCell PlaygroundEditorTheme__tableCellHeader\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start; background-color: rgb(242, 243, 245);\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></th><td class=\"PlaygroundEditorTheme__tableCell\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></td></tr><tr><th class=\"PlaygroundEditorTheme__tableCell PlaygroundEditorTheme__tableCellHeader\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start; background-color: rgb(242, 243, 245);\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></th><td class=\"PlaygroundEditorTheme__tableCell\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></td></tr><tr><th class=\"PlaygroundEditorTheme__tableCell PlaygroundEditorTheme__tableCellHeader\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start; background-color: rgb(242, 243, 245);\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></th><td class=\"PlaygroundEditorTheme__tableCell\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></td></tr><tr><th class=\"PlaygroundEditorTheme__tableCell PlaygroundEditorTheme__tableCellHeader\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start; background-color: rgb(242, 243, 245);\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></th><td class=\"PlaygroundEditorTheme__tableCell\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"border: 1px solid black; width: 75px; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></td></tr></tbody></table><h1 class=\"PlaygroundEditorTheme__h1\" style=\"text-align: right;\"><span style=\"white-space: pre-wrap;\">ㄴㅇㄹㅇㄹㅇㄴㄴㅇㄹ</span></h1>"
+    }
+  ],
+  "updatedAt": "2026-03-19T04:14:23.930Z"
 }
