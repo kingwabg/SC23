@@ -1,44 +1,17 @@
 import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-import { ensureValidSession, hasMenuPermission } from '../utils/auth';
 
-const ProtectedRoute = ({ children, menuKey = null }) => {
-  const location = useLocation();
-  const [isChecking, setIsChecking] = React.useState(true);
-  const [isAuthed, setIsAuthed] = React.useState(false);
+// 개발 모드: 로그인 없이 ADMIN으로 바로 접근
+// localStorage에 가짜 세션 세팅
+if (!localStorage.getItem('userRole')) {
+  localStorage.setItem('userRole', 'ADMIN');
+  localStorage.setItem('currentUser', JSON.stringify({
+    id: 1, name: '시스템 관리자', role: 'ADMIN', email: 'admin@forest.kr',
+    permissions: {}
+  }));
+  localStorage.setItem('accessToken', 'dev-bypass-token');
+}
 
-  React.useEffect(() => {
-    let mounted = true;
-
-    const check = async () => {
-      const ok = await ensureValidSession();
-      if (!mounted) return;
-      setIsAuthed(ok);
-      setIsChecking(false);
-    };
-
-    check();
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  if (isChecking) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-slate-400 text-sm font-bold">
-        인증 상태 확인 중...
-      </div>
-    );
-  }
-
-  if (!isAuthed) {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
-  }
-
-  if (menuKey && !hasMenuPermission(menuKey)) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
+const ProtectedRoute = ({ children }) => {
   return children;
 };
 

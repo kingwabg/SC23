@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -41,7 +41,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<AppRoute element={<IntroPage />} />} />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/visit" element={<AppRoute element={<VisitPage />} />} />
         <Route path="/login" element={<AppRoute element={<LoginPage />} />} />
 
