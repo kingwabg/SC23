@@ -31,6 +31,37 @@ import {
   Timer
 } from 'lucide-react';
 
+const parseRRN = (rrn) => {
+  if (!rrn || rrn.length < 7) return null;
+  const cleanRRN = rrn.replace('-', '');
+  if (cleanRRN.length < 7) return null;
+  
+  const yearPrefix = cleanRRN.substring(0, 2);
+  const month = cleanRRN.substring(2, 4);
+  const day = cleanRRN.substring(4, 6);
+  const genderCode = cleanRRN.charAt(6);
+  
+  let fullYear;
+  if (genderCode === '1' || genderCode === '2' || genderCode === '5' || genderCode === '6') {
+    fullYear = '19' + yearPrefix;
+  } else if (genderCode === '3' || genderCode === '4' || genderCode === '7' || genderCode === '8') {
+    fullYear = '20' + yearPrefix;
+  } else {
+    fullYear = (parseInt(yearPrefix) > 30 ? '19' : '20') + yearPrefix;
+  }
+  
+  const birthDate = `${fullYear}.${month}.${day}`;
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const age = currentYear - parseInt(fullYear);
+  
+  return {
+    birth: birthDate,
+    age: age,
+    gender: (genderCode % 2 === 0) ? '여' : '남'
+  };
+};
+
 const ChildrenPage = () => {
   // --- 글로벌 시스템 상태 ---
   const userRole = localStorage.getItem('userRole') || 'ADMIN';
@@ -44,7 +75,21 @@ const ChildrenPage = () => {
   const [isYearPickerOpen, setIsYearPickerOpen] = useState(false);
   const [isMonthPickerOpen, setIsMonthPickerOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [newChild, setNewChild] = useState({ name: '', gender: '남', birth: '', school: '', grade: 1, address: '', guardian: '', contact: '', cardId: '' });
+  const [isSyncing, setIsSyncing] = useState(false);
+  
+  // --- 필터링 시스템 상태 ---
+  const [filterGender, setFilterGender] = useState('전체');
+  const [filterGrade, setFilterGrade] = useState('전체');
+  const [filterUsageType, setFilterUsageType] = useState('전체');
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const [sheetId, setSheetId] = useState(() => localStorage.getItem('googleSheetId') || '');
+  const [newChild, setNewChild] = useState({ 
+    name: '', gender: '남', birth: '', school: '', grade: 1, address: '', 
+    guardian: '', contact: '', cardId: '', rrn: '', phone: '',
+    enrollment: new Date().toISOString().split('T')[0],
+    prevEnrollment: '', usageType: '일반', familyType: '양부모', remarks: '',
+    family: [] // { name: '', relation: '', contact: '', job: '', cohab: true }
+  });
 
   // 초1 -> 중3까지의 긴 추적을 위한 연도 범위 (15년)
   const years = useMemo(() => Array.from({ length: 15 }, (_, i) => 2015 + i).reverse(), []);
@@ -238,6 +283,36 @@ const ChildrenPage = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [children]); // children 데이터가 변경될 때마다 리스너 갱신
 
+  // 주민번호 파싱 및 자동 연산 함수
+  const parseRRN = (rrn) => {
+    if (!rrn || rrn.length < 7) return null;
+    const cleanRRN = rrn.replace('-', '');
+    const birthPart = cleanRRN.substring(0, 6);
+    const genderDigit = parseInt(cleanRRN.substring(6, 7));
+
+    let yearPrefix = '19';
+    let gender = '남';
+
+    if (genderDigit === 3 || genderDigit === 4) yearPrefix = '20';
+    if (genderDigit === 2 || genderDigit === 4) gender = '여';
+
+    const year = yearPrefix + birthPart.substring(0, 2);
+    const month = birthPart.substring(2, 4);
+    const day = birthPart.substring(4, 6);
+    const birthStr = `${year}-${month}-${day}`;
+    
+    const age = new Date().getFullYear() - parseInt(year) + 1;
+
+    return { gender, birth: birthStr, age };
+  };
+
+  useEffect(() => {
+    const parsed = parseRRN(newChild.rrn);
+    if (parsed) {
+      setNewChild(prev => ({ ...prev, gender: parsed.gender, birth: parsed.birth }));
+    }
+  }, [newChild.rrn]);
+
   // 단말기(900446) 스캔 처리 함수
   const handleTerminalScan = (cardId) => {
     const child = children.find(c => c.cardId === cardId);
@@ -257,7 +332,7 @@ const ChildrenPage = () => {
       // 알림창 3초 후 제거
       setTimeout(() => setLastScannedChild(null), 3000);
       
-      // 출결 데이터 업데이트 (예시: 오늘 날짜 출결 true)
+      // 출결 데이터 업데이트
       const today = new Date().toISOString().split('T')[0];
       setChildren(prev => prev.map(c => {
         if (c.id === child.id) {
@@ -286,9 +361,16 @@ const ChildrenPage = () => {
       name: newChild.name,
       birth: newChild.birth,
       gender: newChild.gender,
+      rrn: newChild.rrn,
+      phone: newChild.phone,
       photo: null,
-      enrollment: new Date().toISOString().split('T')[0],
+      enrollment: newChild.enrollment,
+      prevEnrollment: newChild.prevEnrollment,
       cardId: newChild.cardId,
+      usageType: newChild.usageType,
+      familyType: newChild.familyType,
+      remarks: newChild.remarks,
+      family: newChild.family,
       yearlyData: {
         [selectedYear]: {
           school: newChild.school,
@@ -306,7 +388,13 @@ const ChildrenPage = () => {
 
     setChildren(prev => [...prev, childData]);
     setIsAddModalOpen(false);
-    setNewChild({ name: '', gender: '남', birth: '', school: '', grade: 1, address: '', guardian: '', contact: '', cardId: '' });
+    setNewChild({ 
+      name: '', gender: '남', birth: '', school: '', grade: 1, address: '', 
+      guardian: '', contact: '', cardId: '', rrn: '', phone: '',
+      enrollment: new Date().toISOString().split('T')[0],
+      prevEnrollment: '', usageType: '일반', familyType: '양부모', remarks: '',
+      family: []
+    });
   };
 
   const selectedChild = useMemo(() => children.find(c => c.id === selectedChildId), [children, selectedChildId]);
@@ -318,11 +406,18 @@ const ChildrenPage = () => {
 
   const filteredChildren = useMemo(() => {
     return children.filter(c => {
-      const matchesSearch = c.name.includes(searchQuery);
-      const hasDataThisYear = !!c.yearlyData?.[selectedYear];
-      return matchesSearch && hasDataThisYear;
+      const yearData = c.yearlyData?.[selectedYear];
+      const hasDataThisYear = !!yearData;
+      if (!hasDataThisYear) return false;
+
+      const matchesSearch = c.name.includes(searchQuery) || (yearData.school && yearData.school.includes(searchQuery));
+      const matchesGender = filterGender === '전체' || c.gender === filterGender;
+      const matchesGrade = filterGrade === '전체' || (yearData.grade && yearData.grade.toString() === filterGrade);
+      const matchesUsageType = filterUsageType === '전체' || c.usageType === filterUsageType;
+
+      return matchesSearch && matchesGender && matchesGrade && matchesUsageType;
     });
-  }, [children, searchQuery, selectedYear]);
+  }, [children, searchQuery, selectedYear, filterGender, filterGrade, filterUsageType]);
 
   const currentYearLogs = useMemo(() => {
     if (!selectedChild) return null;
@@ -443,6 +538,127 @@ const ChildrenPage = () => {
     e.target.value = null;
   };
 
+  const handleGoogleSheetSync = async () => {
+    if (!sheetId) {
+      alert('구글 시트 ID 또는 전체 공개 링크를 입력해주세요.');
+      return;
+    }
+
+    setIsSyncing(true);
+    try {
+      let url = '';
+      
+      // 전체 URL이 입력된 경우 처리
+      if (sheetId.startsWith('http')) {
+        url = sheetId;
+        // 출력이 csv가 아니면 강제로 추가 또는 변환
+        if (!url.includes('output=csv') && !url.includes('format=csv')) {
+          url += (url.includes('?') ? '&' : '?') + 'output=csv';
+        }
+      } else {
+        // ID만 입력된 경우 (기본 내보내기 방식)
+        url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
+      }
+      
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('시트 데이터를 가져오는데 실패했습니다. 웹 게시 설정과 링크가 올바른지 확인해주세요.');
+      
+      const csvData = await response.text();
+      processSpreadsheetData(csvData, 'string');
+      localStorage.setItem('googleSheetId', sheetId);
+      alert('구글 시트로부터 최신 출결 데이터를 동기화했습니다.');
+    } catch (error) {
+       console.error(error);
+       alert('동기화 실패: ' + error.message + '\n\n도움말: 시트 메뉴의 [파일] -> [공유] -> [웹에 게시] 에서 "쉼표로 구분된 값(.csv)"으로 게시했는지 확인해 주세요.');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const processSpreadsheetData = (dataStr, type) => {
+    const wb = XLSX.read(dataStr, { type: type });
+    const wsname = wb.SheetNames[0];
+    const ws = wb.Sheets[wsname];
+    const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+
+    if (data.length < 2) return;
+
+    // 헤더 행 찾기 ( "이름" 이 포함된 행을 찾음 )
+    let headerRowIndex = -1;
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].includes('이름')) {
+        headerRowIndex = i;
+        break;
+      }
+    }
+
+    if (headerRowIndex === -1) {
+      alert('스프레드시트에서 "이름" 컬럼을 찾을 수 없습니다. 양식을 확인해주세요.');
+      return;
+    }
+
+    const headers = data[headerRowIndex];
+    const rows = data.slice(headerRowIndex + 1);
+
+    const nameIdx = headers.indexOf('이름');
+    const newChildren = [...children];
+    
+    // 현재 시트에서 연도와 월 추출 (일자 행 근처에서 "2026년02월" 같은 패턴 찾기)
+    let sheetYear = selectedYear;
+    let sheetMonth = String(new Date().getMonth() + 1).padStart(2, '0');
+    
+    // 시트 내의 텍스트에서 날짜 정보 검색 (예: "2026년02월")
+    const datePattern = /(\d{4})년\s*(\d{1,2})월/;
+    for (let i = 0; i < headerRowIndex; i++) {
+      const rowStr = data[i].join('');
+      const match = rowStr.match(datePattern);
+      if (match) {
+        sheetYear = parseInt(match[1]);
+        sheetMonth = match[2].padStart(2, '0');
+        break;
+      }
+    }
+
+    let updatedCount = 0;
+
+    rows.forEach(row => {
+      const name = row[nameIdx];
+      if (!name) return;
+
+      const childIndex = newChildren.findIndex(c => c.name === name);
+      if (childIndex > -1) {
+        if (!newChildren[childIndex].attendance) newChildren[childIndex].attendance = {};
+        
+        headers.forEach((header, idx) => {
+          // "1일", "2일" 혹은 숫자만 있는 헤더 확인
+          const dayMatch = String(header).match(/^(\d+)(일)?$/);
+          if (dayMatch) {
+            const day = dayMatch[1].padStart(2, '0');
+            const status = row[idx];
+            
+            // "출석", "출", "O", "PRESENT", 1 등의 값 확인
+            if (status === '출석' || status === '출' || status === 'PRESENT' || status === 'O' || status === 1) {
+              const dateKey = `${sheetYear}-${sheetMonth}-${day}`;
+              newChildren[childIndex].attendance[dateKey] = {
+                status: 'PRESENT',
+                time: '09:00:00',
+                memo: `시트 동기화 (${sheetYear}-${sheetMonth})`
+              };
+              updatedCount++;
+            }
+          }
+        });
+      }
+    });
+
+    if (updatedCount > 0) {
+      setChildren(newChildren);
+      alert(`${updatedCount}건의 출결 데이터가 동기화되었습니다.`);
+    } else {
+      alert('동기화할 데이터를 찾지 못했습니다. 아동 이름이 시스템에 등록된 이름과 일치하는지 확인해주세요.');
+    }
+  };
+
   return (
     <div className="font-['Outfit'] min-h-screen bg-[#f8fafc] flex flex-col">
       {/* 상단 헤더 */}
@@ -539,35 +755,65 @@ const ChildrenPage = () => {
                     {selectedMonth}월 출결 현황 대장 <span className="text-indigo-600">.</span>
                   </h3>
                 </div>
-                 <div className="flex gap-4">
-                   <div className="relative">
-                     <button 
-                       onClick={() => setIsMonthPickerOpen(!isMonthPickerOpen)}
-                       className="px-6 py-3 bg-white border border-slate-200 rounded-xl font-black text-[11px] flex items-center gap-2"
-                     >
-                       {selectedMonth}월 <ChevronDown className="w-4 h-4" />
-                     </button>
-                     <AnimatePresence>
-                       {isMonthPickerOpen && (
-                         <motion.div 
-                           initial={{ opacity: 0, scale: 0.95 }}
-                           animate={{ opacity: 1, scale: 1 }}
-                           exit={{ opacity: 0, scale: 0.95 }}
-                           className="absolute top-full right-0 mt-2 bg-white border border-slate-100 rounded-2xl shadow-2xl z-50 p-2 grid grid-cols-3 gap-1 w-48"
-                         >
-                           {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
-                             <button 
-                               key={m} 
-                               onClick={() => { setSelectedMonth(m); setIsMonthPickerOpen(false); }}
-                               className={`p-2 rounded-lg text-xs font-black transition-all ${selectedMonth === m ? 'bg-indigo-600 text-white' : 'hover:bg-slate-50'}`}
-                             >
-                               {m}월
-                             </button>
-                           ))}
-                         </motion.div>
-                       )}
-                     </AnimatePresence>
-                   </div>
+                 <div className="flex items-center gap-4 bg-slate-50 p-2 rounded-2xl border border-slate-100">
+                    <div className="relative">
+                      <button 
+                        onClick={() => setIsMonthPickerOpen(!isMonthPickerOpen)}
+                        className="px-6 py-3 bg-white border border-slate-200 rounded-xl font-black text-[11px] flex items-center gap-2"
+                      >
+                        {selectedMonth}월 출결 데이터 <ChevronDown className="w-4 h-4" />
+                      </button>
+                      <AnimatePresence>
+                        {isMonthPickerOpen && (
+                          <motion.div 
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="absolute top-full left-0 mt-2 bg-white border border-slate-100 rounded-2xl shadow-2xl z-50 p-2 grid grid-cols-3 gap-1 w-48"
+                          >
+                            {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
+                              <button 
+                                key={m} 
+                                onClick={() => { setSelectedMonth(m); setIsMonthPickerOpen(false); }}
+                                className={`p-2 rounded-lg text-xs font-black transition-all ${selectedMonth === m ? 'bg-indigo-600 text-white' : 'hover:bg-slate-50'}`}
+                              >
+                                {m}월
+                              </button>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
+                    <div className="w-px h-8 bg-slate-200 mx-1" />
+
+                    <div className="flex flex-col px-4">
+                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Google Sheet URL / ID</span>
+                      <input 
+                        type="text" 
+                        value={sheetId}
+                        onChange={(e) => setSheetId(e.target.value)}
+                        placeholder="ID 또는 링크 입력..."
+                        className="bg-transparent border-none outline-none font-bold text-xs w-48 p-0 placeholder:text-slate-300"
+                      />
+                    </div>
+                    <button 
+                      onClick={handleGoogleSheetSync}
+                      disabled={isSyncing}
+                      className={`px-8 py-3 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-xl transition-all flex items-center gap-2 ${isSyncing ? 'bg-slate-400 cursor-wait' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
+                    >
+                      {isSyncing ? (
+                        <span className="flex items-center gap-2">
+                          <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          동기화...
+                        </span>
+                      ) : (
+                        <>
+                          <TrendingUp className="w-4 h-4" />
+                          시트 동기화
+                        </>
+                      )}
+                    </button>
                    <input 
                      type="file" 
                      ref={fileInputRef} 
@@ -577,12 +823,10 @@ const ChildrenPage = () => {
                    />
                    <button 
                      onClick={() => fileInputRef.current.click()}
-                     className="px-6 py-3 bg-indigo-50 text-indigo-600 rounded-xl font-black text-[11px] uppercase tracking-widest border border-indigo-100 hover:bg-indigo-100 transition-all"
+                     className="px-6 py-3 bg-white text-slate-600 rounded-xl font-black text-[11px] uppercase tracking-widest border border-slate-200 hover:bg-slate-50 transition-all"
                    >
-                     데이터 가져오기
+                     파일 업로드
                    </button>
-                   <button className="px-6 py-3 bg-slate-100 text-slate-900 rounded-xl font-black text-[11px] uppercase tracking-widest">인쇄</button>
-                   <button className="px-6 py-3 bg-slate-900 text-white rounded-xl font-black text-[11px] uppercase tracking-widest shadow-xl">EXCEL</button>
                  </div>
               </div>
 
@@ -663,19 +907,85 @@ const ChildrenPage = () => {
         {activeTab === 'active' && !selectedChildId && (
           <div className="flex-1 overflow-y-auto p-8">
           <div className="max-w-7xl mx-auto space-y-8">
-             <div className="flex justify-between items-end">
-                <div>
-                   <h3 className="text-3xl font-black text-slate-900 tracking-tighter m-0 uppercase italic">기관 아동 명부 (MODIFIED) <span className="text-indigo-600">.</span></h3>
-                   <p className="text-xs font-bold text-slate-400 m-0 uppercase tracking-widest mt-1">{selectedYear}년도 데이터베이스에 {filteredChildren.length}명의 아동이 검색되었습니다.</p>
+             <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-2xl space-y-8">
+                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                   <div>
+                      <h3 className="text-3xl font-black text-slate-900 tracking-tighter m-0 uppercase italic">기관 아동 명부 <span className="text-indigo-600">.</span></h3>
+                      <p className="text-xs font-bold text-slate-400 m-0 uppercase tracking-widest mt-1">{selectedYear}년도 데이터베이스에 {filteredChildren.length}명의 아동이 검색되었습니다.</p>
+                   </div>
+                   
+                   <div className="flex items-center gap-4 w-full lg:w-auto">
+                      <div className="relative flex-1 lg:w-80">
+                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                         <input 
+                           type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+                           placeholder="성명, 학교명 검색..."
+                           className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-black shadow-inner focus:bg-white transition-all outline-none"
+                         />
+                      </div>
+                      <button 
+                        onClick={() => setIsFilterPanelOpen(!isFilterPanelOpen)}
+                        className={`p-4 rounded-2xl border transition-all flex items-center gap-3 font-black text-[11px] uppercase tracking-widest ${isFilterPanelOpen || filterGender !== '전체' || filterGrade !== '전체' || filterUsageType !== '전체' ? 'bg-indigo-600 text-white border-indigo-600 shadow-xl' : 'bg-white text-slate-600 border-slate-100 hover:bg-slate-50'}`}
+                      >
+                         <LayoutGrid className="w-5 h-5" />
+                         상세 필터 {(!isFilterPanelOpen && (filterGender !== '전체' || filterGrade !== '전체' || filterUsageType !== '전체')) && <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />}
+                      </button>
+                   </div>
                 </div>
-                <div className="relative w-80">
-                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                   <input 
-                     type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                     placeholder="이름, 학교 등으로 검색..."
-                     className="w-full pl-12 pr-6 py-4 bg-white border border-slate-100 rounded-[1.5rem] text-sm font-black shadow-xl shadow-slate-200/40 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
-                   />
-                </div>
+
+                <AnimatePresence>
+                   {isFilterPanelOpen && (
+                      <motion.div 
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                      >
+                         <div className="pt-6 border-t border-slate-50 grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <div className="space-y-3">
+                               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">성별 구분</label>
+                               <div className="flex gap-2">
+                                  {['전체', '남', '여'].map(g => (
+                                     <button key={g} onClick={() => setFilterGender(g)} className={`flex-1 py-3 rounded-xl font-black text-[11px] transition-all ${filterGender === g ? 'bg-slate-900 text-white shadow-lg' : 'bg-slate-50 text-slate-400 hover:bg-white border border-transparent hover:border-slate-200'}`}>{g}</button>
+                                  ))}
+                               </div>
+                            </div>
+
+                            <div className="space-y-3">
+                               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">학년별 필터</label>
+                               <select 
+                                 value={filterGrade} 
+                                 onChange={(e) => setFilterGrade(e.target.value)}
+                                 className="w-full bg-slate-50 border border-slate-100 rounded-xl py-3 px-4 font-black text-[11px] outline-none shadow-inner"
+                               >
+                                  <option value="전체">전체 학년</option>
+                                  {[1,2,3,4,5,6].map(g => <option key={g} value={g}>{g}학년 교육생</option>)}
+                               </select>
+                            </div>
+
+                            <div className="space-y-3">
+                               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">이용 유형</label>
+                               <select 
+                                 value={filterUsageType} 
+                                 onChange={(e) => setFilterUsageType(e.target.value)}
+                                 className="w-full bg-slate-50 border border-slate-100 rounded-xl py-3 px-4 font-black text-[11px] outline-none shadow-inner"
+                               >
+                                  <option value="전체">전체 유형</option>
+                                  {['일반', '다문화', '장애', '기타'].map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                               </select>
+                            </div>
+                            <div className="flex items-end">
+                               <button 
+                                 onClick={() => { setFilterGender('전체'); setFilterGrade('전체'); setFilterUsageType('전체'); setSearchQuery(''); }}
+                                 className="w-full py-3 bg-rose-50 text-rose-500 rounded-xl font-black text-[11px] uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all shadow-sm flex items-center justify-center gap-2"
+                               >
+                                  <X className="w-4 h-4" /> 필터 초기화
+                               </button>
+                            </div>
+                         </div>
+                      </motion.div>
+                   )}
+                </AnimatePresence>
              </div>
 
              <div className="bg-white rounded-[3rem] border border-slate-100 shadow-2xl overflow-hidden">
@@ -701,7 +1011,10 @@ const ChildrenPage = () => {
                                  </div>
                                  <div className="flex flex-col">
                                     <span className="text-lg font-black text-slate-900">{child.name}</span>
-                                    <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">{child.cardId}</span>
+                                    <div className="flex items-center gap-2">
+                                       <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">{child.cardId}</span>
+                                       <span className="text-[8px] font-black bg-slate-100 text-slate-400 px-2 py-0.5 rounded-lg border border-slate-100 uppercase">{child.usageType}</span>
+                                    </div>
                                  </div>
                               </div>
                            </td>
@@ -845,58 +1158,158 @@ const ChildrenPage = () => {
                       <div className="mt-10 bg-[#f8fcfd] rounded-[3.5rem] border border-blue-50/50 p-12 min-h-[500px] relative overflow-hidden">
                          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl -translate-y-32 translate-x-32" />
                          <div className="absolute top-6 right-10 text-[10px] font-black text-slate-300 uppercase tracking-widest italic">데이터베이스 동기화: 활성화</div>
-                         
                          {detailTab === 'info' && (
-                           <div
-                             className="relative grid grid-cols-2 gap-12 animate-in fade-in slide-in-from-bottom-8 overflow-hidden rounded-[3rem] border border-sky-100/80 p-10"
-                             style={{
-                               backgroundImage: `linear-gradient(180deg, rgba(248,252,253,0.74) 0%, rgba(248,252,253,0.88) 32%, rgba(248,252,253,0.96) 100%), url(${starInfoBg})`,
-                               backgroundSize: 'cover',
-                               backgroundPosition: 'center',
-                             }}
-                           >
-                              <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,rgba(121,182,255,0.16),transparent_38%)] pointer-events-none" />
-                              <div className="space-y-4 col-span-2 border-b border-white/70 pb-8 relative z-10"><h5 className="text-[12px] font-black text-slate-900 uppercase tracking-[0.4em] m-0 flex items-center gap-3"><ShieldCheck className="w-5 h-5 text-sky-500"/> 개인 신원 및 법적 식별 정보 ({selectedYear})</h5></div>
-                              <div className="space-y-3 relative z-10"><label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">성별 / 생년월일</label><div className="flex gap-4"><input type="text" readOnly value={selectedChild.gender} className="w-24 bg-white/92 border border-white rounded-2xl py-6 px-4 font-black text-center shadow-inner" /><input type="text" readOnly value={selectedChild.birth} className="flex-1 bg-white/92 border border-white rounded-2xl py-6 px-10 font-black shadow-inner" /></div></div>
-                              <div className="space-y-3 relative z-10"><label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">RFID 보안 태그 ID</label><div className="flex gap-2">
-                                <input type="text" readOnly value={selectedChild.displayId || 'N/A'} className="flex-1 bg-white/88 text-slate-500 border border-white rounded-2xl py-6 px-10 font-black tracking-widest shadow-inner" placeholder="관리번호" />
-                                <input type="text" readOnly value={selectedChild.cardId} className="flex-1 bg-slate-900/92 text-sky-300 border-none rounded-2xl py-6 px-10 font-black tracking-widest shadow-2xl" placeholder="하드웨어 ID" />
-                              </div></div>
-                              <div className="space-y-3 relative z-10"><label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">주 보호자 / 당시 학년</label><input type="text" readOnly value={`${currentYearData?.guardian || '없음'} (${currentYearData?.grade || '?'}학년)`} className="w-full bg-white/92 border border-white rounded-2xl py-6 px-10 font-black shadow-inner" /></div>
-                              <div className="space-y-3 relative z-10"><label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">비상 연락처 체계</label><input type="text" readOnly value={currentYearData?.contact || '정보 없음'} className="w-full bg-white/92 border border-white rounded-2xl py-6 px-10 font-black shadow-inner" /></div>
-                              <div className="space-y-3 col-span-2 relative z-10"><label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">실거주지 매핑 주소</label><input type="text" readOnly value={currentYearData?.address || '데이터 없음'} className="w-full bg-white/92 border border-white rounded-2xl py-6 px-10 font-black shadow-inner" /></div>
-                           </div>
-                         )}
-
-                         {detailTab === 'obs' && (
-                           <div className="space-y-12 animate-in fade-in slide-in-from-right-12">
-                              <div className="flex justify-between items-center border-b border-slate-100 pb-8">
-                                 <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-indigo-900 rounded-2xl flex items-center justify-center text-indigo-400 shadow-xl"><BookOpen className="w-6 h-6" /></div>
-                                    <div>
-                                       <h4 className="text-xl font-black text-slate-900 m-0 uppercase tracking-tight italic">성장 케이스 추적 로그</h4>
-                                       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest m-0 mt-1">{selectedYear}년도 기간에 총 {currentYearLogs.observation?.length}건의 기록이 발견되었습니다.</p>
-                                    </div>
-                                 </div>
-                                 <button className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl shadow-indigo-200">새 기록 작성</button>
-                              </div>
-                              <div className="space-y-6">
-                                 {currentYearLogs.observation?.length > 0 ? (
-                                   currentYearLogs.observation.map((log, idx) => (
-                                     <div key={idx} className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-xl flex gap-10 group hover:border-indigo-500 transition-all border-l-8 border-l-indigo-600">
-                                        <div className="w-28 shrink-0 text-center flex flex-col items-center justify-center border-r border-slate-50 pr-10">
-                                           <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-2">기록 일자</span>
-                                           <span className="text-sm font-black text-slate-900">{log.date}</span>
-                                        </div>
-                                        <div className="flex-1 text-lg font-bold text-slate-700 leading-relaxed italic-none">{log.content}</div>
+                            <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8">
+                               {/* 프리미엄 강조 섹션: 신원 및 법적 식별 */}
+                               <div 
+                                 className="relative grid grid-cols-3 gap-8 overflow-hidden rounded-[4rem] border border-sky-100/80 p-12 shadow-2xl shadow-indigo-900/5 group/info"
+                                 style={{
+                                   backgroundImage: `linear-gradient(180deg, rgba(248,252,253,0.82) 0%, rgba(248,252,253,0.92) 32%, rgba(248,252,253,0.98) 100%), url(${starInfoBg})`,
+                                   backgroundSize: 'cover',
+                                   backgroundPosition: 'center',
+                                 }}
+                               >
+                                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,rgba(99,102,241,0.08),transparent_45%)] pointer-events-none" />
+                                  <div className="col-span-3 border-b border-white pb-6 flex items-center justify-between relative z-10">
+                                    <h5 className="text-[12px] font-black text-slate-900 uppercase tracking-[0.4em] m-0 flex items-center gap-3"><ShieldCheck className="w-5 h-5 text-sky-500"/> 개인 신원 및 보안 프로필 ({selectedYear})</h5>
+                                    <span className="text-[9px] font-black text-slate-400 bg-white/60 px-3 py-1 rounded-lg border border-white">UID: {selectedChild.id}</span>
+                                  </div>
+                                  
+                                  <div className="space-y-2 relative z-10">
+                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">주민등록번호</label>
+                                     <div className="bg-slate-900 text-sky-400 rounded-[1.8rem] py-6 px-8 font-black tracking-[0.4em] shadow-2xl relative group/rrn overflow-hidden">
+                                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover/rrn:translate-x-full transition-transform duration-1000" />
+                                       <span className="group-hover/rrn:hidden">*******-*******</span>
+                                       <span className="hidden group-hover/rrn:inline">{selectedChild.rrn || '미등록'}</span>
+                                       <button className="absolute right-4 top-1/2 -translate-y-1/2 text-[8px] bg-white/10 px-3 py-1.5 rounded-xl font-bold uppercase backdrop-blur-sm">Decrypt</button>
                                      </div>
-                                   ))
-                                 ) : (
-                                   <div className="py-32 text-center text-slate-200 font-extrabold uppercase tracking-[1em] italic">데이터_없음: 발견된 기록이 없습니다.</div>
-                                 )}
-                              </div>
-                           </div>
-                         )}
+                                  </div>
+
+                                  <div className="space-y-2 relative z-10">
+                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">성별 / 생체 연령</label>
+                                     <div className="bg-white/94 border border-white rounded-[1.8rem] py-6 px-8 font-black flex justify-between items-center shadow-inner">
+                                       <span className="text-slate-900">{selectedChild.gender}</span>
+                                       <div className="flex items-center gap-2">
+                                          <TrendingUp className="w-3 h-3 text-emerald-500" />
+                                          <span className="text-indigo-600 italic">만 {parseRRN(selectedChild.rrn)?.age || '?'}세</span>
+                                       </div>
+                                     </div>
+                                  </div>
+
+                                  <div className="space-y-2 relative z-10">
+                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">카드 식별 시스템 (RFID)</label>
+                                     <div className="flex gap-2">
+                                        <div className="flex-1 bg-white/94 border border-white rounded-[1.8rem] py-6 px-6 font-black text-center shadow-inner text-[10px] text-slate-400">
+                                          {selectedChild.displayId || '관리 미부여'}
+                                        </div>
+                                        <div className="flex-1 bg-sky-600 text-white rounded-[1.8rem] py-6 px-6 font-black tracking-widest text-center shadow-xl shadow-sky-600/20 text-[11px]">
+                                          {selectedChild.cardId}
+                                        </div>
+                                     </div>
+                                  </div>
+
+                                  <div className="space-y-2 col-span-3 relative z-10 pt-2">
+                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">공식 거주지 주소</label>
+                                     <div className="bg-white/94 border border-white rounded-[1.8rem] py-6 px-10 font-black shadow-inner flex items-center gap-4">
+                                       <MapPin className="w-4 h-4 text-rose-400" />
+                                       <span className="text-slate-700">{currentYearData?.address || '정보 없음'}</span>
+                                     </div>
+                                  </div>
+                               </div>
+
+                               {/* 입소 및 관리 정보 */}
+                               <div className="grid grid-cols-4 gap-8">
+                                  <div className="col-span-4 border-b border-slate-100 pb-4">
+                                    <h5 className="text-[12px] font-black text-slate-900 uppercase tracking-[0.4em] m-0 flex items-center gap-3"><History className="w-5 h-5 text-indigo-500"/> 입소 및 이용 히스토리</h5>
+                                  </div>
+                                  
+                                  <div className="space-y-2">
+                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">최종 입소일</label>
+                                     <div className="bg-slate-50 border border-slate-200 rounded-2xl py-4 px-6 font-black text-slate-700">{selectedChild.enrollment}</div>
+                                  </div>
+                                  <div className="space-y-2">
+                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">이전 입소일</label>
+                                     <div className="bg-slate-50 border border-slate-200 rounded-2xl py-4 px-6 font-black text-slate-700">{selectedChild.prevEnrollment || '-'}</div>
+                                  </div>
+                                  <div className="space-y-2">
+                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">이용 유형</label>
+                                     <div className="bg-indigo-50 text-indigo-600 rounded-2xl py-4 px-6 font-black text-center border border-indigo-100">{selectedChild.usageType}</div>
+                                  </div>
+                                  <div className="space-y-2">
+                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">가정 유형</label>
+                                     <div className="bg-emerald-50 text-emerald-600 rounded-2xl py-4 px-6 font-black text-center border border-emerald-100">{selectedChild.familyType}</div>
+                                  </div>
+                               </div>
+
+                               {/* 가족 관계 목록 */}
+                               <div className="space-y-6">
+                                  <div className="border-b border-slate-100 pb-4 flex justify-between items-center">
+                                    <h5 className="text-[12px] font-black text-slate-900 uppercase tracking-[0.4em] m-0 flex items-center gap-3"><Users className="w-5 h-5 text-indigo-500"/> 가족 관계 데이터베이스</h5>
+                                    <span className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg">{selectedChild.family?.length || 0}명 등록됨</span>
+                                  </div>
+                                  
+                                  <div className="grid grid-cols-2 gap-6">
+                                    {selectedChild.family && selectedChild.family.length > 0 ? (
+                                      selectedChild.family.map((f, idx) => (
+                                        <div key={idx} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-xl flex items-center gap-6 group hover:border-indigo-500 transition-all">
+                                          <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 font-black text-lg border border-slate-100">
+                                            {f.relation ? f.relation[0] : '?'}
+                                          </div>
+                                          <div className="flex-1">
+                                            <div className="flex justify-between items-start">
+                                              <span className="text-sm font-black text-slate-900">{f.name} <small className="text-indigo-400 ml-1">({f.relation})</small></span>
+                                              {f.cohab && <span className="text-[8px] font-black bg-emerald-500 text-white px-2 py-0.5 rounded-full uppercase">동거</span>}
+                                            </div>
+                                            <p className="text-[11px] font-bold text-slate-400 mt-1">{f.contact}</p>
+                                            <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest">{f.job}</p>
+                                          </div>
+                                        </div>
+                                      ))
+                                    ) : (
+                                      <div className="col-span-2 py-12 text-center text-slate-200 font-black uppercase tracking-widest italic border-2 border-dashed border-slate-100 rounded-[3rem]">가족 정보가 등록되지 않았습니다.</div>
+                                    )}
+                                  </div>
+                               </div>
+                               
+                               {/* 비고란 */}
+                               <div className="space-y-4">
+                                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">종합 비고 및 특이사항</label>
+                                  <div className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-inner font-bold text-slate-600 leading-relaxed min-h-[120px]">
+                                    {selectedChild.remarks || '특이사항이 없습니다.'}
+                                  </div>
+                               </div>
+                            </div>
+                          )}
+
+                          {detailTab === 'obs' && (
+                            <div className="space-y-12 animate-in fade-in slide-in-from-right-12">
+                               <div className="flex justify-between items-center border-b border-slate-100 pb-8">
+                                  <div className="flex items-center gap-4">
+                                     <div className="w-12 h-12 bg-indigo-900 rounded-2xl flex items-center justify-center text-indigo-400 shadow-xl"><BookOpen className="w-6 h-6" /></div>
+                                     <div>
+                                        <h4 className="text-xl font-black text-slate-900 m-0 uppercase tracking-tight italic">성장 케이스 추적 로그</h4>
+                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest m-0 mt-1">{selectedYear}년도 기간에 총 {currentYearLogs.observation?.length}건의 기록이 발견되었습니다.</p>
+                                     </div>
+                                  </div>
+                                  <button className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl shadow-indigo-200">새 기록 작성</button>
+                               </div>
+                               <div className="space-y-6">
+                                  {currentYearLogs.observation?.length > 0 ? (
+                                    currentYearLogs.observation.map((log, idx) => (
+                                      <div key={idx} className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-xl flex gap-10 group hover:border-indigo-500 transition-all border-l-8 border-l-indigo-600">
+                                         <div className="w-28 shrink-0 text-center flex flex-col items-center justify-center border-r border-slate-50 pr-10">
+                                            <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-2">기록 일자</span>
+                                            <span className="text-sm font-black text-slate-900">{log.date}</span>
+                                         </div>
+                                         <div className="flex-1 text-lg font-bold text-slate-700 leading-relaxed italic-none">{log.content}</div>
+                                      </div>
+                                    ))
+                                  ) : (
+                                    <div className="py-32 text-center text-slate-200 font-extrabold uppercase tracking-[1em] italic">데이터_없음: 발견된 기록이 없습니다.</div>
+                                  )}
+                               </div>
+                            </div>
+                          )}
 
                           {detailTab === 'consult' && (
                             <div className="grid grid-cols-2 gap-12 animate-in fade-in slide-in-from-right-12">
@@ -920,121 +1333,234 @@ const ChildrenPage = () => {
                                  </div>
                                ))}
                             </div>
-                         )}
-                      </div>
-                   </div>
-                   
-                   {/* 보안 데이터 푸터 */}
-                   <div className="bg-[#0f172a] p-12 rounded-[4rem] text-white shadow-3xl relative overflow-hidden flex items-center justify-between border-b-8 border-b-indigo-600">
-                      <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-blue-600/10 rounded-full blur-[100px] -translate-x-48 -translate-y-48" />
-                      <div className="flex items-center gap-10 relative z-10">
-                         <div className="w-20 h-20 bg-white/10 rounded-[2rem] flex items-center justify-center text-indigo-400 border border-white/10 shadow-3xl scale-110"><History className="w-10 h-10" /></div>
-                         <div className="space-y-2">
-                            <h4 className="text-2xl font-black tracking-tighter uppercase m-0 italic">보안 암호화 장부 아카이브</h4>
-                            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.5em] m-0">실시간 동기화 및 기관 데이터 스냅샷 보호 중</p>
-                         </div>
-                      </div>
-                      <div className="flex items-center gap-10 relative z-10">
-                         <div className="text-right">
-                            <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">규정 준수 상태</div>
-                            <div className="flex items-center gap-3"><span className="text-3xl font-black text-indigo-400 uppercase tracking-tighter italic">인증 완료</span><ShieldCheck className="w-8 h-8 text-emerald-500" /></div>
-                         </div>
-                         <div className="w-px h-16 bg-white/10" />
-                         <div className="text-right">
-                            <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">최초 보관 시점</div>
-                            <div className="text-3xl font-black text-white italic">{selectedChild.enrollment.split('-')[0]}년 <span className="text-indigo-600">.</span></div>
-                         </div>
-                      </div>
-                   </div>
-                </div>
-             </div>
-          </div>
+                          )}
+                       </div>
+                    </div>
+                    
+                    {/* 보안 데이터 푸터 */}
+                    <div className="bg-[#0f172a] p-12 rounded-[4rem] text-white shadow-3xl relative overflow-hidden flex items-center justify-between border-b-8 border-b-indigo-600">
+                       <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-blue-600/10 rounded-full blur-[100px] -translate-x-48 -translate-y-48" />
+                       <div className="flex items-center gap-10 relative z-10">
+                          <div className="w-20 h-20 bg-white/10 rounded-[2rem] flex items-center justify-center text-indigo-400 border border-white/10 shadow-3xl scale-110"><History className="w-10 h-10" /></div>
+                          <div className="space-y-2">
+                             <h4 className="text-2xl font-black tracking-tighter uppercase m-0 italic">보안 암호화 장부 아카이브</h4>
+                             <p className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.5em] m-0">실시간 동기화 및 기관 데이터 스냅샷 보호 중</p>
+                          </div>
+                       </div>
+                       <div className="flex items-center gap-10 relative z-10">
+                          <div className="text-right">
+                             <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">규정 준수 상태</div>
+                             <div className="flex items-center gap-3"><span className="text-3xl font-black text-indigo-400 uppercase tracking-tighter italic">인증 완료</span><ShieldCheck className="w-8 h-8 text-emerald-500" /></div>
+                          </div>
+                          <div className="w-px h-16 bg-white/10" />
+                          <div className="text-right">
+                             <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">최초 보관 시점</div>
+                             <div className="text-3xl font-black text-white italic">{selectedChild.enrollment ? selectedChild.enrollment.split('-')[0] : '2026'}년 <span className="text-indigo-600">.</span></div>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+           </div>
         )}
       </div>
 
-      {/* 신규 아동 등록 모달 */}
+      {/* 신규 아동 등록 모달 - 프리미엄 리디자인 */}
       <AnimatePresence>
         {isAddModalOpen && (
-          <div className="fixed inset-0 z-[2000] flex items-center justify-center p-8">
+          <div className="fixed inset-0 z-[2000] flex items-center justify-center p-8 overflow-y-auto">
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setIsAddModalOpen(false)}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+              className="fixed inset-0 bg-slate-900/80 backdrop-blur-md"
             />
             <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white w-full max-w-2xl rounded-[3rem] shadow-3xl relative z-10 overflow-hidden"
+              exit={{ opacity: 0, scale: 0.95, y: 30 }}
+              className="bg-white w-full max-w-5xl rounded-[4rem] shadow-4xl relative z-10 overflow-hidden my-auto"
             >
-              <div className="p-10 bg-slate-900 text-white flex justify-between items-center">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-emerald-500 rounded-2xl"><Plus className="w-6 h-6 text-white" /></div>
+              {/* 모달 헤더 */}
+              <div className="p-12 bg-slate-900 text-white flex justify-between items-center relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-[80px] -translate-y-32 translate-x-32" />
+                <div className="flex items-center gap-8 relative z-10">
+                  <div className="p-5 bg-emerald-500 rounded-[2rem] shadow-2xl shadow-emerald-500/30 rotate-3">
+                    <Plus className="w-10 h-10 text-white" />
+                  </div>
                   <div>
-                    <h3 className="text-2xl font-black italic uppercase tracking-tighter m-0">신규 아동 시스템 등록</h3>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest m-0 mt-1">RFID 카드 연동 및 기본 정보 입력</p>
+                    <h3 className="text-4xl font-black italic uppercase tracking-tighter m-0">스마트 아동 카드 발급</h3>
+                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.4em] m-0 mt-2">인공지능 데이터 자동 매핑 및 RFID 보안 연동</p>
                   </div>
                 </div>
-                <button onClick={() => setIsAddModalOpen(false)} className="p-2 hover:bg-white/10 rounded-xl transition-all"><X className="w-6 h-6" /></button>
+                <button onClick={() => setIsAddModalOpen(false)} className="p-4 hover:bg-white/10 rounded-[1.5rem] transition-all relative z-10">
+                  <X className="w-8 h-8" />
+                </button>
               </div>
 
-              <div className="p-12 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">성명 (필수)</label>
-                    <input type="text" value={newChild.name} onChange={e => setNewChild({...newChild, name: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all" placeholder="이름 입력" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">RFID 카드 ID (필수)</label>
-                    <input type="text" value={newChild.cardId} onChange={e => setNewChild({...newChild, cardId: e.target.value.toUpperCase()})} className="w-full bg-slate-900 text-emerald-400 border-none rounded-2xl py-4 px-6 font-black tracking-widest outline-none focus:ring-4 focus:ring-emerald-500/20 transition-all" placeholder="예: E7FDCD66" />
-                  </div>
+              {/* 모달 본문 */}
+              <div className="p-16 grid grid-cols-12 gap-16 max-h-[70vh] overflow-y-auto custom-scrollbar bg-[#f8fafc]">
+                
+                {/* 섹션 1: 핵심 식별 정보 (좌측) */}
+                <div className="col-span-12 lg:col-span-5 space-y-12">
+                   <div className="space-y-8 bg-white p-10 rounded-[3rem] shadow-xl border border-slate-100">
+                      <h4 className="text-[12px] font-black text-indigo-600 uppercase tracking-widest flex items-center gap-2 mb-6">
+                        <ShieldCheck className="w-4 h-4" /> 01. 핵심 식별 정보
+                      </h4>
+                      
+                      <div className="space-y-4">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">주민등록번호 (자동인식)</label>
+                        <input 
+                          type="text" 
+                          value={newChild.rrn} 
+                          onChange={e => setNewChild({...newChild, rrn: e.target.value})} 
+                          className="w-full bg-slate-900 text-indigo-400 border-none rounded-2xl py-6 px-8 font-black tracking-[0.5em] shadow-2xl focus:ring-4 focus:ring-indigo-500/20 outline-none" 
+                          placeholder="000000-0000000" 
+                        />
+                        <p className="text-[9px] font-bold text-slate-400 ml-2 italic">입력 시 성별, 생년월일, 연령이 자동 계산됩니다.</p>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">성명</label>
+                           <input type="text" value={newChild.name} onChange={e => setNewChild({...newChild, name: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-5 px-6 font-black outline-none focus:bg-white transition-all shadow-inner" placeholder="이름" />
+                        </div>
+                        <div className="space-y-2">
+                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">RFID 카드 ID</label>
+                           <input type="text" value={newChild.cardId} onChange={e => setNewChild({...newChild, cardId: e.target.value.toUpperCase()})} className="w-full bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-2xl py-5 px-6 font-black tracking-widest outline-none shadow-inner" placeholder="E7FDCD66" />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">성별</label>
+                           <input type="text" readOnly value={newChild.gender} className="w-full bg-slate-100 text-slate-500 border-none rounded-2xl py-5 px-6 font-black text-center" />
+                        </div>
+                        <div className="space-y-2">
+                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">연령 (만)</label>
+                           <input type="text" readOnly value={parseRRN(newChild.rrn)?.age || '-'} className="w-full bg-slate-100 text-slate-500 border-none rounded-2xl py-5 px-6 font-black text-center" />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">휴대폰 번호</label>
+                        <input type="text" value={newChild.phone} onChange={e => setNewChild({...newChild, phone: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-5 px-6 font-black shadow-inner" placeholder="010-0000-0000" />
+                      </div>
+                   </div>
+
+                   <div className="space-y-8 bg-white p-10 rounded-[3rem] shadow-xl border border-slate-100">
+                      <h4 className="text-[12px] font-black text-indigo-600 uppercase tracking-widest flex items-center gap-2 mb-6">
+                        <GraduationCap className="w-4 h-4" /> 02. 학업 및 소속 정보
+                      </h4>
+                      <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2 col-span-2">
+                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">학교명</label>
+                          <input type="text" value={newChild.school} onChange={e => setNewChild({...newChild, school: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-5 px-6 font-black shadow-inner" placeholder="학교 이름 입력" />
+                        </div>
+                        <div className="space-y-2">
+                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">학년</label>
+                           <select value={newChild.grade} onChange={e => setNewChild({...newChild, grade: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-5 px-6 font-black outline-none shadow-inner">
+                              {[1,2,3,4,5,6].map(g => <option key={g} value={g}>{g}학년</option>)}
+                           </select>
+                        </div>
+                        <div className="space-y-2">
+                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">이용 유형</label>
+                           <select value={newChild.usageType} onChange={e => setNewChild({...newChild, usageType: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-5 px-6 font-black outline-none shadow-inner">
+                              {['일반', '다문화', '장애', '기타'].map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                           </select>
+                        </div>
+                      </div>
+                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">성별</label>
-                    <div className="flex gap-2">
-                      {['남', '여'].map(g => (
-                        <button key={g} onClick={() => setNewChild({...newChild, gender: g})} className={`flex-1 py-4 rounded-2xl font-black transition-all ${newChild.gender === g ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-slate-400'}`}>{g}</button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">생년월일</label>
-                    <input type="date" value={newChild.birth} onChange={e => setNewChild({...newChild, birth: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all" />
-                  </div>
-                </div>
+                {/* 섹션 2: 거주 및 입소 정보 (우측) */}
+                <div className="col-span-12 lg:col-span-7 space-y-12">
+                   <div className="bg-white p-10 rounded-[3rem] shadow-xl border border-slate-100">
+                      <h4 className="text-[12px] font-black text-indigo-600 uppercase tracking-widest flex items-center gap-2 mb-8">
+                        <MapPin className="w-4 h-4" /> 03. 거주 및 행정 정보
+                      </h4>
+                      <div className="grid grid-cols-2 gap-8">
+                        <div className="space-y-2 col-span-2">
+                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">실거주 주소</label>
+                          <input type="text" value={newChild.address} onChange={e => setNewChild({...newChild, address: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-5 px-8 font-black shadow-inner" placeholder="주소 정보를 상세하게 입력하세요." />
+                        </div>
+                        <div className="space-y-2">
+                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">최초 입소일</label>
+                           <input type="date" value={newChild.enrollment} onChange={e => setNewChild({...newChild, enrollment: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-5 px-6 font-black shadow-inner" />
+                        </div>
+                        <div className="space-y-2">
+                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">이전(전입) 입소일</label>
+                           <input type="date" value={newChild.prevEnrollment} onChange={e => setNewChild({...newChild, prevEnrollment: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-5 px-6 font-black shadow-inner" />
+                        </div>
+                      </div>
+                   </div>
 
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">학교 정보 / 학년</label>
-                  <div className="flex gap-4">
-                    <input type="text" value={newChild.school} onChange={e => setNewChild({...newChild, school: e.target.value})} className="flex-[2] bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none placeholder:font-bold" placeholder="학교명" />
-                    <select value={newChild.grade} onChange={e => setNewChild({...newChild, grade: e.target.value})} className="flex-1 bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none">
-                      {[1,2,3,4,5,6].map(g => <option key={g} value={g}>{g}학년</option>)}
-                    </select>
-                  </div>
-                </div>
+                   <div className="bg-white p-10 rounded-[3rem] shadow-xl border border-slate-100">
+                      <div className="flex justify-between items-center mb-8">
+                        <h4 className="text-[12px] font-black text-indigo-600 uppercase tracking-widest flex items-center gap-2">
+                          <Users className="w-4 h-4" /> 04. 가족 관계 및 구성원
+                        </h4>
+                        <button 
+                          onClick={() => setNewChild({ ...newChild, family: [...newChild.family, { name: '', relation: '', contact: '', job: '', cohab: true }] })}
+                          className="px-4 py-2 bg-slate-900 text-white rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-indigo-600 transition-all"
+                        >
+                          구성원 추가 +
+                        </button>
+                      </div>
 
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">보호자 성함</label>
-                    <input type="text" value={newChild.guardian} onChange={e => setNewChild({...newChild, guardian: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none" placeholder="보호자 성명" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">연락처</label>
-                    <input type="text" value={newChild.contact} onChange={e => setNewChild({...newChild, contact: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none" placeholder="010-0000-0000" />
-                  </div>
-                </div>
+                      <div className="space-y-4">
+                        {newChild.family.map((f, idx) => (
+                           <div key={idx} className="p-6 bg-slate-50 rounded-2xl border border-slate-100 grid grid-cols-4 gap-4 relative animate-in fade-in slide-in-from-top-4">
+                              <input type="text" placeholder="이름" value={f.name} onChange={e => {
+                                 const updated = [...newChild.family]; updated[idx].name = e.target.value; setNewChild({...newChild, family: updated});
+                              }} className="bg-white border-none rounded-xl py-3 px-4 font-bold text-xs shadow-sm" />
+                              <input type="text" placeholder="관계(부/모/형..)" value={f.relation} onChange={e => {
+                                 const updated = [...newChild.family]; updated[idx].relation = e.target.value; setNewChild({...newChild, family: updated});
+                              }} className="bg-white border-none rounded-xl py-3 px-4 font-bold text-xs shadow-sm" />
+                              <input type="text" placeholder="연락처" value={f.contact} onChange={e => {
+                                 const updated = [...newChild.family]; updated[idx].contact = e.target.value; setNewChild({...newChild, family: updated});
+                              }} className="bg-white border-none rounded-xl py-3 px-4 font-bold text-xs shadow-sm" />
+                              <div className="flex items-center gap-2">
+                                <button 
+                                  onClick={() => {
+                                    const updated = [...newChild.family]; updated[idx].cohab = !updated[idx].cohab; setNewChild({...newChild, family: updated});
+                                  }}
+                                  className={`flex-1 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${f.cohab ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-400'}`}
+                                >
+                                  {f.cohab ? '동거 중' : '비동거'}
+                                </button>
+                                <button onClick={() => {
+                                  const updated = newChild.family.filter((_, i) => i !== idx); setNewChild({...newChild, family: updated});
+                                }} className="p-3 bg-rose-50 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all"><X className="w-4 h-4" /></button>
+                              </div>
+                           </div>
+                        ))}
+                        {newChild.family.length === 0 && (
+                          <div className="py-8 text-center text-slate-300 font-bold text-xs italic">가족 구성원을 추가해 주세요.</div>
+                        )}
+                      </div>
+                   </div>
 
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">실거주 주소</label>
-                  <input type="text" value={newChild.address} onChange={e => setNewChild({...newChild, address: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none" placeholder="상세 주소 입력" />
+                   <div className="bg-white p-10 rounded-[3rem] shadow-xl border border-slate-100">
+                      <h4 className="text-[12px] font-black text-indigo-600 uppercase tracking-widest flex items-center gap-2 mb-6">
+                        <MessageSquare className="w-4 h-4" /> 05. 특이사항 및 비고
+                      </h4>
+                      <textarea 
+                        value={newChild.remarks} 
+                        onChange={e => setNewChild({...newChild, remarks: e.target.value})}
+                        className="w-full bg-slate-50 border border-slate-100 rounded-[2rem] p-8 font-bold text-slate-600 outline-none focus:bg-white transition-all shadow-inner h-40 resize-none"
+                        placeholder="아동의 건강상태, 주의사항, 특징 등을 자유롭게 기록하세요."
+                      />
+                   </div>
                 </div>
               </div>
 
-              <div className="p-10 bg-slate-50 border-t border-slate-100 flex gap-4">
-                <button onClick={() => setIsAddModalOpen(false)} className="flex-1 py-5 bg-white border border-slate-200 text-slate-500 rounded-3xl font-black text-[12px] uppercase tracking-widest shadow-sm hover:bg-slate-100 transition-all">취소</button>
-                <button onClick={handleAddChild} className="flex-[2] py-5 bg-emerald-600 text-white rounded-3xl font-black text-[12px] uppercase tracking-widest shadow-2xl shadow-emerald-600/20 hover:bg-emerald-700 transition-all">아동 정보 저장 및 카드 연동</button>
+              {/* 모달 푸터 */}
+              <div className="p-12 bg-white border-t border-slate-100 flex gap-6">
+                <button onClick={() => setIsAddModalOpen(false)} className="flex-1 py-6 bg-slate-100 text-slate-500 rounded-[2.5rem] font-black text-[14px] uppercase tracking-widest hover:bg-slate-200 transition-all">취소 및 폐기</button>
+                <button onClick={handleAddChild} className="flex-[2] py-6 bg-slate-900 text-white rounded-[2.5rem] font-black text-[14px] uppercase tracking-widest shadow-3xl shadow-indigo-900/40 hover:bg-indigo-600 transition-all flex items-center justify-center gap-4">
+                   <ShieldCheck className="w-6 h-6 text-indigo-400" />
+                   아동 스마트 카드 발급 및 시스템 저장
+                </button>
               </div>
             </motion.div>
           </div>

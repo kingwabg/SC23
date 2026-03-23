@@ -495,9 +495,6 @@ const StaffPage = () => {
                     <h3 className="text-3xl font-black text-slate-900 tracking-tighter">{selectedStaff.name}</h3>
                     <div className="text-indigo-600 font-black text-xs uppercase mt-2 tracking-[0.3em] bg-indigo-50 px-6 py-2 rounded-full italic shadow-sm">{selectedStaff.role}</div>
                   </div>
-                  <button onClick={() => simulateLogin(selectedStaff)} className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-emerald-500/20 transition-all">
-                    <UserCheck className="w-4 h-4" /> 이 종사자로 로그인 테스트
-                  </button>
                 </div>
               </div>
 

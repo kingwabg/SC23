@@ -33,8 +33,8 @@ const StatsPage = () => {
               <ArrowLeft className="w-6 h-6 text-slate-400 group-hover:text-indigo-600" />
             </Link>
             <div>
-               <h2 className="text-4xl font-black text-slate-900 tracking-tighter uppercase italic m-0">Compliance Intelligence <span className="text-[10px] not-italic bg-emerald-500 text-white px-4 py-1.5 rounded-full uppercase tracking-[0.2em] font-black shadow-lg">Live Analysis</span></h2>
-               <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] mt-2 m-0 ml-1">Integrated Record Compliance & Statistics Engine</p>
+               <h2 className="text-4xl font-black text-slate-900 tracking-tighter uppercase italic m-0">운영일지 및 현황 <span className="text-[10px] not-italic bg-emerald-500 text-white px-4 py-1.5 rounded-full uppercase tracking-[0.2em] font-black shadow-lg">Daily Log</span></h2>
+               <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] mt-2 m-0 ml-1">오늘의 아동·종사자 현황 및 프로그램 이행 기록</p>
             </div>
           </div>
           <div className="flex bg-slate-100 p-1.5 rounded-2xl gap-2 shadow-inner border border-slate-100 inline-block">
@@ -49,13 +49,47 @@ const StatsPage = () => {
         <div className="flex gap-4">
           <button className="flex items-center gap-3 px-8 py-5 bg-white border border-slate-200 rounded-[2rem] font-black shadow-lg hover:shadow-2xl transition-all uppercase tracking-widest text-xs">
             <CalendarIcon className="w-5 h-5 text-indigo-500" />
-            2026년 3월 보고서
+            2026년 3월 23일 (월)
           </button>
           <button className="flex items-center gap-3 px-10 py-5 bg-slate-900 text-white rounded-[2rem] font-black shadow-2xl hover:bg-black transition-all uppercase tracking-[0.2em] text-xs">
             <Download className="w-5 h-5 text-emerald-400" />
-            전체 아카이브 엑셀 추출
+            운역일지 HWP/Excel 출력
           </button>
         </div>
+      </div>
+
+      {/* Today's Live Status (현황) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+         <div className="p-8 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[2.5rem] text-white shadow-2xl space-y-4">
+            <div className="flex justify-between items-center">
+               <Users className="w-8 h-8 opacity-50" />
+               <span className="text-[10px] font-black uppercase tracking-widest text-blue-100">Children Status</span>
+            </div>
+            <div>
+               <p className="text-3xl font-black">아동 등원: 8 / 10명</p>
+               <p className="text-xs font-bold text-blue-100/70 mt-1">상태: 정상 (결석 2명 사유 확인됨)</p>
+            </div>
+         </div>
+         <div className="p-8 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-[2.5rem] text-white shadow-2xl space-y-4">
+            <div className="flex justify-between items-center">
+               <Activity className="w-8 h-8 opacity-50" />
+               <span className="text-[10px] font-black uppercase tracking-widest text-emerald-100">Staff Status</span>
+            </div>
+            <div>
+               <p className="text-3xl font-black">종사자 출근: 3 / 3명</p>
+               <p className="text-xs font-bold text-emerald-100/70 mt-1">상태: 100% 출근 완료</p>
+            </div>
+         </div>
+         <div className="p-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-[2.5rem] text-white shadow-2xl space-y-4">
+            <div className="flex justify-between items-center">
+               <ClipboardList className="w-8 h-8 opacity-50" />
+               <span className="text-[10px] font-black uppercase tracking-widest text-amber-100">Program Status</span>
+            </div>
+            <div>
+               <p className="text-3xl font-black">프로그램: 2 / 3건</p>
+               <p className="text-xs font-bold text-amber-100/70 mt-1">오전 1건 완료, 오후 1건 진행 예정</p>
+            </div>
+         </div>
       </div>
 
       {/* Hero Analytics Cards */}

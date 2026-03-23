@@ -22,53 +22,25 @@ const Sidebar = ({ isPinned, setIsPinned }) => {
   const location = useLocation();
   const [isHovered, setIsHovered] = React.useState(false);
   const isExpanded = isPinned || isHovered;
-  
-  // Role Simulation (In real app, this comes from Auth Context)
-  const [userRole, setUserRole] = React.useState(localStorage.getItem('userRole') || 'ADMIN');
-  const [currentUser, setCurrentUser] = React.useState(() => {
-    const saved = localStorage.getItem('currentUser');
-    return saved ? JSON.parse(saved) : null;
-  });
+  const userRole = 'ADMIN';
+  const currentUser = null;
 
-  // Dynamic Permissions (From Admin Settings or Individual)
-  const permissions = React.useMemo(() => {
-    if (currentUser && userRole === 'NON_STAFF') {
-      return { 'NON_STAFF': currentUser.permissions };
+  const permissions = {
+    'ADMIN': {
+      'dashboard': true,
+      'children': true,
+      'stats': true,
+      'staff': true,
+      'programs': true
     }
-    const saved = localStorage.getItem('appPermissions');
-    return saved ? JSON.parse(saved) : {
-      'NON_STAFF': {
-        'dashboard': true,
-        'children': true,
-        'calendar': true,
-        'staff': false,
-        'programs': false,
-        'meetings': false,
-        'stats': false,
-        'facility': false,
-        'public': false
-      }
-    };
-  }, [userRole, currentUser]);
-
-  const toggleRole = () => {
-    const newRole = userRole === 'ADMIN' ? 'NON_STAFF' : 'ADMIN';
-    setUserRole(newRole);
-    localStorage.setItem('userRole', newRole);
-    if (newRole === 'ADMIN') localStorage.removeItem('currentUser'); // Clear individual if going back to Admin
-    window.location.reload(); 
   };
   
   const menuItems = [
     { key: 'dashboard', name: '대시보드', icon: LayoutDashboard, path: '/dashboard' },
     { key: 'children', name: '아동 관리/출결', icon: Users, path: '/children' },
-    { key: 'staff', name: '종사자 관리', icon: UserSquare2, path: '/staff' },
-    { key: 'calendar', name: '일정/캘린더', icon: CalendarDays, path: '/calendar' },
+    { key: 'staff', name: '종사자 관리/출결', icon: UserSquare2, path: '/staff' },
     { key: 'programs', name: '프로그램 관리', icon: ClipboardList, path: '/programs' },
-    { key: 'meetings', name: '운영회의록 관리', icon: Building2, path: '/meetings' },
-    { key: 'stats', name: '행정 보고/통계', icon: BarChart3, path: '/stats' },
-    { key: 'facility', name: '시설/자산 관리', icon: Globe, path: '/facility' },
-    { key: 'public', name: '홍보 사이트 관리', icon: Globe, path: '/public-admin' },
+    { key: 'stats', name: '운영일지/통계', icon: BarChart3, path: '/stats' },
   ].filter(item => {
     if (userRole === 'ADMIN') return true;
     return permissions.NON_STAFF[item.key] !== false; // Default true unless explicitly false in role, but individual might control sub-tabs
@@ -133,38 +105,19 @@ const Sidebar = ({ isPinned, setIsPinned }) => {
 
       <div className={`pt-4 border-t border-slate-100 flex flex-col gap-4 ${isExpanded ? '' : 'items-center'}`}>
         {/* User Info */}
-        <div className={`flex items-center gap-3 transition-all ${isExpanded ? 'px-2' : 'justify-center'}`} title={!isExpanded ? (userRole === 'ADMIN' ? '시스템 관리자' : currentUser?.name || '종사자') : undefined}>
-           <div className={`w-9 h-9 flex-shrink-0 rounded-full border border-slate-200 flex items-center justify-center overflow-hidden ${userRole === 'ADMIN' ? 'bg-emerald-50 text-emerald-600' : 'bg-indigo-50 text-indigo-600'}`}>
-             {currentUser && userRole === 'NON_STAFF' ? (
-                <span className="text-sm font-black">{currentUser.name[0]}</span>
-             ) : (
-                <UserCircle className="w-5 h-5" />
-             )}
+        <div className={`flex items-center gap-3 transition-all ${isExpanded ? 'px-2' : 'justify-center'}`} title={!isExpanded ? '시스템 관리자' : undefined}>
+           <div className={`w-9 h-9 flex-shrink-0 rounded-full border border-slate-200 flex items-center justify-center overflow-hidden bg-emerald-50 text-emerald-600`}>
+              <UserCircle className="w-5 h-5" />
            </div>
            
            <div className={`flex flex-col whitespace-nowrap overflow-hidden transition-all duration-300 ${isExpanded ? 'opacity-100 w-full' : 'opacity-0 w-0'}`}>
               <span className="text-sm font-black text-slate-800 tracking-tight">
-                {userRole === 'ADMIN' ? '시스템 관리자' : currentUser?.name || '종사자 계정'}
+                시스템 관리자
               </span>
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
-                {userRole === 'ADMIN' ? 'ADMIN' : currentUser?.role || 'STAFF'}
+                ADMIN
               </span>
            </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="w-full">
-          <Link 
-            to="/"
-            className={`w-full flex items-center p-2.5 rounded-xl transition-all text-rose-500 hover:bg-rose-50 ${isExpanded ? 'justify-start gap-3 px-3' : 'justify-center px-0'}`}
-            title={!isExpanded ? "로그아웃" : undefined}
-          >
-            <LogOut className="w-5 h-5 flex-shrink-0" />
-            
-            <span className={`text-sm font-bold whitespace-nowrap transition-all duration-300 ${isExpanded ? 'opacity-100 w-full' : 'opacity-0 w-0 overflow-hidden'}`}>
-              로그아웃
-            </span>
-          </Link>
         </div>
       </div>
     </div>
