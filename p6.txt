@@ -1,0 +1,290 @@
+        {/* 상세 뷰 레이아웃 (아동 선택 시 표시) */}
+        {selectedChildId && (
+          <div className="flex-1 flex w-full animate-in fade-in duration-500 bg-slate-100">
+             <motion.div 
+               initial={{ width: 0 }}
+               animate={{ width: isSidebarCollapsed ? '0px' : '340px' }}
+               className="bg-white border-r border-slate-200 flex flex-col shrink-0 h-full overflow-hidden shadow-xl relative z-40"
+             >
+                <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-900 text-white">
+                   <div>
+                     <h4 className="text-sm font-black tracking-tight m-0">아동 목록</h4>
+                     <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400">선택해서 상세 편집</p>
+                   </div>
+                   <button onClick={() => setSelectedChildId(null)} className="p-2 hover:bg-white/10 rounded-lg transition-all"><X className="w-4 h-4" /></button>
+                </div>
+                <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-3">
+                   {filteredChildren.map(child => (
+                     <button
+                       key={child.id}
+                       onClick={() => setSelectedChildId(child.id)}
+                       className={`w-full p-6 rounded-3xl border transition-all text-left flex items-center gap-4 group ${selectedChildId === child.id ? 'bg-indigo-600 border-indigo-600 shadow-xl shadow-indigo-600/20 scale-[1.02]' : 'bg-white border-slate-100 hover:border-indigo-200'}`}
+                     >
+                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-sm border ${selectedChildId === child.id ? 'bg-white/20 border-white/30 text-white' : 'bg-slate-50 border-slate-100 text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600'}`}>
+                           {child.name[0]}
+                        </div>
+                        <div className="flex-1">
+                           <div className={`text-sm font-black ${selectedChildId === child.id ? 'text-white' : 'text-slate-900'}`}>{child.name}</div>
+                           <div className={`text-[10px] font-bold mt-0.5 ${selectedChildId === child.id ? 'text-indigo-200' : 'text-slate-400'}`}>{child.yearlyData?.[selectedYear]?.school || '미지정'}</div>
+                        </div>
+                        <ChevronRight className={`w-4 h-4 transition-transform ${selectedChildId === child.id ? 'text-white translate-x-1' : 'text-slate-200'}`} />
+                     </button>
+                   ))}
+                </div>
+             </motion.div>
+
+             <div className="flex-1 flex flex-col h-full overflow-hidden relative">
+                <div className="bg-white flex items-center justify-between px-12 py-8 border-b border-slate-200 shrink-0">
+                   <div className="flex items-center gap-8">
+                      <div className="flex items-center gap-6">
+                         <div className="w-20 h-20 rounded-[2.5rem] bg-indigo-900 flex items-center justify-center text-indigo-400 shadow-2xl overflow-hidden relative border-4 border-white">
+                            {selectedChild.photo ? <img src={selectedChild.photo} className="w-full h-full object-cover" /> : <User className="w-8 h-8" />}
+                         </div>
+                         <div>
+                            <div className="flex items-center gap-3 mb-1">
+                               <h3 className="text-3xl font-black text-slate-900 tracking-tighter uppercase m-0 italic">{selectedChild.name} <span className="text-indigo-600">.</span></h3>
+                               <span className="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-[9px] font-black uppercase tracking-widest border border-indigo-100">{selectedChild.gender} / 만 {calculateAge(selectedChild.birth)}세</span>
+                            </div>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.4em] m-0">Child Profile & Records</p>
+                         </div>
+                      </div>
+                      <div className="h-10 w-px bg-slate-100 mx-4" />
+                      <div className="flex flex-col space-y-3">
+                         <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1 flex items-center gap-2">
+                            <History className="w-3 h-3" /> 개별 데이터 보유 타임라인
+                         </span>
+                         <div className="flex flex-wrap gap-2 text-center">
+                            {Object.keys(selectedChild.yearlyData).sort().map(year => (
+                               <button 
+                                 key={year}
+                                 onClick={() => setSelectedYear(parseInt(year))}
+                                 className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all border ${selectedYear === parseInt(year) ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg scale-105' : 'bg-white text-slate-400 border-slate-100 hover:border-indigo-200'}`}
+                               >
+                                  {year.slice(2)}년
+                               </button>
+                            ))}
+                         </div>
+                      </div>
+
+                      <div className="flex items-center gap-6 text-[13px] font-black text-slate-400 uppercase tracking-widest pt-2">
+                         <span className="flex items-center gap-3 bg-white px-5 py-2.5 rounded-2xl border border-slate-100 shadow-sm"><GraduationCap className="w-5 h-5 text-indigo-500" /> {currentYearData?.school || '미지정'}</span>
+                         <span className="flex items-center gap-3 bg-indigo-50 text-indigo-600 px-5 py-2.5 rounded-2xl border border-indigo-100"><MapPin className="w-5 h-5" /> {currentYearData?.address?.split(' ')[1] || '정보 없음'} 지역</span>
+                      </div>
+                   </div>
+                   <div className="flex gap-4">
+                      <button onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} className="p-5 bg-white border border-slate-200 rounded-[2rem] shadow-sm hover:shadow-xl transition-all text-slate-400">
+                         {isSidebarCollapsed ? <ChevronRight className="w-6 h-6" /> : <ChevronLeft className="w-6 h-6" />}
+                      </button>
+                      <button className="px-12 py-6 bg-slate-900 text-white rounded-[2.5rem] font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl hover:bg-black transition-all">레포트 내보내기</button>
+                   </div>
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-12 bg-white relative">
+                   <div className="max-w-6xl mx-auto space-y-12">
+                      <div className="flex gap-1 relative z-10 border-b border-slate-100">
+                         {[
+                           { id: 'info', label: '기본 정보', icon: User },
+                           { id: 'obs', label: '관찰 기록', icon: BookOpen },
+                           { id: 'consult', label: '상담 일지', icon: MessageSquare }
+                         ].map(tab => (
+                           <button 
+                             key={tab.id} 
+                             onClick={() => setDetailTab(tab.id)} 
+                             className={`flex items-center gap-3 px-10 py-6 text-[12px] font-black uppercase tracking-widest transition-all relative ${detailTab === tab.id ? 'text-indigo-600' : 'text-slate-400 hover:text-slate-600'}`}
+                           >
+                             <tab.icon className={`w-5 h-5 ${detailTab === tab.id ? 'text-indigo-600' : 'text-slate-300'}`} />
+                             {tab.label}
+                             {detailTab === tab.id && <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-1 bg-indigo-600 rounded-full" />}
+                           </button>
+                         ))}
+                      </div>
+
+                      <div className="mt-4">
+                         {detailTab === 'info' && (
+                           <div className="grid grid-cols-2 gap-12 animate-in fade-in slide-in-from-right-12">
+                              {/* 가족 관계 목록 */}
+                              <div className="space-y-6">
+                                 <div className="border-b border-slate-100 pb-4 flex justify-between items-center">
+                                   <h5 className="text-[12px] font-black text-slate-900 uppercase tracking-[0.4em] m-0 flex items-center gap-3"><Users className="w-5 h-5 text-indigo-500"/> 가족 관계 데이터베이스</h5>
+                                   <span className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg">{selectedChild.family?.length || 0}명 등록됨</span>
+                                 </div>
+                                 
+                                 <div className="grid grid-cols-2 gap-6">
+                                   {selectedChild.family && selectedChild.family.length > 0 ? (
+                                     selectedChild.family.map((f, idx) => (
+                                       <div key={idx} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-xl flex items-center gap-6 group hover:border-indigo-500 transition-all">
+                                         <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 font-black text-lg border border-slate-100">
+                                           {f.relation ? f.relation[0] : '?'}
+                                         </div>
+                                         <div className="flex-1">
+                                           <div className="flex justify-between items-start">
+                                             <span className="text-sm font-black text-slate-900">{f.name} <small className="text-indigo-400 ml-1">({f.relation})</small></span>
+                                             {f.cohab && <span className="text-[8px] font-black bg-emerald-500 text-white px-2 py-0.5 rounded-full uppercase">동거</span>}
+                                           </div>
+                                           <p className="text-[11px] font-bold text-slate-400 mt-1">{f.contact}</p>
+                                           <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest">{f.job}</p>
+                                         </div>
+                                       </div>
+                                     ))
+                                   ) : (
+                                     <div className="col-span-2 py-12 text-center text-slate-200 font-black uppercase tracking-widest italic border-2 border-dashed border-slate-100 rounded-[3rem]">가족 정보가 등록되지 않았습니다.</div>
+                                   )}
+                                 </div>
+                              </div>
+                              
+                              {/* 비고란 */}
+                              <div className="space-y-4">
+                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">종합 비고 및 특이사항</label>
+                                 <div className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-inner font-bold text-slate-600 leading-relaxed min-h-[120px]">
+                                   {selectedChild.remarks || '특이사항이 없습니다.'}
+                                 </div>
+                              </div>
+                           </div>
+                         )}
+
+                         {detailTab === 'obs' && (
+                           <div className="space-y-12 animate-in fade-in slide-in-from-right-12">
+                              <div className="flex justify-between items-center border-b border-slate-100 pb-8">
+                                 <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-indigo-900 rounded-2xl flex items-center justify-center text-indigo-400 shadow-xl"><BookOpen className="w-6 h-6" /></div>
+                                    <div>
+                                       <h4 className="text-xl font-black text-slate-900 m-0 uppercase tracking-tight italic">성장 케이스 추적 로그</h4>
+                                       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest m-0 mt-1">{selectedYear}년도 기간 중 총 {currentYearLogs.observation?.length}건의 기록이 발견되었습니다.</p>
+                                    </div>
+                                 </div>
+                                 <button className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl shadow-indigo-200">신규 기록 작성</button>
+                              </div>
+                              <div className="space-y-6">
+                                 {currentYearLogs.observation?.length > 0 ? (
+                                   currentYearLogs.observation.map((log, idx) => (
+                                     <div key={idx} className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-xl flex gap-10 group hover:border-indigo-500 transition-all border-l-8 border-l-indigo-600">
+                                        <div className="w-28 shrink-0 text-center flex flex-col items-center justify-center border-r border-slate-50 pr-10">
+                                           <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-2">기록 일자</span>
+                                           <span className="text-sm font-black text-slate-900">{log.date}</span>
+                                        </div>
+                                        <div className="flex-1 text-lg font-bold text-slate-700 leading-relaxed italic-none">{log.content}</div>
+                                     </div>
+                                   ))
+                                 ) : (
+                                   <div className="py-32 text-center text-slate-200 font-extrabold uppercase tracking-[1em] italic">데이터 없음: 발견된 기록이 없습니다.</div>
+                                 )}
+                              </div>
+                           </div>
+                         )}
+
+                         {detailTab === 'consult' && (
+                           <div className="grid grid-cols-2 gap-12 animate-in fade-in slide-in-from-right-12">
+                              {[
+                                { key: 'h1', label: '상반기 전문 상담', period: '1월 - 6월', data: currentYearLogs.h1, color: 'emerald' },
+                                { key: 'h2', label: '하반기 전문 상담', period: '7월 - 12월', data: currentYearLogs.h2, color: 'blue' }
+                              ].map(h => (
+                                <div key={h.key} className={`p-12 rounded-[4rem] border-4 shadow-2xl flex flex-col justify-between min-h-[440px] transition-all relative overflow-hidden ${h.data ? `bg-${h.color}-50 border-${h.color}-500 shadow-${h.color}-900/10` : 'bg-white border-dashed border-slate-200 opacity-60'}`}>
+                                   <div className="absolute top-0 right-0 w-48 h-48 bg-slate-900/5 rounded-full blur-3xl -translate-y-24 translate-x-24" />
+                                   <div className="space-y-4 relative z-10">
+                                      <div className="flex justify-between items-center"><span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-white px-4 py-1.5 rounded-full shadow-sm">{h.period} 필수 기록</span>{h.data && <CheckCircle2 className={`w-8 h-8 text-${h.color}-500`} />}</div>
+                                      <h5 className="text-3xl font-black text-slate-900 m-0 uppercase tracking-tighter leading-tight">{h.label}</h5>
+                                      <p className="text-[10px] font-bold text-slate-400 m-0 uppercase tracking-widest italic-none">기관 준수 프로토콜: 필수 작성</p>
+                                   </div>
+                                   <div className="bg-white/80 p-8 rounded-[2rem] italic-none font-bold text-base text-slate-600 border border-slate-100 shadow-inner flex-1 my-8">
+                                      {h.data ? h.data.content : "상담 내역이 감지되지 않았습니다. 규정 준수를 위해 기록 작성이 필요합니다."}
+                                   </div>
+                                   <button className={`w-full py-6 rounded-3xl font-black text-[12px] uppercase tracking-[0.2em] relative z-10 transition-all ${h.data ? `bg-slate-900 text-white shadow-xl` : 'bg-slate-200 text-slate-500 hover:bg-slate-900 hover:text-white'}`}>
+                                      {h.data ? '기록 열람 및 수정' : '신규 상담 기록 시작'}
+                                   </button>
+                                </div>
+                              ))}
+                           </div>
+                         )}
+                      </div>
+                   </div>
+                </div>
+             </div>
+          </div>
+        )}
+      </div>
+
+      {/* 신규 아동 등록 모달 */}
+      <AnimatePresence>
+        {isAddModalOpen && (
+          <div className="fixed inset-0 z-[2000] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-xl">
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white w-full max-w-2xl rounded-[3rem] shadow-3xl overflow-hidden border border-white/20 flex flex-col"
+            >
+              <div className="p-10 border-b border-slate-100 flex justify-between items-center bg-slate-900 text-white">
+                <div>
+                  <h4 className="text-2xl font-black tracking-tight m-0 italic">신규 아동 등록 <span className="text-emerald-400">.</span></h4>
+                  <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400">스마트 가드닝 시스템 통합 연동</p>
+                </div>
+                <button onClick={() => setIsAddModalOpen(false)} className="p-4 hover:bg-white/10 rounded-2xl transition-all"><X className="w-6 h-6" /></button>
+              </div>
+              
+              <div className="p-12 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">성명 (필수)</label>
+                    <input type="text" value={newChild.name} onChange={e => setNewChild({...newChild, name: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all" placeholder="이름 입력" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">RFID 카드 ID (필수)</label>
+                    <input type="text" value={newChild.cardId} onChange={e => setNewChild({...newChild, cardId: e.target.value.toUpperCase()})} className="w-full bg-slate-900 text-emerald-400 border-none rounded-2xl py-4 px-6 font-black tracking-widest outline-none focus:ring-4 focus:ring-emerald-500/20 transition-all" placeholder="예: E7FDCD66" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">성별</label>
+                    <div className="flex gap-2">
+                      {['남', '여'].map(g => (
+                        <button key={g} onClick={() => setNewChild({...newChild, gender: g})} className={`flex-1 py-4 rounded-2xl font-black transition-all ${newChild.gender === g ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-slate-400'}`}>{g}</button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">생년월일</label>
+                    <input type="date" value={newChild.birth} onChange={e => setNewChild({...newChild, birth: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all" />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">학교 정보 / 학년</label>
+                  <div className="flex gap-4">
+                    <input type="text" value={newChild.school} onChange={e => setNewChild({...newChild, school: e.target.value})} className="flex-[2] bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none placeholder:font-bold" placeholder="학교명" />
+                    <select value={newChild.grade} onChange={e => setNewChild({...newChild, grade: e.target.value})} className="flex-1 bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none">
+                      {[1,2,3,4,5,6].map(g => <option key={g} value={g}>{g}학년</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">보호자 성함</label>
+                    <input type="text" value={newChild.guardian} onChange={e => setNewChild({...newChild, guardian: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none" placeholder="보호자 성명" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">연락처</label>
+                    <input type="text" value={newChild.contact} onChange={e => setNewChild({...newChild, contact: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none" placeholder="010-0000-0000" />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">실거주 주소</label>
+                  <input type="text" value={newChild.address} onChange={e => setNewChild({...newChild, address: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none" placeholder="상세 주소 입력" />
+                </div>
+              </div>
+
+              <div className="p-10 bg-slate-50 border-t border-slate-100 flex gap-4">
+                <button onClick={() => setIsAddModalOpen(false)} className="flex-1 py-5 bg-white border border-slate-200 text-slate-500 rounded-3xl font-black text-[12px] uppercase tracking-widest shadow-sm hover:bg-slate-100 transition-all">취소</button>
+                <button onClick={handleAddChild} className="flex-[2] py-5 bg-emerald-600 text-white rounded-3xl font-black text-[12px] uppercase tracking-widest shadow-2xl shadow-emerald-600/20 hover:bg-emerald-700 transition-all">아동 정보 저장 및 카드 연동</button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+export default ChildrenPage;

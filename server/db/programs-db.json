@@ -1,0 +1,38 @@
+{
+  "programs": [
+    {
+      "id": 1,
+      "date": "2026-03-16",
+      "time": "14:00~15:30",
+      "title": "창의 미술 교실",
+      "tutor": "이영희",
+      "status": "실시완료",
+      "category": "정서지원",
+      "displayDate": "2026.03.16",
+      "participants": 8
+    },
+    {
+      "id": 2,
+      "date": "2026-03-16",
+      "time": "16:00~17:30",
+      "title": "독서 토론 동아리",
+      "tutor": "김민수",
+      "status": "진행중",
+      "category": "교육지원",
+      "displayDate": "2026.03.16",
+      "participants": 10
+    },
+    {
+      "id": 3,
+      "date": "2026-03-18",
+      "time": "13:00~17:00",
+      "title": "지역 탐방 프로젝트",
+      "tutor": "외부강사",
+      "status": "예정",
+      "category": "문화체험",
+      "displayDate": "2026.03.18",
+      "participants": 12
+    }
+  ],
+  "updatedAt": "2026-03-19T16:59:19.398Z"
+}

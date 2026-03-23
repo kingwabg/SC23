@@ -1,0 +1,90 @@
+  const fileInputRef = useRef(null);
+  const handleAttendanceImport = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const bstr = evt.target.result;
+      const wb = XLSX.read(bstr, { type: 'binary' });
+      const wsname = wb.SheetNames[0];
+      const ws = wb.Sheets[wsname];
+      const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      if (data.length < 2) return;
+      const headers = data[0]; 
+      const rows = data.slice(1);
+      const newChildren = [...children];
+      const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0');
+      rows.forEach(row => {
+        const name = row[0];
+        const childIndex = newChildren.findIndex(c => c.name === name);
+        if (childIndex > -1) {
+          if (!newChildren[childIndex].attendance) newChildren[childIndex].attendance = {};
+          headers.forEach((header, idx) => {
+            if (idx === 0) return;
+            const day = String(header).padStart(2, '0');
+            const status = row[idx];
+            if (status === '출' || status === 'PRESENT' || status === 'O' || status === 1) {
+              const dateKey = `${selectedYear}-${currentMonth}-${day}`;
+              newChildren[childIndex].attendance[dateKey] = { status: 'PRESENT', time: '09:00:00', memo: '엑셀 데이터 일괄 임포트' };
+            }
+          });
+        }
+      });
+      setChildren(newChildren);
+      alert('출결 데이터가 성공적으로 통합되었습니다.');
+    };
+    reader.readAsBinaryString(file);
+    e.target.value = null;
+  };
+
+  return (
+    <div className="font-['Outfit'] min-h-screen bg-[#f8fafc] flex flex-col">
+      <div className="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center shrink-0 shadow-sm z-[100]">
+        <div className="flex items-center gap-8">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-slate-900 rounded-xl shadow-xl rotate-3"><Users className="w-6 h-6 text-indigo-400" /></div>
+            <div>
+               <h2 className="text-xl font-black text-slate-900 tracking-tighter uppercase m-0 italic">아동 기록 통합 관리</h2>
+               <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.4em] m-0">숲속 지능형 시스템 v3.0</p>
+            </div>
+          </div>
+          <div className="relative">
+             <button onClick={() => setIsYearPickerOpen(!isYearPickerOpen)} className="flex items-center gap-4 bg-slate-900 text-white px-8 py-3 rounded-2xl shadow-2xl hover:bg-slate-800 transition-all border border-slate-700 group">
+                <div className="flex flex-col items-start">
+                   <span className="text-[8px] font-black text-indigo-400 uppercase tracking-widest leading-none mb-1">활성 장부 연도</span>
+                   <span className="text-sm font-black italic">{selectedYear}년도 아카이브</span>
+                </div>
+                <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${isYearPickerOpen ? 'rotate-180' : ''}`} />
+             </button>
+             <AnimatePresence>
+                {isYearPickerOpen && (
+                  <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }} className="absolute top-full left-0 mt-3 w-64 bg-white rounded-[2rem] shadow-3xl border border-slate-100 overflow-hidden z-[1000]">
+                     <div className="p-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">저장소 기록 선택</span>
+                        <Timer className="w-4 h-4 text-indigo-500" />
+                     </div>
+                     <div className="max-h-80 overflow-y-auto p-2 custom-scrollbar">
+                        {years.map(y => (
+                          <button key={y} onClick={() => { setSelectedYear(y); setIsYearPickerOpen(false); }} className={`w-full text-left px-6 py-4 rounded-xl text-xs font-black transition-all flex items-center justify-between ${selectedYear === y ? 'bg-indigo-600 text-white' : 'hover:bg-slate-50 text-slate-600'}`}>
+                             {y}년 데이터
+                             {selectedYear === y && <CheckCircle2 className="w-4 h-4" />}
+                          </button>
+                        ))}
+                     </div>
+                  </motion.div>
+                )}
+             </AnimatePresence>
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+           <div className="flex bg-slate-100 p-1.5 rounded-2xl gap-1">
+             {[{ id: 'active', label: '아동 목록/관리', icon: Users, key: 'children_view' }, { id: 'ledger', label: '출결대장', icon: FileSpreadsheet, key: 'attendance_view' }].filter(t => can(t.key)).map(t => (
+               <button key={t.id} onClick={() => { setActiveTab(t.id); setSelectedChildId(null); }} className={`flex items-center gap-2.5 px-6 py-2 rounded-xl text-[11px] font-black transition-all ${activeTab === t.id ? 'bg-indigo-600 text-white shadow-xl' : 'text-slate-500 hover:text-slate-900'}`}>
+                 <t.icon className="w-4 h-4" />
+                 {t.label}
+               </button>
+             ))}
+           </div>
+           {can('children_create') && <button onClick={() => setIsAddModalOpen(true)} className="px-6 py-3 bg-emerald-600 text-white rounded-xl shadow-xl hover:bg-emerald-700 font-black text-[11px] flex items-center gap-2 uppercase tracking-widest transition-all"><Plus className="w-4 h-4" /> 신규 아동 등록</button>}
+        </div>
+      </div>

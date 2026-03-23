@@ -1,0 +1,871 @@
+﻿import React, { useState, useMemo, useEffect, useRef } from 'react';
+import * as XLSX from 'xlsx';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Users, 
+  Search, 
+  Plus, 
+  X, 
+  User, 
+  Calendar as CalendarIcon,
+  FileSpreadsheet,
+  Fingerprint,
+  MoreVertical,
+  GraduationCap,
+  Printer,
+  BookOpen,
+  MessageSquare,
+  ShieldCheck,
+  ClipboardCheck,
+  History,
+  TrendingUp,
+  Heart,
+  CheckCircle2,
+  MapPin,
+  ChevronLeft,
+  ChevronRight,
+  LayoutGrid,
+  Table as TableIcon,
+  ChevronDown,
+  Timer,
+  Eye,
+  EyeOff,
+  Save,
+  AlertCircle
+} from 'lucide-react';
+
+const calculateAge = (birth) => {
+  if (!birth) return '';
+  const today = new Date();
+  const birthDate = new Date(birth);
+  if (Number.isNaN(birthDate.getTime())) return '';
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) age -= 1;
+  return age >= 0 ? String(age) : '';
+};
+
+const maskSsn = (ssn) => {
+  if (!ssn) return '';
+  const cleaned = String(ssn).replace(/\s+/g, '');
+  if (cleaned.length <= 7) return cleaned;
+  return `${cleaned.slice(0, 8)}******`;
+};
+
+const buildChildForm = (child, yearData) => ({
+  name: child?.name || '',
+  gender: child?.gender || '',
+  phone: child?.phone || yearData?.contact || '',
+  ssn: child?.ssn || '',
+  birth: child?.birth || '',
+  school: yearData?.school || child?.school || '',
+  grade: yearData?.grade || child?.grade || '',
+  enrollment: child?.enrollment || '',
+  prevEnrollment: child?.prevEnrollment || '',
+  address: yearData?.address || child?.address || '',
+  useType: child?.useType || '',
+  guardianName: yearData?.guardian || child?.guardianName || '',
+  guardianRel: yearData?.guardianRel || child?.guardianRel || '',
+  guardianType: yearData?.guardianType || child?.guardianType || '',
+  guardianContact: yearData?.contact || child?.guardianContact || '',
+  notes: child?.notes || '',
+  manager: child?.manager || '',
+  kidsCallId: child?.kidsCallId || '',
+  dischargeDate: child?.dischargeDate || '',
+  displayId: child?.displayId || '',
+  cardId: child?.cardId || '',
+});
+const ChildrenPage = () => {
+  // --- 湲濡쒕쾶 ?쒖뒪???곹깭 ---
+  const userRole = localStorage.getItem('userRole') || 'ADMIN';
+  const [selectedYear, setSelectedYear] = useState(2026);
+  const [activeTab, setActiveTab] = useState('active'); 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedChildId, setSelectedChildId] = useState(null);
+  const [detailTab, setDetailTab] = useState('info');
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isYearPickerOpen, setIsYearPickerOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newChild, setNewChild] = useState({ name: '', gender: '??, birth: '', school: '', grade: 1, address: '', guardian: '', contact: '', cardId: '' });
+  const [showSsn, setShowSsn] = useState(false);
+  const [editForm, setEditForm] = useState(null);
+
+  // 珥? -> 以?源뚯???湲?異붿쟻???꾪븳 ?곕룄 踰붿쐞 (15??
+  const years = useMemo(() => Array.from({ length: 15 }, (_, i) => 2015 + i).reverse(), []);
+
+  // --- 沅뚰븳 ?덉씠??---
+  const permissions = useMemo(() => {
+    const currentUser = localStorage.getItem('currentUser');
+    if (currentUser && userRole === 'NON_STAFF') {
+      const user = JSON.parse(currentUser);
+      return { 'NON_STAFF': user.permissions || {} };
+    }
+    const saved = localStorage.getItem('appPermissions');
+    return saved ? JSON.parse(saved) : {
+      'NON_STAFF': {
+        'children_view': true,
+        'children_create': false,
+        'children_edit': false,
+        'children_delete': false,
+        'attendance_view': true,
+        'attendance_edit': false,
+        'attendance_excel': false,
+        'rfid_access': true
+      }
+    };
+  }, [userRole]);
+
+  const can = (perm) => userRole === 'ADMIN' || permissions.NON_STAFF[perm];
+
+  // --- ?곗씠???좎? 諛??뚯뒪???명듃 ---
+  const [children, setChildren] = useState(() => {
+    const saved = localStorage.getItem('forestChildrenList');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.length > 0 && (!parsed[0].yearlyData || !parsed[0].yearlyData[2018])) {
+        localStorage.removeItem('forestChildrenList');
+      } else {
+        return parsed;
+      }
+    }
+    return [
+      { 
+        id: 1, name: '源誘쇱닔', birth: '2011-05-12', gender: '??, photo: null, enrollment: '2018-03-02', cardId: 'E7FDCD66',
+        yearlyData: {
+          2018: { school: '?뀁냽珥덈벑?숆탳', grade: 1, address: '?쒖슱??媛뺣궓援?A?⑥?', guardian: '源泥좎닔', contact: '010-1111-1111' },
+          2019: { school: '?뀁냽珥덈벑?숆탳', grade: 2, address: '?쒖슱??媛뺣궓援?A?⑥?', guardian: '源泥좎닔', contact: '010-1111-1111' },
+          2020: { school: '?뀁냽珥덈벑?숆탳', grade: 3, address: '?쒖슱??媛뺣궓援?B鍮뚮씪', guardian: '源泥좎닔', contact: '010-2222-2222' },
+          2021: { school: '?뀁냽珥덈벑?숆탳', grade: 4, address: '?쒖슱??媛뺣궓援?B鍮뚮씪', guardian: '源泥좎닔', contact: '010-2222-2222' },
+          2022: { school: '?뀁냽珥덈벑?숆탳', grade: 5, address: '?쒖슱???쒖큹援?C?꾪뙆??, guardian: '源泥좎닔', contact: '010-3333-3333' },
+          2023: { school: '?뀁냽珥덈벑?숆탳', grade: 6, address: '?쒖슱???쒖큹援?C?꾪뙆??, guardian: '源泥좎닔', contact: '010-3333-3333' },
+          2024: { school: '?뀁냽以묓븰援?, grade: '以?', address: '?쒖슱???쒖큹援?D?⑥?', guardian: '源泥좎닔', contact: '010-4444-4444' },
+          2025: { school: '?뀁냽以묓븰援?, grade: '以?', address: '?쒖슱???쒖큹援?D?⑥?', guardian: '源泥좎닔', contact: '010-4444-4444' },
+          2026: { school: '?뀁냽以묓븰援?, grade: '以?', address: '?쒖슱???쒖큹援?D?⑥?', guardian: '源泥좎닔', contact: '010-1234-5678' }
+        },
+        logs: { 
+          2018: { observation: [{ date: '2018-03-12', content: '1?숇뀈 ?낇븰! ?덈Т 洹?쎄퀬 ?⑹뵫??' }], h1: { date: '2018-05-10', content: '?곸쓳 ?꾩＜ 鍮좊쫫' }, h2: { date: '2018-11-20', content: '移쒓뎄?ㅺ낵 ???댁슱由? }, guardian: [] },
+          2026: { observation: [{ date: '2026-03-10', content: '以? ?ъ텣湲??놁씠 ?깆닕?? 吏꾨줈 怨좊? 以?' }], h1: { date: '2026-03-15', content: '吏꾨줈 吏묒쨷 ?곷떞' }, h2: null, guardian: [] }
+        },
+        attendance: {}
+      },
+      { 
+        id: 2, name: '?댁쁺??, birth: '2018-11-20', gender: '??, photo: null, enrollment: '2025-03-02', cardId: 'A1B2C3D4',
+        yearlyData: {
+          2025: { school: '?곗깉珥덈벑?숆탳', grade: 1, address: '?쒖슱???쒖큹援??쒖큹?濡?, guardian: '諛뺤쁺??, contact: '010-9999-8888' },
+          2026: { school: '?뀁냽珥덈벑?숆탳', grade: 2, address: '?쒖슱???쒖큹援??쒖큹?濡?, guardian: '諛뺤쁺??, contact: '010-4321-8765' }
+        },
+        logs: { 2025: { observation: [], h1: { date: '2025-05-02', content: '?낆냼 珥덇린 ?곷떞' }, h2: null, guardian: [] }, 2026: { observation: [], h1: null, h2: null, guardian: [] } },
+        attendance: {}
+      },
+      {
+        id: 3, name: '諛뺤???, birth: '2019-02-15', gender: '??, photo: null, enrollment: '2026-03-02', cardId: 'BG774211',
+        yearlyData: {
+          2026: { school: '?몃Ⅸ?ㅼ큹?깊븰援?, grade: 1, address: '?쒖슱???≫뙆援??좎떎??, guardian: '諛뺤쿋??, contact: '010-5555-5555' }
+        },
+        logs: { 2026: { observation: [], h1: null, h2: null, guardian: [] } },
+        attendance: {}
+      },
+      {
+        id: 4, 
+        name: '?뺤슦??,
+        birth: '2018-05-20', 
+        gender: '??, 
+        photo: null, 
+        enrollment: '2026-03-02', 
+        displayId: 'NF561136',
+        cardId: '37B0B566',
+        yearlyData: { 2026: { school: '?뀁냽珥덈벑?숆탳', grade: 2, address: '?쒖슱???쒖큹援?, guardian: '?뺤쿋??, contact: '010-8888-8888' } },
+        logs: { 2026: { observation: [], h1: null, h2: null, guardian: [] } },
+        attendance: {}
+      }
+    ];
+  });
+
+  const [scanLogs, setScanLogs] = useState(() => {
+    const saved = localStorage.getItem('forestScanLogs');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [lastScannedChild, setLastScannedChild] = useState(null);
+
+  useEffect(() => {
+    localStorage.setItem('forestChildrenList', JSON.stringify(children));
+  }, [children]);
+
+  useEffect(() => {
+    localStorage.setItem('forestScanLogs', JSON.stringify(scanLogs));
+  }, [scanLogs]);
+
+  useEffect(() => {
+    const fetchAttendance = async () => {
+      try {
+        const response = await fetch('http://localhost:5005/api/attendance');
+        const externalData = await response.json();
+        externalData.forEach(item => {
+          if (item.time && item.time !== '-') {
+            const isAlreadyProcessed = scanLogs.some(log => 
+              log.name === item.name && 
+              new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) === item.time
+            );
+            if (!isAlreadyProcessed) {
+              const child = children.find(c => c.name === item.name);
+              if (child) {
+                const newLog = {
+                  id: Date.now() + Math.random(),
+                  terminalId: '900446',
+                  cardId: child.cardId,
+                  name: child.name,
+                  timestamp: new Date(`${new Date().toISOString().split('T')[0]}T${item.time}`).toISOString(),
+                  status: 'SUCCESS'
+                };
+                setScanLogs(prev => [newLog, ...prev].slice(0, 50));
+                const today = new Date().toISOString().split('T')[0];
+                setChildren(prev => prev.map(c => {
+                  if (c.id === child.id) {
+                    return {
+                      ...c,
+                      attendance: { ...c.attendance, [today]: { status: 'PRESENT', time: item.time } }
+                    };
+                  }
+                  return c;
+                }));
+              }
+            }
+          }
+        });
+      } catch (err) {
+        console.log('以묎퀎 ?쒕쾭 ?곌껐 ?湲?以?..');
+      }
+    };
+    const interval = setInterval(fetchAttendance, 60000);
+    fetchAttendance();
+    return () => clearInterval(interval);
+  }, [children, scanLogs]);
+
+  useEffect(() => {
+    let buffer = '';
+    let lastKeyTime = Date.now();
+    const handleKeyDown = (e) => {
+      const currentTime = Date.now();
+      if (currentTime - lastKeyTime > 50) buffer = '';
+      if (e.key === 'Enter') {
+        if (buffer.length >= 4) {
+          handleTerminalScan(buffer.toUpperCase());
+        }
+        buffer = '';
+      } else if (e.key.length === 1) {
+        buffer += e.key;
+      }
+      lastKeyTime = currentTime;
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [children]);
+  const handleTerminalScan = (cardId) => {
+    const child = children.find(c => c.cardId === cardId);
+    const newLog = {
+      id: Date.now(),
+      terminalId: '900446',
+      cardId: cardId,
+      name: child ? child.name : '誘몃벑濡?移대뱶',
+      timestamp: new Date().toISOString(),
+      status: child ? 'SUCCESS' : 'UNKNOWN'
+    };
+    setScanLogs(prev => [newLog, ...prev].slice(0, 50));
+    if (child) {
+      setLastScannedChild(child);
+      setTimeout(() => setLastScannedChild(null), 3000);
+      const today = new Date().toISOString().split('T')[0];
+      setChildren(prev => prev.map(c => {
+        if (c.id === child.id) {
+          return {
+            ...c,
+            attendance: { ...c.attendance, [today]: { status: 'PRESENT', time: new Date().toLocaleTimeString() } }
+          };
+        }
+        return c;
+      }));
+    }
+  };
+
+  const handleAddChild = () => {
+    if (!newChild.name || !newChild.cardId) {
+      alert('?꾨룞 ?대쫫怨?移대뱶 踰덊샇???꾩닔?낅땲??');
+      return;
+    }
+    const id = Date.now();
+    const childData = {
+      id,
+      name: newChild.name,
+      birth: newChild.birth,
+      gender: newChild.gender,
+      photo: null,
+      enrollment: new Date().toISOString().split('T')[0],
+      cardId: newChild.cardId,
+      yearlyData: {
+        [selectedYear]: { school: newChild.school, grade: parseInt(newChild.grade), address: newChild.address, guardian: newChild.guardian, contact: newChild.contact }
+      },
+      logs: { [selectedYear]: { observation: [], h1: null, h2: null, guardian: [] } },
+      attendance: {}
+    };
+    setChildren(prev => [...prev, childData]);
+    setIsAddModalOpen(false);
+    setNewChild({ name: '', gender: '??, birth: '', school: '', grade: 1, address: '', guardian: '', contact: '', cardId: '' });
+  };
+
+  const selectedChild = useMemo(() => children.find(c => c.id === selectedChildId), [children, selectedChildId]);
+  const currentYearData = useMemo(() => {
+    if (!selectedChild) return null;
+    return selectedChild.yearlyData?.[selectedYear] || null;
+  }, [selectedChild, selectedYear]);
+
+  const filteredChildren = useMemo(() => {
+    return children.filter(c => {
+      const matchesSearch = c.name.includes(searchQuery);
+      const hasDataThisYear = !!c.yearlyData?.[selectedYear];
+      return matchesSearch && hasDataThisYear;
+    });
+  }, [children, searchQuery, selectedYear]);
+
+  const currentYearLogs = useMemo(() => {
+    if (!selectedChild) return null;
+    return selectedChild.logs?.[selectedYear] || { observation: [], h1: null, h2: null, guardian: [] };
+  }, [selectedChild, selectedYear]);
+
+  useEffect(() => {
+    if (!selectedChild) {
+      setEditForm(null);
+      return;
+    }
+    setEditForm(buildChildForm(selectedChild, currentYearData || {}));
+    setShowSsn(false);
+  }, [selectedChildId, selectedYear]);
+
+  const handleSaveChildInfo = () => {
+    if (!selectedChild || !editForm) return;
+    if (!editForm.name?.trim()) {
+      alert('?대쫫? ?꾩닔?낅땲??');
+      return;
+    }
+    setChildren(prev => prev.map(child => {
+      if (child.id !== selectedChild.id) return child;
+      const nextYearData = {
+        ...(child.yearlyData || {}),
+        [selectedYear]: {
+          ...(child.yearlyData?.[selectedYear] || {}),
+          school: editForm.school,
+          grade: editForm.grade,
+          address: editForm.address,
+          guardian: editForm.guardianName,
+          guardianRel: editForm.guardianRel,
+          guardianType: editForm.guardianType,
+          contact: editForm.guardianContact,
+        }
+      };
+      return {
+        ...child,
+        name: editForm.name,
+        gender: editForm.gender,
+        phone: editForm.phone,
+        ssn: editForm.ssn,
+        birth: editForm.birth,
+        enrollment: editForm.enrollment,
+        prevEnrollment: editForm.prevEnrollment,
+        address: editForm.address,
+        useType: editForm.useType,
+        guardianName: editForm.guardianName,
+        guardianRel: editForm.guardianRel,
+        guardianType: editForm.guardianType,
+        guardianContact: editForm.guardianContact,
+        notes: editForm.notes,
+        manager: editForm.manager,
+        kidsCallId: editForm.kidsCallId,
+        dischargeDate: editForm.dischargeDate,
+        displayId: editForm.displayId,
+        cardId: editForm.cardId,
+        yearlyData: nextYearData,
+      };
+    }));
+    alert('?꾨룞 ?뺣낫媛 ??λ릺?덉뒿?덈떎.');
+  };
+  const fileInputRef = useRef(null);
+  const handleAttendanceImport = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const bstr = evt.target.result;
+      const wb = XLSX.read(bstr, { type: 'binary' });
+      const wsname = wb.SheetNames[0];
+      const ws = wb.Sheets[wsname];
+      const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      if (data.length < 2) return;
+      const headers = data[0]; 
+      const rows = data.slice(1);
+      const newChildren = [...children];
+      const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0');
+      rows.forEach(row => {
+        const name = row[0];
+        const childIndex = newChildren.findIndex(c => c.name === name);
+        if (childIndex > -1) {
+          if (!newChildren[childIndex].attendance) newChildren[childIndex].attendance = {};
+          headers.forEach((header, idx) => {
+            if (idx === 0) return;
+            const day = String(header).padStart(2, '0');
+            const status = row[idx];
+            if (status === '異? || status === 'PRESENT' || status === 'O' || status === 1) {
+              const dateKey = `${selectedYear}-${currentMonth}-${day}`;
+              newChildren[childIndex].attendance[dateKey] = { status: 'PRESENT', time: '09:00:00', memo: '?묒? ?곗씠???쇨큵 ?꾪룷?? };
+            }
+          });
+        }
+      });
+      setChildren(newChildren);
+      alert('異쒓껐 ?곗씠?곌? ?깃났?곸쑝濡??듯빀?섏뿀?듬땲??');
+    };
+    reader.readAsBinaryString(file);
+    e.target.value = null;
+  };
+
+  return (
+    <div className="font-['Outfit'] min-h-screen bg-[#f8fafc] flex flex-col">
+      <div className="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center shrink-0 shadow-sm z-[100]">
+        <div className="flex items-center gap-8">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-slate-900 rounded-xl shadow-xl rotate-3"><Users className="w-6 h-6 text-indigo-400" /></div>
+            <div>
+               <h2 className="text-xl font-black text-slate-900 tracking-tighter uppercase m-0 italic">?꾨룞 湲곕줉 ?듯빀 愿由?/h2>
+               <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.4em] m-0">?뀁냽 吏?ν삎 ?쒖뒪??v3.0</p>
+            </div>
+          </div>
+          <div className="relative">
+             <button onClick={() => setIsYearPickerOpen(!isYearPickerOpen)} className="flex items-center gap-4 bg-slate-900 text-white px-8 py-3 rounded-2xl shadow-2xl hover:bg-slate-800 transition-all border border-slate-700 group">
+                <div className="flex flex-col items-start">
+                   <span className="text-[8px] font-black text-indigo-400 uppercase tracking-widest leading-none mb-1">?쒖꽦 ?λ? ?곕룄</span>
+                   <span className="text-sm font-black italic">{selectedYear}?꾨룄 ?꾩뭅?대툕</span>
+                </div>
+                <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${isYearPickerOpen ? 'rotate-180' : ''}`} />
+             </button>
+             <AnimatePresence>
+                {isYearPickerOpen && (
+                  <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }} className="absolute top-full left-0 mt-3 w-64 bg-white rounded-[2rem] shadow-3xl border border-slate-100 overflow-hidden z-[1000]">
+                     <div className="p-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">??μ냼 湲곕줉 ?좏깮</span>
+                        <Timer className="w-4 h-4 text-indigo-500" />
+                     </div>
+                     <div className="max-h-80 overflow-y-auto p-2 custom-scrollbar">
+                        {years.map(y => (
+                          <button key={y} onClick={() => { setSelectedYear(y); setIsYearPickerOpen(false); }} className={`w-full text-left px-6 py-4 rounded-xl text-xs font-black transition-all flex items-center justify-between ${selectedYear === y ? 'bg-indigo-600 text-white' : 'hover:bg-slate-50 text-slate-600'}`}>
+                             {y}???곗씠??                             {selectedYear === y && <CheckCircle2 className="w-4 h-4" />}
+                          </button>
+                        ))}
+                     </div>
+                  </motion.div>
+                )}
+             </AnimatePresence>
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+           <div className="flex bg-slate-100 p-1.5 rounded-2xl gap-1">
+             {[{ id: 'active', label: '?꾨룞 紐⑸줉/愿由?, icon: Users, key: 'children_view' }, { id: 'ledger', label: '異쒓껐???, icon: FileSpreadsheet, key: 'attendance_view' }].filter(t => can(t.key)).map(t => (
+               <button key={t.id} onClick={() => { setActiveTab(t.id); setSelectedChildId(null); }} className={`flex items-center gap-2.5 px-6 py-2 rounded-xl text-[11px] font-black transition-all ${activeTab === t.id ? 'bg-indigo-600 text-white shadow-xl' : 'text-slate-500 hover:text-slate-900'}`}>
+                 <t.icon className="w-4 h-4" />
+                 {t.label}
+               </button>
+             ))}
+           </div>
+           {can('children_create') && <button onClick={() => setIsAddModalOpen(true)} className="px-6 py-3 bg-emerald-600 text-white rounded-xl shadow-xl hover:bg-emerald-700 font-black text-[11px] flex items-center gap-2 uppercase tracking-widest transition-all"><Plus className="w-4 h-4" /> ?좉퇋 ?꾨룞 ?깅줉</button>}
+        </div>
+      </div>
+      <div className="flex-1 flex overflow-hidden relative">
+        {activeTab === 'ledger' && (
+          <div className="flex-1 overflow-y-auto p-12 bg-white flex flex-col">
+            <div className="max-w-7xl mx-auto w-full space-y-10">
+              <div className="flex justify-between items-end">
+                <div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <FileSpreadsheet className="w-5 h-5 text-indigo-600" />
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Attendance Registry</span>
+                  </div>
+                  <h3 className="text-4xl font-black text-slate-900 tracking-tighter uppercase italic">?붽컙 異쒓껐 ?꾪솴 ???<span className="text-indigo-600">.</span></h3>
+                </div>
+                 <div className="flex gap-4">
+                   <input type="file" ref={fileInputRef} onChange={handleAttendanceImport} className="hidden" accept=".xlsx, .xls, .csv" />
+                   <button onClick={() => fileInputRef.current.click()} className="px-6 py-3 bg-indigo-50 text-indigo-600 rounded-xl font-black text-[11px] uppercase tracking-widest border border-indigo-100 hover:bg-indigo-100 transition-all">?곗씠??媛?몄삤湲?/button>
+                   <button className="px-6 py-3 bg-slate-100 text-slate-900 rounded-xl font-black text-[11px] uppercase tracking-widest">?몄뇙</button>
+                   <button className="px-6 py-3 bg-slate-900 text-white rounded-xl font-black text-[11px] uppercase tracking-widest shadow-xl">EXCEL</button>
+                 </div>
+              </div>
+              <div className="bg-white rounded-[4rem] border border-slate-100 shadow-2xl overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse min-w-[1200px]">
+                    <thead>
+                      <tr className="bg-[#0f172a] text-slate-400">
+                        <th className="px-10 py-8 font-black uppercase tracking-widest text-[10px] sticky left-0 z-20 bg-[#0f172a]">?꾩껜 ?꾨룞 ?깅챸</th>
+                        {Array.from({ length: 31 }, (_, i) => i + 1).map(day => <th key={day} className="px-2 py-8 text-center font-black text-[10px] w-12">{day}</th>)}
+                        <th className="px-8 py-8 text-center font-black uppercase text-[10px] bg-slate-800 text-indigo-400">?⑷퀎</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-50">
+                      {children.map(child => {
+                        const days = Array.from({ length: 31 }, (_, i) => {
+                          const date = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(i+1).padStart(2, '0')}`;
+                          return child.attendance?.[date];
+                        });
+                        const presentCount = days.filter(d => d?.status === 'PRESENT').length;
+                        return (
+                          <tr key={child.id} className="hover:bg-indigo-50/30 transition-all">
+                            <td className="px-10 py-6 font-black text-slate-900 sticky left-0 bg-white z-10">{child.name}</td>
+                            {days.map((day, i) => (
+                              <td key={i} className="px-1 py-6 text-center border-r border-slate-50">
+                                {day?.status === 'PRESENT' ? (
+                                  <div className="flex flex-col items-center gap-1 group/day">
+                                    <div className="w-7 h-7 bg-emerald-500 rounded-xl flex items-center justify-center text-white text-[10px] font-black shadow-lg shadow-emerald-500/20 group-hover/day:scale-125 transition-all">異?/div>
+                                    <span className="text-[7px] font-black text-slate-400 tracking-tighter">{day.time?.slice(0,5)}</span>
+                                  </div>
+                                ) : <div className="w-2 h-2 bg-slate-100 rounded-full mx-auto" />}
+                              </td>
+                            ))}
+                            <td className="px-8 py-6 text-center bg-indigo-50/50"><span className="text-base font-black text-indigo-600 italic">{presentCount}</span><span className="text-[9px] font-bold text-slate-400 ml-1">Days</span></td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        <AnimatePresence>
+          {lastScannedChild && (
+            <motion.div initial={{ opacity: 0, scale: 0.8, y: 50 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.8, y: 20 }} className="fixed bottom-12 right-12 z-[1000] flex items-center gap-6 bg-slate-900 text-white p-8 rounded-[3rem] shadow-3xl border border-white/10">
+              <div className="w-20 h-20 rounded-[2rem] border-4 border-indigo-500/30 overflow-hidden shadow-2xl relative">
+                {lastScannedChild.photo ? <img src={lastScannedChild.photo} className="w-full h-full object-cover" /> : <User className="w-8 h-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-slate-700" />}
+              </div>
+              <div className="space-y-1 pr-8">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl font-black italic">{lastScannedChild.name}</span>
+                  <span className="px-2 py-0.5 bg-emerald-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest shadow-xl shadow-emerald-500/20">Checked IN</span>
+                </div>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em] m-0">?⑤쭚湲?900446 ?몄쬆 ?깃났</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        {activeTab === 'active' && !selectedChildId && (
+          <div className="flex-1 overflow-y-auto p-8">
+          <div className="max-w-7xl mx-auto space-y-8">
+             <div className="flex justify-between items-end">
+                <div>
+                   <h3 className="text-3xl font-black text-slate-900 tracking-tighter m-0 uppercase italic">湲곌? ?꾨룞 紐낅? <span className="text-indigo-600">.</span></h3>
+                   <p className="text-xs font-bold text-slate-400 m-0 uppercase tracking-widest mt-1">{selectedYear}?꾨룄 ?곗씠?곕쿋?댁뒪??{filteredChildren.length}紐낆쓽 ?꾨룞??寃?됰릺?덉뒿?덈떎.</p>
+                </div>
+                <div className="relative w-80">
+                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                   <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="?대쫫, ?숆탳 ?깆쑝濡?寃??.." className="w-full pl-12 pr-6 py-4 bg-white border border-slate-100 rounded-[1.5rem] text-sm font-black shadow-xl shadow-slate-200/40 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none" />
+                </div>
+             </div>
+             <div className="bg-white rounded-[2rem] border border-slate-100 shadow-2xl overflow-hidden">
+                <div className="overflow-x-auto max-h-[calc(100vh-260px)]">
+                  <table className="w-full min-w-[1900px] text-left text-sm">
+                     <thead className="sticky top-0 bg-[#0f172a] text-slate-400 font-black uppercase tracking-[0.2em] text-[10px] z-20">
+                        <tr>
+                           <th className="px-6 py-4">?대쫫 / ?깅퀎</th>
+                           <th className="px-6 py-4">?대???/ 二쇰?踰덊샇</th>
+                           <th className="px-6 py-4">?앸뀈?붿씪 / ?곕졊</th>
+                           <th className="px-6 py-4">?숆탳 / ?숇뀈</th>
+                           <th className="px-6 py-4">?낆냼 / ?댁쟾?낆냼 / ?댁냼</th>
+                           <th className="px-6 py-4">二쇱냼 / ?댁슜?좏삎</th>
+                           <th className="px-6 py-4">蹂댄샇??/ 愿怨?/ ?좏삎</th>
+                           <th className="px-6 py-4">?곕씫泥?/ 鍮꾧퀬</th>
+                           <th className="px-6 py-4">?대떦??/ ?ㅼ쫰肄쏧D</th>
+                           <th className="px-6 py-4">愿由щ쾲??/ 移대뱶ID</th>
+                           <th className="px-6 py-4 text-right">?곸꽭</th>
+                        </tr>
+                     </thead>
+                     <tbody className="divide-y divide-slate-100">
+                        {filteredChildren.map(child => {
+                          const yearData = child.yearlyData?.[selectedYear] || {};
+                          return (
+                          <tr key={child.id} onClick={() => setSelectedChildId(child.id)} className="cursor-pointer hover:bg-indigo-50/40 transition-all align-top">
+                             <td className="px-6 py-4"><div className="font-black text-slate-900">{child.name || '誘몄엯??}</div><div className="mt-1 text-xs font-bold text-slate-500">{child.gender || '誘몄엯??}</div></td>
+                             <td className="px-6 py-4"><div className="font-bold text-slate-800">{child.phone || '誘몄엯??}</div><div className="mt-1 text-xs font-bold text-slate-400">{maskSsn(child.ssn) || '誘몄엯??}</div></td>
+                             <td className="px-6 py-4"><div className="font-bold text-slate-800">{child.birth || '誘몄엯??}</div><div className="mt-1 text-xs font-bold text-slate-500">留?{calculateAge(child.birth) || '誘몄엯??}</div></td>
+                             <td className="px-6 py-4"><div className="font-bold text-slate-800">{yearData.school || child.school || '誘몄엯??}</div><div className="mt-1 text-xs font-bold text-slate-500">{yearData.grade || child.grade || '誘몄엯??}</div></td>
+                             <td className="px-6 py-4 text-xs font-bold text-slate-600 leading-6"><div>?낆냼: {child.enrollment || '誘몄엯??}</div><div>?댁쟾: {child.prevEnrollment || '誘몄엯??}</div><div>?댁냼: {child.dischargeDate || '誘몄엯??}</div></td>
+                             <td className="px-6 py-4 text-xs font-bold text-slate-600 leading-6"><div className="max-w-[220px] truncate">{yearData.address || child.address || '誘몄엯??}</div><div className="mt-1 text-slate-500">{child.useType || '誘몄엯??}</div></td>
+                             <td className="px-6 py-4 text-xs font-bold text-slate-600 leading-6"><div>{yearData.guardian || child.guardianName || '誘몄엯??}</div><div>{yearData.guardianRel || child.guardianRel || '誘몄엯??}</div><div>{yearData.guardianType || child.guardianType || '誘몄엯??}</div></td>
+                             <td className="px-6 py-4 text-xs font-bold text-slate-600 leading-6"><div>{yearData.contact || child.guardianContact || '誘몄엯??}</div><div className="max-w-[220px] truncate text-slate-500">{child.notes || '誘몄엯??}</div></td>
+                             <td className="px-6 py-4 text-xs font-bold text-slate-600 leading-6"><div>{child.manager || '誘몄엯??}</div><div className="text-slate-500">{child.kidsCallId || '誘몄엯??}</div></td>
+                             <td className="px-6 py-4 text-xs font-bold text-slate-600 leading-6"><div>{child.displayId || '誘몄엯??}</div><div className="text-slate-500">{child.cardId || '誘몄엯??}</div></td>
+                             <td className="px-6 py-4 text-right"><button className="px-4 py-2 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase shadow-lg">?곸꽭 ?닿린</button></td>
+                          </tr>
+                        )})}
+                     </tbody>
+                  </table>
+                </div>
+             </div>
+          </div>
+        </div>
+        )}
+        {selectedChildId && (
+          <div className="flex-1 flex w-full animate-in fade-in duration-500 bg-slate-50">
+             <motion.div 
+               initial={{ width: 0 }}
+               animate={{ width: isSidebarCollapsed ? '0px' : '340px' }}
+               className="bg-white border-r border-slate-200 flex flex-col shrink-0 h-full overflow-hidden shadow-xl relative z-40"
+             >
+                <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-900 text-white">
+                   <div>
+                     <h4 className="text-sm font-black tracking-tight m-0">?꾨룞 紐⑸줉</h4>
+                     <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400">?좏깮?댁꽌 ?곸꽭 ?몄쭛</p>
+                   </div>
+                   <button onClick={() => setSelectedChildId(null)} className="p-2 hover:bg-white/10 rounded-lg transition-all"><X className="w-4 h-4" /></button>
+                </div>
+                <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-3">
+                   {filteredChildren.map(child => (
+                     <button
+                       key={child.id}
+                       onClick={() => setSelectedChildId(child.id)}
+                       className={`w-full p-6 rounded-3xl border transition-all text-left flex items-center gap-4 group ${selectedChildId === child.id ? 'bg-indigo-600 border-indigo-600 shadow-xl shadow-indigo-600/20 scale-[1.02]' : 'bg-white border-slate-100 hover:border-indigo-200'}`}
+                     >
+                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-sm border ${selectedChildId === child.id ? 'bg-white/20 border-white/30 text-white' : 'bg-slate-50 border-slate-100 text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600'}`}>
+                           {child.name[0]}
+                        </div>
+                        <div className="flex-1">
+                           <div className={`text-sm font-black ${selectedChildId === child.id ? 'text-white' : 'text-slate-900'}`}>{child.name}</div>
+                           <div className={`text-[10px] font-bold mt-0.5 ${selectedChildId === child.id ? 'text-indigo-200' : 'text-slate-400'}`}>{child.yearlyData?.[selectedYear]?.school || '誘몄???}</div>
+                        </div>
+                        <ChevronRight className={`w-4 h-4 transition-transform ${selectedChildId === child.id ? 'text-white translate-x-1' : 'text-slate-200'}`} />
+                     </button>
+                   ))}
+                </div>
+             </motion.div>
+
+             <div className="flex-1 flex flex-col h-full overflow-hidden relative">
+                <div className="bg-white flex items-center justify-between px-12 py-8 border-b border-slate-200 shrink-0">
+                   <div className="flex items-center gap-8 text-sm font-bold text-slate-400">
+                      <div className="flex flex-col space-y-2">
+                         <span className="text-[10px] uppercase tracking-widest px-1 flex items-center gap-2">?대젰 蹂댁쑀 ?곕룄</span>
+                         <div className="flex flex-wrap gap-2">
+                            {Object.keys(selectedChild.yearlyData).sort().map(year => (
+                               <button 
+                                 key={year}
+                                 onClick={() => setSelectedYear(parseInt(year))}
+                                 className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all border ${selectedYear === parseInt(year) ? 'bg-blue-600 text-white border-blue-600 shadow-lg' : 'bg-white text-slate-400 border-slate-100 hover:border-blue-200'}`}
+                               >
+                                  {year}??                               </button>
+                            ))}
+                         </div>
+                      </div>
+                   </div>
+                   <div className="flex gap-4">
+                      <button onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} className="p-5 bg-white border border-slate-200 rounded-[2rem] shadow-sm hover:shadow-xl transition-all text-slate-400">
+                         {isSidebarCollapsed ? <ChevronRight className="w-6 h-6" /> : <ChevronLeft className="w-6 h-6" />}
+                      </button>
+                   </div>
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-12 bg-slate-50 relative">
+                   <div className="max-w-[1200px] mx-auto space-y-4">
+                      {/* ?됱젙??5????*/}
+                      <div className="flex gap-0 border-b-2 border-slate-200">
+                         {[
+                           { id: 'info', label: '湲곕낯?몄쟻?ы빆' },
+                           { id: 'usage', label: '?먭꺽諛륁씠?⑹젙蹂? },
+                           { id: 'health', label: '?μ븷諛뤾굔媛뺤젙蹂? },
+                           { id: 'family', label: '媛援ъ썝?곌퀬?먯젙蹂? },
+                           { id: 'remarks', label: '?뱀씠?ы빆' }
+                         ].map(tab => (
+                           <button 
+                             key={tab.id} 
+                             onClick={() => setDetailTab(tab.id)} 
+                             className={`px-6 py-3 text-[11px] font-bold transition-all border-t border-l border-r rounded-t-lg -mb-[2px] ${detailTab === tab.id ? 'bg-blue-50 text-blue-700 border-blue-200 border-b-white z-10' : 'bg-slate-100 text-slate-500 border-transparent hover:bg-slate-200'}`}
+                           >
+                             {tab.label}
+                           </button>
+                         ))}
+                      </div>
+
+                      <div className="bg-white border-2 border-slate-200 p-6 shadow-sm">
+                         {detailTab === 'info' && (
+                           <div className="space-y-6">
+                              <div className="flex items-center gap-2 text-red-600 mb-4 bg-red-50 p-2 rounded border border-red-100">
+                                 <AlertCircle className="w-4 h-4" />
+                                 <span className="text-[11px] font-bold">二쇰??깅줉踰덊샇 ??怨좎쑀?앸퀎?뺣낫 蹂寃???二쇱쓽媛 ?꾩슂?⑸땲??</span>
+                              </div>
+
+                              <div className="flex gap-8">
+                                 {/* ?됱젙 洹몃━???뚯씠釉?*/}
+                                 <div className="flex-1 grid grid-cols-12 border-t border-l border-slate-300">
+                                    {/* 泥?踰덉㎏ ??*/}
+                                    <div className="col-span-2 bg-slate-50 p-2 border-r border-b border-slate-300 text-[11px] font-bold flex items-center justify-center">愿由щ쾲??/div>
+                                    <div className="col-span-4 p-2 border-r border-b border-slate-300">
+                                       <input type="text" value={editForm?.displayId} onChange={e => setEditForm({...editForm, displayId: e.target.value})} className="w-full text-xs border border-slate-200 p-1 outline-none" />
+                                    </div>
+                                    <div className="col-span-2 bg-slate-50 p-2 border-r border-b border-slate-300 text-[11px] font-bold flex items-center justify-center">?깅챸</div>
+                                    <div className="col-span-4 p-2 border-r border-b border-slate-300">
+                                       <input type="text" value={editForm?.name} onChange={e => setEditForm({...editForm, name: e.target.value})} className="w-full text-xs font-bold border border-slate-200 p-1 outline-none" />
+                                    </div>
+
+                                    {/* ??踰덉㎏ ??*/}
+                                    <div className="col-span-2 bg-slate-50 p-2 border-r border-b border-slate-300 text-[11px] font-bold flex items-center justify-center">二쇰?踰덊샇</div>
+                                    <div className="col-span-10 p-2 border-r border-b border-slate-300 flex items-center gap-2">
+                                       <input type={showSsn ? "text" : "password"} value={editForm?.ssn} onChange={e => setEditForm({...editForm, ssn: e.target.value})} className="flex-1 text-xs border border-slate-200 p-1 outline-none" placeholder="000000-0000000" />
+                                       <button onClick={() => setShowSsn(!showSsn)} className="p-1 hover:bg-slate-100 rounded border border-slate-200">{showSsn ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}</button>
+                                       <span className="text-[10px] text-slate-400 font-bold ml-2">?앸뀈?붿씪: {editForm?.birth} (留?{calculateAge(editForm?.birth)}??</span>
+                                    </div>
+
+                                    {/* ??踰덉㎏ ??*/}
+                                    <div className="col-span-2 bg-slate-50 p-2 border-r border-b border-slate-300 text-[11px] font-bold flex items-center justify-center">?깅퀎</div>
+                                    <div className="col-span-4 p-2 border-r border-b border-slate-300">
+                                       <select value={editForm?.gender} onChange={e => setEditForm({...editForm, gender: e.target.value})} className="w-full text-xs border border-slate-200 p-1 outline-none">
+                                          <option value="??>??/option>
+                                          <option value="??>??/option>
+                                       </select>
+                                    </div>
+                                    <div className="col-span-2 bg-slate-50 p-2 border-r border-b border-slate-300 text-[11px] font-bold flex items-center justify-center">?대???/div>
+                                    <div className="col-span-4 p-2 border-r border-b border-slate-300">
+                                       <input type="text" value={editForm?.phone} onChange={e => setEditForm({...editForm, phone: e.target.value})} className="w-full text-xs border border-slate-200 p-1 outline-none" />
+                                    </div>
+
+                                    {/* ??踰덉㎏ ??*/}
+                                    <div className="col-span-2 bg-slate-50 p-2 border-r border-b border-slate-300 text-[11px] font-bold flex items-center justify-center">二쇱냼</div>
+                                    <div className="col-span-10 p-2 border-r border-b border-slate-300">
+                                       <input type="text" value={editForm?.address} onChange={e => setEditForm({...editForm, address: e.target.value})} className="w-full text-xs border border-slate-200 p-1 outline-none" />
+                                    </div>
+
+                                    {/* ?ㅼ꽢 踰덉㎏ ??(?숆탳 ?뺣낫) */}
+                                    <div className="col-span-2 bg-slate-50 p-2 border-r border-b border-slate-300 text-[11px] font-bold flex items-center justify-center">?숆탳紐?/div>
+                                    <div className="col-span-4 p-2 border-r border-b border-slate-300">
+                                       <input type="text" value={editForm?.school} onChange={e => setEditForm({...editForm, school: e.target.value})} className="w-full text-xs border border-slate-200 p-1 outline-none" />
+                                    </div>
+                                    <div className="col-span-2 bg-slate-50 p-2 border-r border-b border-slate-300 text-[11px] font-bold flex items-center justify-center">?숇뀈</div>
+                                    <div className="col-span-4 p-2 border-r border-b border-slate-300">
+                                       <input type="text" value={editForm?.grade} onChange={e => setEditForm({...editForm, grade: e.target.value})} className="w-full text-xs border border-slate-200 p-1 outline-none" />
+                                    </div>
+
+                                    {/* 媛援ъ썝 ?뺣낫 ?붿빟 (媛援ъ썝 ?꾩슜 ??씠 ?덉쑝??湲곕낯???쇰? ?쒖떆) */}
+                                    <div className="col-span-2 bg-slate-50 p-2 border-r border-b border-slate-300 text-[11px] font-bold flex items-center justify-center">蹂댄샇??/div>
+                                    <div className="col-span-4 p-2 border-r border-b border-slate-300">
+                                       <input type="text" value={editForm?.guardianName} onChange={e => setEditForm({...editForm, guardianName: e.target.value})} className="w-full text-xs border border-slate-200 p-1 outline-none" />
+                                    </div>
+                                    <div className="col-span-2 bg-slate-50 p-2 border-r border-b border-slate-300 text-[11px] font-bold flex items-center justify-center">蹂댄샇???곕씫泥?/div>
+                                    <div className="col-span-4 p-2 border-r border-b border-slate-300">
+                                       <input type="text" value={editForm?.guardianContact} onChange={e => setEditForm({...editForm, guardianContact: e.target.value})} className="w-full text-xs border border-slate-200 p-1 outline-none" />
+                                    </div>
+                                 </div>
+
+                                 {/* ?곗륫 ?ъ쭊 諛?踰꾪듉 ?곸뿭 */}
+                                 <div className="w-48 space-y-4">
+                                    <div className="w-44 h-52 bg-slate-100 border border-slate-300 flex flex-col items-center justify-center gap-2 relative">
+                                       {selectedChild.photo ? (
+                                         <img src={selectedChild.photo} className="w-full h-full object-cover" />
+                                       ) : (
+                                         <User className="w-12 h-12 text-slate-300" />
+                                       )}
+                                       <span className="text-[10px] text-slate-400 font-bold">?ъ쭊 ?놁쓬</span>
+                                       <button className="absolute bottom-2 right-2 p-2 bg-white/80 rounded-full border border-slate-200 hover:bg-white shadow-sm"><Printer className="w-4 h-4 text-slate-500" /></button>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                       <button onClick={handleSaveChildInfo} className="w-full py-2 bg-blue-600 text-white text-xs font-bold rounded shadow-md hover:bg-blue-700 flex items-center justify-center gap-2"><Save className="w-4 h-4" /> ???(F2)</button>
+                                       <button className="w-full py-2 bg-slate-800 text-white text-xs font-bold rounded shadow-md hover:bg-black flex items-center justify-center gap-2"><Printer className="w-4 h-4" /> 湲곕줉吏 異쒕젰</button>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                         )}
+
+                         {detailTab === 'family' && (
+                           <div className="space-y-6">
+                              <h5 className="text-sm font-bold border-l-4 border-blue-600 pl-3">媛援ъ썝 諛??곌퀬???곸꽭 ?뺣낫</h5>
+                              <div className="grid grid-cols-2 gap-6">
+                                 {selectedChild.family?.map((f, i) => (
+                                   <div key={i} className="border border-slate-200 p-4 rounded-lg bg-slate-50">
+                                      <div className="flex justify-between font-bold text-xs border-b border-slate-200 pb-2 mb-2">
+                                         <span>{f.name} ({f.relation})</span>
+                                         {f.cohab && <span className="text-blue-600 px-2 bg-blue-50">?숆굅</span>}
+                                      </div>
+                                      <div className="text-[11px] space-y-1">
+                                         <div className="flex justify-between font-medium"><span>?곕씫泥?</span> <span>{f.contact}</span></div>
+                                         <div className="flex justify-between font-medium"><span>吏곸뾽:</span> <span>{f.job}</span></div>
+                                      </div>
+                                   </div>
+                                 ))}
+                              </div>
+                           </div>
+                         )}
+
+                         {detailTab === 'remarks' && (
+                           <div className="space-y-4">
+                              <h5 className="text-sm font-bold border-l-4 border-blue-600 pl-3">?뱀씠?ы빆 醫낇빀 湲곕줉</h5>
+                              <textarea 
+                                value={editForm?.notes} 
+                                onChange={e => setEditForm({...editForm, notes: e.target.value})} 
+                                className="w-full h-80 border border-slate-300 p-4 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none"
+                                placeholder="?꾨룞???뱀씠?ы빆 諛?愿李?寃곌낵瑜??먯쑀濡?쾶 ?낅젰?섏꽭??"
+                              />
+                           </div>
+                         )}
+
+                         {(detailTab === 'usage' || detailTab === 'health') && (
+                           <div className="py-20 text-center text-slate-300 font-bold italic border-2 border-dashed border-slate-100 uppercase tracking-widest">
+                              異뷀썑 ?쒖뒪???낅뜲?댄듃 ?덉젙?낅땲?? (?됱젙 ?꾩궛 ?곕룞 ?湲?以?
+                           </div>
+                         )}
+                      </div>
+                   </div>
+                </div>
+             </div>
+          </div>
+        )}
+      </div>
+
+      <AnimatePresence>
+        {isAddModalOpen && (
+          <div className="fixed inset-0 z-[2000] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-xl">
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-white w-full max-w-2xl rounded-[3rem] shadow-3xl overflow-hidden border border-white/20 flex flex-col">
+              <div className="p-10 border-b border-slate-100 flex justify-between items-center bg-slate-900 text-white">
+                <div>
+                  <h4 className="text-2xl font-black tracking-tight m-0 italic">?좉퇋 ?꾨룞 ?깅줉 <span className="text-emerald-400">.</span></h4>
+                  <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400">?쒖뒪???듯빀 ?곕룞</p>
+                </div>
+                <button onClick={() => setIsAddModalOpen(false)} className="p-4 hover:bg-white/10 rounded-2xl transition-all"><X className="w-6 h-6" /></button>
+              </div>
+              <div className="p-12 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">?깅챸 (?꾩닔)</label>
+                    <input type="text" value={newChild.name} onChange={e => setNewChild({...newChild, name: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">RFID 移대뱶 ID (?꾩닔)</label>
+                    <input type="text" value={newChild.cardId} onChange={e => setNewChild({...newChild, cardId: e.target.value.toUpperCase()})} className="w-full bg-slate-900 text-emerald-400 border-none rounded-2xl py-4 px-6 font-black outline-none" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">?깅퀎</label>
+                    <div className="flex gap-2">
+                      {['??, '??].map(g => <button key={g} onClick={() => setNewChild({...newChild, gender: g})} className={`flex-1 py-4 rounded-2xl font-black transition-all ${newChild.gender === g ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-slate-400'}`}>{g}</button>)}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">?앸뀈?붿씪</label>
+                    <input type="date" value={newChild.birth} onChange={e => setNewChild({...newChild, birth: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none" />
+                  </div>
+                </div>
+              </div>
+              <div className="p-10 bg-slate-50 border-t border-slate-100 flex gap-4">
+                <button onClick={() => setIsAddModalOpen(false)} className="flex-1 py-5 bg-white border border-slate-200 text-slate-500 rounded-3xl font-black text-[12px] uppercase tracking-widest hover:bg-slate-100 transition-all">痍⑥냼</button>
+                <button onClick={handleAddChild} className="flex-[2] py-5 bg-emerald-600 text-white rounded-3xl font-black text-[12px] uppercase tracking-widest hover:bg-emerald-700 transition-all">?뺣낫 ???諛??곕룞</button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+export default ChildrenPage;

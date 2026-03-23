@@ -1,0 +1,261 @@
+        {selectedChildId && (
+          <div className="flex-1 flex w-full animate-in fade-in duration-500 bg-slate-50">
+             <motion.div 
+               initial={{ width: 0 }}
+               animate={{ width: isSidebarCollapsed ? '0px' : '340px' }}
+               className="bg-white border-r border-slate-200 flex flex-col shrink-0 h-full overflow-hidden shadow-xl relative z-40"
+             >
+                <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-900 text-white">
+                   <div>
+                     <h4 className="text-sm font-black tracking-tight m-0">아동 목록</h4>
+                     <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400">선택해서 상세 편집</p>
+                   </div>
+                   <button onClick={() => setSelectedChildId(null)} className="p-2 hover:bg-white/10 rounded-lg transition-all"><X className="w-4 h-4" /></button>
+                </div>
+                <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-3">
+                   {filteredChildren.map(child => (
+                     <button
+                       key={child.id}
+                       onClick={() => setSelectedChildId(child.id)}
+                       className={`w-full p-6 rounded-3xl border transition-all text-left flex items-center gap-4 group ${selectedChildId === child.id ? 'bg-indigo-600 border-indigo-600 shadow-xl shadow-indigo-600/20 scale-[1.02]' : 'bg-white border-slate-100 hover:border-indigo-200'}`}
+                     >
+                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-sm border ${selectedChildId === child.id ? 'bg-white/20 border-white/30 text-white' : 'bg-slate-50 border-slate-100 text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600'}`}>
+                           {child.name[0]}
+                        </div>
+                        <div className="flex-1">
+                           <div className={`text-sm font-black ${selectedChildId === child.id ? 'text-white' : 'text-slate-900'}`}>{child.name}</div>
+                           <div className={`text-[10px] font-bold mt-0.5 ${selectedChildId === child.id ? 'text-indigo-200' : 'text-slate-400'}`}>{child.yearlyData?.[selectedYear]?.school || '미지정'}</div>
+                        </div>
+                        <ChevronRight className={`w-4 h-4 transition-transform ${selectedChildId === child.id ? 'text-white translate-x-1' : 'text-slate-200'}`} />
+                     </button>
+                   ))}
+                </div>
+             </motion.div>
+
+             <div className="flex-1 flex flex-col h-full overflow-hidden relative">
+                <div className="bg-white flex items-center justify-between px-12 py-8 border-b border-slate-200 shrink-0">
+                   <div className="flex items-center gap-8 text-sm font-bold text-slate-400">
+                      <div className="flex flex-col space-y-2">
+                         <span className="text-[10px] uppercase tracking-widest px-1 flex items-center gap-2">이력 보유 연도</span>
+                         <div className="flex flex-wrap gap-2">
+                            {Object.keys(selectedChild.yearlyData).sort().map(year => (
+                               <button 
+                                 key={year}
+                                 onClick={() => setSelectedYear(parseInt(year))}
+                                 className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all border ${selectedYear === parseInt(year) ? 'bg-blue-600 text-white border-blue-600 shadow-lg' : 'bg-white text-slate-400 border-slate-100 hover:border-blue-200'}`}
+                               >
+                                  {year}년
+                               </button>
+                            ))}
+                         </div>
+                      </div>
+                   </div>
+                   <div className="flex gap-4">
+                      <button onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} className="p-5 bg-white border border-slate-200 rounded-[2rem] shadow-sm hover:shadow-xl transition-all text-slate-400">
+                         {isSidebarCollapsed ? <ChevronRight className="w-6 h-6" /> : <ChevronLeft className="w-6 h-6" />}
+                      </button>
+                   </div>
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-12 bg-slate-50 relative">
+                   <div className="max-w-[1200px] mx-auto space-y-4">
+                      {/* 행정용 5단 탭 */}
+                      <div className="flex gap-0 border-b-2 border-slate-200">
+                         {[
+                           { id: 'info', label: '기본인적사항' },
+                           { id: 'usage', label: '자격및이용정보' },
+                           { id: 'health', label: '장애및건강정보' },
+                           { id: 'family', label: '가구원연고자정보' },
+                           { id: 'remarks', label: '특이사항' }
+                         ].map(tab => (
+                           <button 
+                             key={tab.id} 
+                             onClick={() => setDetailTab(tab.id)} 
+                             className={`px-6 py-3 text-[11px] font-bold transition-all border-t border-l border-r rounded-t-lg -mb-[2px] ${detailTab === tab.id ? 'bg-blue-50 text-blue-700 border-blue-200 border-b-white z-10' : 'bg-slate-100 text-slate-500 border-transparent hover:bg-slate-200'}`}
+                           >
+                             {tab.label}
+                           </button>
+                         ))}
+                      </div>
+
+                      <div className="bg-white border-2 border-slate-200 p-6 shadow-sm">
+                         {detailTab === 'info' && (
+                           <div className="space-y-6">
+                              <div className="flex items-center gap-2 text-red-600 mb-4 bg-red-50 p-2 rounded border border-red-100">
+                                 <AlertCircle className="w-4 h-4" />
+                                 <span className="text-[11px] font-bold">주민등록번호 등 고유식별정보 변경 시 주의가 필요합니다.</span>
+                              </div>
+
+                              <div className="flex gap-8">
+                                 {/* 행정 그리드 테이블 */}
+                                 <div className="flex-1 grid grid-cols-12 border-t border-l border-slate-300">
+                                    {/* 첫 번째 행 */}
+                                    <div className="col-span-2 bg-slate-50 p-2 border-r border-b border-slate-300 text-[11px] font-bold flex items-center justify-center">관리번호</div>
+                                    <div className="col-span-4 p-2 border-r border-b border-slate-300">
+                                       <input type="text" value={editForm?.displayId} onChange={e => setEditForm({...editForm, displayId: e.target.value})} className="w-full text-xs border border-slate-200 p-1 outline-none" />
+                                    </div>
+                                    <div className="col-span-2 bg-slate-50 p-2 border-r border-b border-slate-300 text-[11px] font-bold flex items-center justify-center">성명</div>
+                                    <div className="col-span-4 p-2 border-r border-b border-slate-300">
+                                       <input type="text" value={editForm?.name} onChange={e => setEditForm({...editForm, name: e.target.value})} className="w-full text-xs font-bold border border-slate-200 p-1 outline-none" />
+                                    </div>
+
+                                    {/* 두 번째 행 */}
+                                    <div className="col-span-2 bg-slate-50 p-2 border-r border-b border-slate-300 text-[11px] font-bold flex items-center justify-center">주민번호</div>
+                                    <div className="col-span-10 p-2 border-r border-b border-slate-300 flex items-center gap-2">
+                                       <input type={showSsn ? "text" : "password"} value={editForm?.ssn} onChange={e => setEditForm({...editForm, ssn: e.target.value})} className="flex-1 text-xs border border-slate-200 p-1 outline-none" placeholder="000000-0000000" />
+                                       <button onClick={() => setShowSsn(!showSsn)} className="p-1 hover:bg-slate-100 rounded border border-slate-200">{showSsn ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}</button>
+                                       <span className="text-[10px] text-slate-400 font-bold ml-2">생년월일: {editForm?.birth} (만 {calculateAge(editForm?.birth)}세)</span>
+                                    </div>
+
+                                    {/* 세 번째 행 */}
+                                    <div className="col-span-2 bg-slate-50 p-2 border-r border-b border-slate-300 text-[11px] font-bold flex items-center justify-center">성별</div>
+                                    <div className="col-span-4 p-2 border-r border-b border-slate-300">
+                                       <select value={editForm?.gender} onChange={e => setEditForm({...editForm, gender: e.target.value})} className="w-full text-xs border border-slate-200 p-1 outline-none">
+                                          <option value="남">남</option>
+                                          <option value="여">여</option>
+                                       </select>
+                                    </div>
+                                    <div className="col-span-2 bg-slate-50 p-2 border-r border-b border-slate-300 text-[11px] font-bold flex items-center justify-center">휴대폰</div>
+                                    <div className="col-span-4 p-2 border-r border-b border-slate-300">
+                                       <input type="text" value={editForm?.phone} onChange={e => setEditForm({...editForm, phone: e.target.value})} className="w-full text-xs border border-slate-200 p-1 outline-none" />
+                                    </div>
+
+                                    {/* 네 번째 행 */}
+                                    <div className="col-span-2 bg-slate-50 p-2 border-r border-b border-slate-300 text-[11px] font-bold flex items-center justify-center">주소</div>
+                                    <div className="col-span-10 p-2 border-r border-b border-slate-300">
+                                       <input type="text" value={editForm?.address} onChange={e => setEditForm({...editForm, address: e.target.value})} className="w-full text-xs border border-slate-200 p-1 outline-none" />
+                                    </div>
+
+                                    {/* 다섯 번째 행 (학교 정보) */}
+                                    <div className="col-span-2 bg-slate-50 p-2 border-r border-b border-slate-300 text-[11px] font-bold flex items-center justify-center">학교명</div>
+                                    <div className="col-span-4 p-2 border-r border-b border-slate-300">
+                                       <input type="text" value={editForm?.school} onChange={e => setEditForm({...editForm, school: e.target.value})} className="w-full text-xs border border-slate-200 p-1 outline-none" />
+                                    </div>
+                                    <div className="col-span-2 bg-slate-50 p-2 border-r border-b border-slate-300 text-[11px] font-bold flex items-center justify-center">학년</div>
+                                    <div className="col-span-4 p-2 border-r border-b border-slate-300">
+                                       <input type="text" value={editForm?.grade} onChange={e => setEditForm({...editForm, grade: e.target.value})} className="w-full text-xs border border-slate-200 p-1 outline-none" />
+                                    </div>
+
+                                    {/* 가구원 정보 요약 (가구원 전용 탭이 있으나 기본에 일부 표시) */}
+                                    <div className="col-span-2 bg-slate-50 p-2 border-r border-b border-slate-300 text-[11px] font-bold flex items-center justify-center">보호자</div>
+                                    <div className="col-span-4 p-2 border-r border-b border-slate-300">
+                                       <input type="text" value={editForm?.guardianName} onChange={e => setEditForm({...editForm, guardianName: e.target.value})} className="w-full text-xs border border-slate-200 p-1 outline-none" />
+                                    </div>
+                                    <div className="col-span-2 bg-slate-50 p-2 border-r border-b border-slate-300 text-[11px] font-bold flex items-center justify-center">보호자 연락처</div>
+                                    <div className="col-span-4 p-2 border-r border-b border-slate-300">
+                                       <input type="text" value={editForm?.guardianContact} onChange={e => setEditForm({...editForm, guardianContact: e.target.value})} className="w-full text-xs border border-slate-200 p-1 outline-none" />
+                                    </div>
+                                 </div>
+
+                                 {/* 우측 사진 및 버튼 영역 */}
+                                 <div className="w-48 space-y-4">
+                                    <div className="w-44 h-52 bg-slate-100 border border-slate-300 flex flex-col items-center justify-center gap-2 relative">
+                                       {selectedChild.photo ? (
+                                         <img src={selectedChild.photo} className="w-full h-full object-cover" />
+                                       ) : (
+                                         <User className="w-12 h-12 text-slate-300" />
+                                       )}
+                                       <span className="text-[10px] text-slate-400 font-bold">사진 없음</span>
+                                       <button className="absolute bottom-2 right-2 p-2 bg-white/80 rounded-full border border-slate-200 hover:bg-white shadow-sm"><Printer className="w-4 h-4 text-slate-500" /></button>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                       <button onClick={handleSaveChildInfo} className="w-full py-2 bg-blue-600 text-white text-xs font-bold rounded shadow-md hover:bg-blue-700 flex items-center justify-center gap-2"><Save className="w-4 h-4" /> 저장 (F2)</button>
+                                       <button className="w-full py-2 bg-slate-800 text-white text-xs font-bold rounded shadow-md hover:bg-black flex items-center justify-center gap-2"><Printer className="w-4 h-4" /> 기록지 출력</button>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                         )}
+
+                         {detailTab === 'family' && (
+                           <div className="space-y-6">
+                              <h5 className="text-sm font-bold border-l-4 border-blue-600 pl-3">가구원 및 연고자 상세 정보</h5>
+                              <div className="grid grid-cols-2 gap-6">
+                                 {selectedChild.family?.map((f, i) => (
+                                   <div key={i} className="border border-slate-200 p-4 rounded-lg bg-slate-50">
+                                      <div className="flex justify-between font-bold text-xs border-b border-slate-200 pb-2 mb-2">
+                                         <span>{f.name} ({f.relation})</span>
+                                         {f.cohab && <span className="text-blue-600 px-2 bg-blue-50">동거</span>}
+                                      </div>
+                                      <div className="text-[11px] space-y-1">
+                                         <div className="flex justify-between font-medium"><span>연락처:</span> <span>{f.contact}</span></div>
+                                         <div className="flex justify-between font-medium"><span>직업:</span> <span>{f.job}</span></div>
+                                      </div>
+                                   </div>
+                                 ))}
+                              </div>
+                           </div>
+                         )}
+
+                         {detailTab === 'remarks' && (
+                           <div className="space-y-4">
+                              <h5 className="text-sm font-bold border-l-4 border-blue-600 pl-3">특이사항 종합 기록</h5>
+                              <textarea 
+                                value={editForm?.notes} 
+                                onChange={e => setEditForm({...editForm, notes: e.target.value})} 
+                                className="w-full h-80 border border-slate-300 p-4 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none"
+                                placeholder="아동의 특이사항 및 관찰 결과를 자유롭게 입력하세요."
+                              />
+                           </div>
+                         )}
+
+                         {(detailTab === 'usage' || detailTab === 'health') && (
+                           <div className="py-20 text-center text-slate-300 font-bold italic border-2 border-dashed border-slate-100 uppercase tracking-widest">
+                              추후 시스템 업데이트 예정입니다. (행정 전산 연동 대기 중)
+                           </div>
+                         )}
+                      </div>
+                   </div>
+                </div>
+             </div>
+          </div>
+        )}
+      </div>
+
+      <AnimatePresence>
+        {isAddModalOpen && (
+          <div className="fixed inset-0 z-[2000] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-xl">
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-white w-full max-w-2xl rounded-[3rem] shadow-3xl overflow-hidden border border-white/20 flex flex-col">
+              <div className="p-10 border-b border-slate-100 flex justify-between items-center bg-slate-900 text-white">
+                <div>
+                  <h4 className="text-2xl font-black tracking-tight m-0 italic">신규 아동 등록 <span className="text-emerald-400">.</span></h4>
+                  <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400">시스템 통합 연동</p>
+                </div>
+                <button onClick={() => setIsAddModalOpen(false)} className="p-4 hover:bg-white/10 rounded-2xl transition-all"><X className="w-6 h-6" /></button>
+              </div>
+              <div className="p-12 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">성명 (필수)</label>
+                    <input type="text" value={newChild.name} onChange={e => setNewChild({...newChild, name: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">RFID 카드 ID (필수)</label>
+                    <input type="text" value={newChild.cardId} onChange={e => setNewChild({...newChild, cardId: e.target.value.toUpperCase()})} className="w-full bg-slate-900 text-emerald-400 border-none rounded-2xl py-4 px-6 font-black outline-none" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">성별</label>
+                    <div className="flex gap-2">
+                      {['남', '여'].map(g => <button key={g} onClick={() => setNewChild({...newChild, gender: g})} className={`flex-1 py-4 rounded-2xl font-black transition-all ${newChild.gender === g ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-slate-400'}`}>{g}</button>)}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">생년월일</label>
+                    <input type="date" value={newChild.birth} onChange={e => setNewChild({...newChild, birth: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 font-black outline-none" />
+                  </div>
+                </div>
+              </div>
+              <div className="p-10 bg-slate-50 border-t border-slate-100 flex gap-4">
+                <button onClick={() => setIsAddModalOpen(false)} className="flex-1 py-5 bg-white border border-slate-200 text-slate-500 rounded-3xl font-black text-[12px] uppercase tracking-widest hover:bg-slate-100 transition-all">취소</button>
+                <button onClick={handleAddChild} className="flex-[2] py-5 bg-emerald-600 text-white rounded-3xl font-black text-[12px] uppercase tracking-widest hover:bg-emerald-700 transition-all">정보 저장 및 연동</button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+export default ChildrenPage;

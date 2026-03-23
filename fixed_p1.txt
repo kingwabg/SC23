@@ -1,0 +1,150 @@
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import * as XLSX from 'xlsx';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Users, 
+  Search, 
+  Plus, 
+  X, 
+  User, 
+  Calendar as CalendarIcon,
+  FileSpreadsheet,
+  Fingerprint,
+  MoreVertical,
+  GraduationCap,
+  Printer,
+  BookOpen,
+  MessageSquare,
+  ShieldCheck,
+  ClipboardCheck,
+  History,
+  TrendingUp,
+  Heart,
+  CheckCircle2,
+  MapPin,
+  ChevronLeft,
+  ChevronRight,
+  LayoutGrid,
+  Table as TableIcon,
+  ChevronDown,
+  Timer,
+  Eye,
+  EyeOff,
+  Save,
+  AlertCircle
+} from 'lucide-react';
+
+const calculateAge = (birth) => {
+  if (!birth) return '';
+  const today = new Date();
+  const birthDate = new Date(birth);
+  if (Number.isNaN(birthDate.getTime())) return '';
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) age -= 1;
+  return age >= 0 ? String(age) : '';
+};
+
+const maskSsn = (ssn) => {
+  if (!ssn) return '';
+  const cleaned = String(ssn).replace(/\s+/g, '');
+  if (cleaned.length <= 7) return cleaned;
+  return `${cleaned.slice(0, 8)}******`;
+};
+
+const buildChildForm = (child, yearData) => ({
+  name: child?.name || '',
+  gender: child?.gender || '',
+  phone: child?.phone || yearData?.contact || '',
+  ssn: child?.ssn || '',
+  birth: child?.birth || '',
+  school: yearData?.school || child?.school || '',
+  grade: yearData?.grade || child?.grade || '',
+  enrollment: child?.enrollment || '',
+  prevEnrollment: child?.prevEnrollment || '',
+  address: yearData?.address || child?.address || '',
+  useType: child?.useType || '',
+  guardianName: yearData?.guardian || child?.guardianName || '',
+  guardianRel: yearData?.guardianRel || child?.guardianRel || '',
+  guardianType: yearData?.guardianType || child?.guardianType || '',
+  guardianContact: yearData?.contact || child?.guardianContact || '',
+  notes: child?.notes || '',
+  manager: child?.manager || '',
+  kidsCallId: child?.kidsCallId || '',
+  dischargeDate: child?.dischargeDate || '',
+  displayId: child?.displayId || '',
+  cardId: child?.cardId || '',
+});
+const ChildrenPage = () => {
+  // --- 글로벌 시스템 상태 ---
+  const userRole = localStorage.getItem('userRole') || 'ADMIN';
+  const [selectedYear, setSelectedYear] = useState(2026);
+  const [activeTab, setActiveTab] = useState('active'); 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedChildId, setSelectedChildId] = useState(null);
+  const [detailTab, setDetailTab] = useState('info');
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isYearPickerOpen, setIsYearPickerOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newChild, setNewChild] = useState({ name: '', gender: '남', birth: '', school: '', grade: 1, address: '', guardian: '', contact: '', cardId: '' });
+  const [showSsn, setShowSsn] = useState(false);
+  const [editForm, setEditForm] = useState(null);
+
+  // 초1 -> 중3까지의 긴 추적을 위한 연도 범위 (15년)
+  const years = useMemo(() => Array.from({ length: 15 }, (_, i) => 2015 + i).reverse(), []);
+
+  // --- 권한 레이어 ---
+  const permissions = useMemo(() => {
+    const currentUser = localStorage.getItem('currentUser');
+    if (currentUser && userRole === 'NON_STAFF') {
+      const user = JSON.parse(currentUser);
+      return { 'NON_STAFF': user.permissions || {} };
+    }
+    const saved = localStorage.getItem('appPermissions');
+    return saved ? JSON.parse(saved) : {
+      'NON_STAFF': {
+        'children_view': true,
+        'children_create': false,
+        'children_edit': false,
+        'children_delete': false,
+        'attendance_view': true,
+        'attendance_edit': false,
+        'attendance_excel': false,
+        'rfid_access': true
+      }
+    };
+  }, [userRole]);
+
+  const can = (perm) => userRole === 'ADMIN' || permissions.NON_STAFF[perm];
+
+  // --- 데이터 유지 및 테스트 세트 ---
+  const [children, setChildren] = useState(() => {
+    const saved = localStorage.getItem('forestChildrenList');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.length > 0 && (!parsed[0].yearlyData || !parsed[0].yearlyData[2018])) {
+        localStorage.removeItem('forestChildrenList');
+      } else {
+        return parsed;
+      }
+    }
+    return [
+      { 
+        id: 1, name: '김민수', birth: '2011-05-12', gender: '남', photo: null, enrollment: '2018-03-02', cardId: 'E7FDCD66',
+        yearlyData: {
+          2018: { school: '숲속초등학교', grade: 1, address: '서울시 강남구 A단지', guardian: '김철수', contact: '010-1111-1111' },
+          2019: { school: '숲속초등학교', grade: 2, address: '서울시 강남구 A단지', guardian: '김철수', contact: '010-1111-1111' },
+          2020: { school: '숲속초등학교', grade: 3, address: '서울시 강남구 B빌라', guardian: '김철수', contact: '010-2222-2222' },
+          2021: { school: '숲속초등학교', grade: 4, address: '서울시 강남구 B빌라', guardian: '김철수', contact: '010-2222-2222' },
+          2022: { school: '숲속초등학교', grade: 5, address: '서울시 서초구 C아파트', guardian: '김철수', contact: '010-3333-3333' },
+          2023: { school: '숲속초등학교', grade: 6, address: '서울시 서초구 C아파트', guardian: '김철수', contact: '010-3333-3333' },
+          2024: { school: '숲속중학교', grade: '중1', address: '서울시 서초구 D단지', guardian: '김철수', contact: '010-4444-4444' },
+          2025: { school: '숲속중학교', grade: '중2', address: '서울시 서초구 D단지', guardian: '김철수', contact: '010-4444-4444' },
+          2026: { school: '숲속중학교', grade: '중3', address: '서울시 서초구 D단지', guardian: '김철수', contact: '010-1234-5678' }
+        },
+        logs: { 
+          2018: { observation: [{ date: '2018-03-12', content: '1학년 입학! 너무 귀엽고 씩씩함.' }], h1: { date: '2018-05-10', content: '적응 아주 빠름' }, h2: { date: '2018-11-20', content: '친구들과 잘 어울림' }, guardian: [] },
+          2026: { observation: [{ date: '2026-03-10', content: '중3 사춘기 없이 성숙함. 진로 고민 중.' }], h1: { date: '2026-03-15', content: '진로 집중 상담' }, h2: null, guardian: [] }
+        },
+        attendance: {}
+      },

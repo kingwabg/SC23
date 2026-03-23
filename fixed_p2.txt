@@ -1,0 +1,113 @@
+      { 
+        id: 2, name: '이영희', birth: '2018-11-20', gender: '여', photo: null, enrollment: '2025-03-02', cardId: 'A1B2C3D4',
+        yearlyData: {
+          2025: { school: '산새초등학교', grade: 1, address: '서울시 서초구 서초대로', guardian: '박영순', contact: '010-9999-8888' },
+          2026: { school: '숲속초등학교', grade: 2, address: '서울시 서초구 서초대로', guardian: '박영순', contact: '010-4321-8765' }
+        },
+        logs: { 2025: { observation: [], h1: { date: '2025-05-02', content: '입소 초기 상담' }, h2: null, guardian: [] }, 2026: { observation: [], h1: null, h2: null, guardian: [] } },
+        attendance: {}
+      },
+      {
+        id: 3, name: '박지훈', birth: '2019-02-15', gender: '남', photo: null, enrollment: '2026-03-02', cardId: 'BG774211',
+        yearlyData: {
+          2026: { school: '푸른들초등학교', grade: 1, address: '서울시 송파구 잠실동', guardian: '박철웅', contact: '010-5555-5555' }
+        },
+        logs: { 2026: { observation: [], h1: null, h2: null, guardian: [] } },
+        attendance: {}
+      },
+      {
+        id: 4, 
+        name: '정우성',
+        birth: '2018-05-20', 
+        gender: '남', 
+        photo: null, 
+        enrollment: '2026-03-02', 
+        displayId: 'NF561136',
+        cardId: '37B0B566',
+        yearlyData: { 2026: { school: '숲속초등학교', grade: 2, address: '서울시 서초구', guardian: '정철학', contact: '010-8888-8888' } },
+        logs: { 2026: { observation: [], h1: null, h2: null, guardian: [] } },
+        attendance: {}
+      }
+    ];
+  });
+
+  const [scanLogs, setScanLogs] = useState(() => {
+    const saved = localStorage.getItem('forestScanLogs');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [lastScannedChild, setLastScannedChild] = useState(null);
+
+  useEffect(() => {
+    localStorage.setItem('forestChildrenList', JSON.stringify(children));
+  }, [children]);
+
+  useEffect(() => {
+    localStorage.setItem('forestScanLogs', JSON.stringify(scanLogs));
+  }, [scanLogs]);
+
+  useEffect(() => {
+    const fetchAttendance = async () => {
+      try {
+        const response = await fetch('http://localhost:5005/api/attendance');
+        const externalData = await response.json();
+        externalData.forEach(item => {
+          if (item.time && item.time !== '-') {
+            const isAlreadyProcessed = scanLogs.some(log => 
+              log.name === item.name && 
+              new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) === item.time
+            );
+            if (!isAlreadyProcessed) {
+              const child = children.find(c => c.name === item.name);
+              if (child) {
+                const newLog = {
+                  id: Date.now() + Math.random(),
+                  terminalId: '900446',
+                  cardId: child.cardId,
+                  name: child.name,
+                  timestamp: new Date(`${new Date().toISOString().split('T')[0]}T${item.time}`).toISOString(),
+                  status: 'SUCCESS'
+                };
+                setScanLogs(prev => [newLog, ...prev].slice(0, 50));
+                const today = new Date().toISOString().split('T')[0];
+                setChildren(prev => prev.map(c => {
+                  if (c.id === child.id) {
+                    return {
+                      ...c,
+                      attendance: { ...c.attendance, [today]: { status: 'PRESENT', time: item.time } }
+                    };
+                  }
+                  return c;
+                }));
+              }
+            }
+          }
+        });
+      } catch (err) {
+        console.log('중계 서버 연결 대기 중...');
+      }
+    };
+    const interval = setInterval(fetchAttendance, 60000);
+    fetchAttendance();
+    return () => clearInterval(interval);
+  }, [children, scanLogs]);
+
+  useEffect(() => {
+    let buffer = '';
+    let lastKeyTime = Date.now();
+    const handleKeyDown = (e) => {
+      const currentTime = Date.now();
+      if (currentTime - lastKeyTime > 50) buffer = '';
+      if (e.key === 'Enter') {
+        if (buffer.length >= 4) {
+          handleTerminalScan(buffer.toUpperCase());
+        }
+        buffer = '';
+      } else if (e.key.length === 1) {
+        buffer += e.key;
+      }
+      lastKeyTime = currentTime;
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [children]);

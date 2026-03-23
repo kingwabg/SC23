@@ -20,6 +20,12 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --app-shell-top: max(1rem, env(safe-area-inset-top));
+  --app-shell-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+html {
+  background: #f8fafc;
 }
 
 body {
@@ -27,8 +33,16 @@ body {
   display: flex;
   min-width: 320px;
   min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(121, 182, 255, 0.18), transparent 32%),
+    linear-gradient(180deg, #eff6ff 0%, #f8fafc 24%, #f8fafc 100%);
+  overscroll-behavior-y: none;
 }
 
 #root {
   width: 100%;
+}
+
+* {
+  box-sizing: border-box;
 }

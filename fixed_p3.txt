@@ -1,0 +1,127 @@
+  const handleTerminalScan = (cardId) => {
+    const child = children.find(c => c.cardId === cardId);
+    const newLog = {
+      id: Date.now(),
+      terminalId: '900446',
+      cardId: cardId,
+      name: child ? child.name : '미등록 카드',
+      timestamp: new Date().toISOString(),
+      status: child ? 'SUCCESS' : 'UNKNOWN'
+    };
+    setScanLogs(prev => [newLog, ...prev].slice(0, 50));
+    if (child) {
+      setLastScannedChild(child);
+      setTimeout(() => setLastScannedChild(null), 3000);
+      const today = new Date().toISOString().split('T')[0];
+      setChildren(prev => prev.map(c => {
+        if (c.id === child.id) {
+          return {
+            ...c,
+            attendance: { ...c.attendance, [today]: { status: 'PRESENT', time: new Date().toLocaleTimeString() } }
+          };
+        }
+        return c;
+      }));
+    }
+  };
+
+  const handleAddChild = () => {
+    if (!newChild.name || !newChild.cardId) {
+      alert('아동 이름과 카드 번호는 필수입니다.');
+      return;
+    }
+    const id = Date.now();
+    const childData = {
+      id,
+      name: newChild.name,
+      birth: newChild.birth,
+      gender: newChild.gender,
+      photo: null,
+      enrollment: new Date().toISOString().split('T')[0],
+      cardId: newChild.cardId,
+      yearlyData: {
+        [selectedYear]: { school: newChild.school, grade: parseInt(newChild.grade), address: newChild.address, guardian: newChild.guardian, contact: newChild.contact }
+      },
+      logs: { [selectedYear]: { observation: [], h1: null, h2: null, guardian: [] } },
+      attendance: {}
+    };
+    setChildren(prev => [...prev, childData]);
+    setIsAddModalOpen(false);
+    setNewChild({ name: '', gender: '남', birth: '', school: '', grade: 1, address: '', guardian: '', contact: '', cardId: '' });
+  };
+
+  const selectedChild = useMemo(() => children.find(c => c.id === selectedChildId), [children, selectedChildId]);
+  const currentYearData = useMemo(() => {
+    if (!selectedChild) return null;
+    return selectedChild.yearlyData?.[selectedYear] || null;
+  }, [selectedChild, selectedYear]);
+
+  const filteredChildren = useMemo(() => {
+    return children.filter(c => {
+      const matchesSearch = c.name.includes(searchQuery);
+      const hasDataThisYear = !!c.yearlyData?.[selectedYear];
+      return matchesSearch && hasDataThisYear;
+    });
+  }, [children, searchQuery, selectedYear]);
+
+  const currentYearLogs = useMemo(() => {
+    if (!selectedChild) return null;
+    return selectedChild.logs?.[selectedYear] || { observation: [], h1: null, h2: null, guardian: [] };
+  }, [selectedChild, selectedYear]);
+
+  useEffect(() => {
+    if (!selectedChild) {
+      setEditForm(null);
+      return;
+    }
+    setEditForm(buildChildForm(selectedChild, currentYearData || {}));
+    setShowSsn(false);
+  }, [selectedChildId, selectedYear]);
+
+  const handleSaveChildInfo = () => {
+    if (!selectedChild || !editForm) return;
+    if (!editForm.name?.trim()) {
+      alert('이름은 필수입니다.');
+      return;
+    }
+    setChildren(prev => prev.map(child => {
+      if (child.id !== selectedChild.id) return child;
+      const nextYearData = {
+        ...(child.yearlyData || {}),
+        [selectedYear]: {
+          ...(child.yearlyData?.[selectedYear] || {}),
+          school: editForm.school,
+          grade: editForm.grade,
+          address: editForm.address,
+          guardian: editForm.guardianName,
+          guardianRel: editForm.guardianRel,
+          guardianType: editForm.guardianType,
+          contact: editForm.guardianContact,
+        }
+      };
+      return {
+        ...child,
+        name: editForm.name,
+        gender: editForm.gender,
+        phone: editForm.phone,
+        ssn: editForm.ssn,
+        birth: editForm.birth,
+        enrollment: editForm.enrollment,
+        prevEnrollment: editForm.prevEnrollment,
+        address: editForm.address,
+        useType: editForm.useType,
+        guardianName: editForm.guardianName,
+        guardianRel: editForm.guardianRel,
+        guardianType: editForm.guardianType,
+        guardianContact: editForm.guardianContact,
+        notes: editForm.notes,
+        manager: editForm.manager,
+        kidsCallId: editForm.kidsCallId,
+        dischargeDate: editForm.dischargeDate,
+        displayId: editForm.displayId,
+        cardId: editForm.cardId,
+        yearlyData: nextYearData,
+      };
+    }));
+    alert('아동 정보가 저장되었습니다.');
+  };

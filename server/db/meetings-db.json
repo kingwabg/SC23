@@ -1,0 +1,325 @@
+{
+  "meetings": [
+    {
+      "id": 11,
+      "year": 2026,
+      "date": "2026.03.19",
+      "type": "LOG",
+      "status": "확정",
+      "title": "3월 20일 운영일지",
+      "writer": "김민수",
+      "startTime": "10:00",
+      "endTime": "19:00",
+      "approval": {
+        "manager": {
+          "name": "최하은",
+          "confirmed": true,
+          "date": "2026.03.19"
+        },
+        "director": {
+          "name": "김민수",
+          "confirmed": false,
+          "date": null
+        }
+      },
+      "stats": {
+        "children": {
+          "male": {
+            "pre": 0,
+            "elem": 1,
+            "mid": 1,
+            "high": 0,
+            "extra": 0,
+            "total": 2
+          },
+          "female": {
+            "pre": 0,
+            "elem": 1,
+            "mid": 0,
+            "high": 0,
+            "extra": 0,
+            "total": 1
+          }
+        },
+        "attendance": {
+          "limit": 40,
+          "current": 3,
+          "present": 3,
+          "official": 0,
+          "alt": 0,
+          "absent": 0,
+          "extra": 0
+        },
+        "meals": {
+          "morning": 0,
+          "lunch": 0,
+          "dinner": 3
+        },
+        "staff": {
+          "total": 3,
+          "teachers": 1,
+          "instructors": 0,
+          "extra": 1
+        }
+      },
+      "content": "<table class=\"PlaygroundEditorTheme__table\"><colgroup><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"></colgroup><tbody><tr><td colspan=\"2\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><b><strong class=\"PlaygroundEditorTheme__textBold\" style=\"white-space: pre-wrap;\">일자</strong></b></p></td><td colspan=\"3\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">2026.03.19</span></p></td><td colspan=\"2\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><b><strong class=\"PlaygroundEditorTheme__textBold\" style=\"white-space: pre-wrap;\">운영시간</strong></b></p></td><td colspan=\"3\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">10:00 ~ 19:00 (학기중)</span></p></td><td colspan=\"2\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><b><strong class=\"PlaygroundEditorTheme__textBold\" style=\"white-space: pre-wrap;\">담당자</strong></b></p></td><td colspan=\"2\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">김민수</span></p></td></tr><tr><td rowspan=\"3\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">아동현황</span><br><span style=\"white-space: pre-wrap;\">(취학구분)</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">성별</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">취학전</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">탈학교</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">초등학교</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">중학교</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">고등학교</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">기타</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">계</span></p></td><td rowspan=\"3\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">급식현황</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">조식</span></p></td><td colspan=\"3\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><b><strong class=\"PlaygroundEditorTheme__textBold\" style=\"white-space: pre-wrap;\">0 명</strong></b></p></td></tr><tr><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">남</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">1</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">1</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><b><strong class=\"PlaygroundEditorTheme__textBold\" style=\"white-space: pre-wrap;\">2</strong></b></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">중식</span></p></td><td colspan=\"3\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><b><strong class=\"PlaygroundEditorTheme__textBold\" style=\"white-space: pre-wrap;\">0 명</strong></b></p></td></tr><tr><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">여</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">1</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><b><strong class=\"PlaygroundEditorTheme__textBold\" style=\"white-space: pre-wrap;\">1</strong></b></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">석식</span></p></td><td colspan=\"3\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><b><strong class=\"PlaygroundEditorTheme__textBold\" style=\"white-space: pre-wrap;\">3 명</strong></b></p></td></tr><tr><td rowspan=\"2\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">아동출석</span><br><span style=\"white-space: pre-wrap;\">(출석구분)</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">정원</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">현원</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">출석</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">공결</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">대체출석</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">결석</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">기타</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">계</span></p></td><td rowspan=\"2\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">교사현황</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">종사자</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">교사인원</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">강사인원</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">기타인원</span></p></td></tr><tr><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">40</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">3</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><b><strong class=\"PlaygroundEditorTheme__textBold\" style=\"white-space: pre-wrap;\">3</strong></b></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><b><strong class=\"PlaygroundEditorTheme__textBold\" style=\"white-space: pre-wrap;\">0</strong></b></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><b><strong class=\"PlaygroundEditorTheme__textBold\" style=\"white-space: pre-wrap;\">3</strong></b></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">3</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">1</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">1</span></p></td></tr></tbody></table><p class=\"PlaygroundEditorTheme__paragraph\"><br></p><p class=\"PlaygroundEditorTheme__paragraph\"><br></p>"
+    },
+    {
+      "id": 10,
+      "year": 2026,
+      "date": "2026.03.19",
+      "type": "LOG",
+      "status": "확정",
+      "title": "3월 19일 운영일지",
+      "writer": "김민수",
+      "startTime": "10:00",
+      "endTime": "19:00",
+      "approval": {
+        "manager": {
+          "name": "최하은",
+          "confirmed": true,
+          "date": "2026.03.19"
+        },
+        "director": {
+          "name": "김민수",
+          "confirmed": false,
+          "date": null
+        }
+      },
+      "stats": {
+        "children": {
+          "male": {
+            "pre": 0,
+            "elem": 1,
+            "mid": 1,
+            "high": 0,
+            "extra": 0,
+            "total": 2
+          },
+          "female": {
+            "pre": 0,
+            "elem": 1,
+            "mid": 0,
+            "high": 0,
+            "extra": 0,
+            "total": 1
+          }
+        },
+        "attendance": {
+          "limit": 40,
+          "current": 3,
+          "present": 3,
+          "official": 0,
+          "alt": 0,
+          "absent": 0,
+          "extra": 0
+        },
+        "meals": {
+          "morning": 0,
+          "lunch": 0,
+          "dinner": 3
+        },
+        "staff": {
+          "total": 3,
+          "teachers": 1,
+          "instructors": 0,
+          "extra": 1
+        }
+      },
+      "content": "<p class=\"PlaygroundEditorTheme__paragraph\"><br></p>"
+    },
+    {
+      "id": 9,
+      "year": 2026,
+      "date": "2026.03.19",
+      "type": "LOG",
+      "status": "확정",
+      "title": "3월 19일 운영일지",
+      "writer": "김민수",
+      "startTime": "10:00",
+      "endTime": "19:00",
+      "approval": {
+        "manager": {
+          "name": "최하은",
+          "confirmed": true,
+          "date": "2026.03.19"
+        },
+        "director": {
+          "name": "김민수",
+          "confirmed": false,
+          "date": null
+        }
+      },
+      "stats": {
+        "children": {
+          "male": {
+            "pre": 0,
+            "elem": 0,
+            "mid": 0,
+            "high": 0,
+            "extra": 0,
+            "total": 0
+          },
+          "female": {
+            "pre": 0,
+            "elem": 0,
+            "mid": 0,
+            "high": 0,
+            "extra": 0,
+            "total": 0
+          }
+        },
+        "attendance": {
+          "limit": 40,
+          "current": 0,
+          "present": 0,
+          "official": 0,
+          "alt": 0,
+          "absent": 0,
+          "extra": 0
+        },
+        "meals": {
+          "morning": 0,
+          "lunch": 0,
+          "dinner": 0
+        },
+        "staff": {
+          "total": 0,
+          "teachers": 0,
+          "instructors": 0,
+          "extra": 0
+        }
+      },
+      "content": "<p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: right;\"><br></p>"
+    },
+    {
+      "id": 8,
+      "year": 2026,
+      "date": "2026.03.19",
+      "type": "LOG",
+      "status": "확정",
+      "title": "3월 19일 운영일지",
+      "writer": "김민수",
+      "startTime": "10:00",
+      "endTime": "19:00",
+      "approval": {
+        "manager": {
+          "name": "최하은",
+          "confirmed": true,
+          "date": "2026.03.19"
+        },
+        "director": {
+          "name": "김민수",
+          "confirmed": false,
+          "date": null
+        }
+      },
+      "stats": {
+        "children": {
+          "male": {
+            "pre": 0,
+            "elem": 1,
+            "mid": 1,
+            "high": 0,
+            "extra": 0,
+            "total": 2
+          },
+          "female": {
+            "pre": 0,
+            "elem": 1,
+            "mid": 0,
+            "high": 0,
+            "extra": 0,
+            "total": 1
+          }
+        },
+        "attendance": {
+          "limit": 40,
+          "current": 3,
+          "present": 3,
+          "official": 0,
+          "alt": 0,
+          "absent": 0,
+          "extra": 0
+        },
+        "meals": {
+          "morning": 0,
+          "lunch": 0,
+          "dinner": 3
+        },
+        "staff": {
+          "total": 3,
+          "teachers": 1,
+          "instructors": 0,
+          "extra": 1
+        }
+      },
+      "content": "<p class=\"PlaygroundEditorTheme__paragraph\"><br></p>"
+    },
+    {
+      "id": 6,
+      "year": 2026,
+      "date": "2026.03.20",
+      "type": "LOG",
+      "title": "시설 운영일지 - 3월 20일 목요일",
+      "writer": "최하은",
+      "status": "확정",
+      "startTime": "10:00",
+      "endTime": "19:00",
+      "approval": {
+        "manager": {
+          "name": "최하은",
+          "confirmed": true,
+          "date": "2026.03.19"
+        },
+        "director": {
+          "name": "김민수",
+          "confirmed": false,
+          "date": null
+        }
+      },
+      "stats": {
+        "children": {
+          "male": {
+            "pre": 0,
+            "elem": 1,
+            "mid": 1,
+            "high": 0,
+            "extra": 0,
+            "total": 2
+          },
+          "female": {
+            "pre": 0,
+            "elem": 1,
+            "mid": 0,
+            "high": 0,
+            "extra": 0,
+            "total": 1
+          }
+        },
+        "attendance": {
+          "limit": 40,
+          "current": 3,
+          "present": 3,
+          "official": 1,
+          "alt": 0,
+          "absent": 1,
+          "extra": 0
+        },
+        "meals": {
+          "morning": 0,
+          "lunch": 0,
+          "dinner": 3
+        },
+        "staff": {
+          "total": 3,
+          "teachers": 1,
+          "instructors": 0,
+          "extra": 1
+        }
+      },
+      "content": "<table class=\"PlaygroundEditorTheme__table\"><colgroup><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 53px;\"><col style=\"width: 61.75px;\"></colgroup><tbody><tr><td colspan=\"2\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><b><strong class=\"PlaygroundEditorTheme__textBold\" style=\"white-space: pre-wrap;\">일자</strong></b></p></td><td colspan=\"3\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">2026.03.20</span></p></td><td colspan=\"2\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><b><strong class=\"PlaygroundEditorTheme__textBold\" style=\"white-space: pre-wrap;\">운영시간</strong></b></p></td><td colspan=\"3\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">10:00 ~ 19:00 </span><br><span style=\"white-space: pre-wrap;\">(학기중)</span></p></td><td colspan=\"2\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><b><strong class=\"PlaygroundEditorTheme__textBold\" style=\"white-space: pre-wrap;\">담당자</strong></b></p></td><td colspan=\"2\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">최하은</span></p></td></tr><tr><td rowspan=\"3\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">아동현황</span><br><span style=\"white-space: pre-wrap;\">(취학구분)</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">성별</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">취학전</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">탈학교</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">초등학교</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">중학교</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">고등학교</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">기타</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">계</span></p></td><td rowspan=\"3\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">급식현황</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">조식</span></p></td><td colspan=\"3\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><b><strong class=\"PlaygroundEditorTheme__textBold\" style=\"white-space: pre-wrap;\">0 명</strong></b></p></td></tr><tr><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">남</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">1</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">1</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><b><strong class=\"PlaygroundEditorTheme__textBold\" style=\"white-space: pre-wrap;\">2</strong></b></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">중식</span></p></td><td colspan=\"3\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><b><strong class=\"PlaygroundEditorTheme__textBold\" style=\"white-space: pre-wrap;\">0 명</strong></b></p></td></tr><tr><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">여</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">1</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><b><strong class=\"PlaygroundEditorTheme__textBold\" style=\"white-space: pre-wrap;\">1</strong></b></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">석식</span></p></td><td colspan=\"3\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><b><strong class=\"PlaygroundEditorTheme__textBold\" style=\"white-space: pre-wrap;\">3 명</strong></b></p></td></tr><tr><td rowspan=\"2\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">아동출석</span><br><span style=\"white-space: pre-wrap;\">(출석구분)</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">정원</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">현원</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">출석</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">공결</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">대체출석</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">결석</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">기타</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">계</span></p></td><td rowspan=\"2\" class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">교사현황</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">종사자</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">교사인원</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">강사인원</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; background-color: rgb(245, 245, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">기타인원</span></p></td></tr><tr><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">40</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">3</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><b><strong class=\"PlaygroundEditorTheme__textBold\" style=\"white-space: pre-wrap;\">3</strong></b></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">1</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><b><strong class=\"PlaygroundEditorTheme__textBold\" style=\"white-space: pre-wrap;\">1</strong></b></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><b><strong class=\"PlaygroundEditorTheme__textBold\" style=\"white-space: pre-wrap;\">4</strong></b></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">3</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">1</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">0</span></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: center;\"><span style=\"white-space: pre-wrap;\">1</span></p></td></tr></tbody></table><p class=\"PlaygroundEditorTheme__paragraph\"><br></p><h1 class=\"PlaygroundEditorTheme__h1\" style=\"text-align: right;\"><br></h1><table class=\"PlaygroundEditorTheme__table\"><colgroup><col style=\"width: 92px;\"><col style=\"width: 92px;\"><col style=\"width: 92px;\"><col style=\"width: 92px;\"><col style=\"width: 328.215px;\"></colgroup><tbody><tr><th class=\"PlaygroundEditorTheme__tableCell PlaygroundEditorTheme__tableCellHeader\" style=\"width: 75px; background-color: rgb(242, 243, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><span style=\"white-space: pre-wrap;\">ㅁㄴㄴㅇㄴㅁ</span></p></th><th class=\"PlaygroundEditorTheme__tableCell PlaygroundEditorTheme__tableCellHeader\" style=\"width: 75px; background-color: rgb(242, 243, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></th><th class=\"PlaygroundEditorTheme__tableCell PlaygroundEditorTheme__tableCellHeader\" style=\"width: 75px; background-color: rgb(242, 243, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></th><th class=\"PlaygroundEditorTheme__tableCell PlaygroundEditorTheme__tableCellHeader\" style=\"width: 75px; background-color: rgb(242, 243, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></th><th class=\"PlaygroundEditorTheme__tableCell PlaygroundEditorTheme__tableCellHeader\" style=\"width: 75px; background-color: rgb(242, 243, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></th></tr><tr><th class=\"PlaygroundEditorTheme__tableCell PlaygroundEditorTheme__tableCellHeader\" style=\"width: 75px; background-color: rgb(242, 243, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></th><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: start;\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: start;\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: start;\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: start;\"><br></p></td></tr><tr><th class=\"PlaygroundEditorTheme__tableCell PlaygroundEditorTheme__tableCellHeader\" style=\"width: 75px; background-color: rgb(242, 243, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></th><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: start;\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: start;\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: start;\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: start;\"><br></p></td></tr><tr><th class=\"PlaygroundEditorTheme__tableCell PlaygroundEditorTheme__tableCellHeader\" style=\"width: 75px; background-color: rgb(242, 243, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></th><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: start;\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: start;\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: start;\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: start;\"><br></p></td></tr><tr><th class=\"PlaygroundEditorTheme__tableCell PlaygroundEditorTheme__tableCellHeader\" style=\"width: 75px; background-color: rgb(242, 243, 245); border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\"><br></p></th><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: start;\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: start;\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: start;\"><br></p></td><td class=\"PlaygroundEditorTheme__tableCell\" style=\"width: 75px; border: 1px solid black; vertical-align: top; text-align: start;\"><p class=\"PlaygroundEditorTheme__paragraph\" style=\"text-align: start;\"><br></p></td></tr></tbody></table><h1 class=\"PlaygroundEditorTheme__h1\" style=\"text-align: right;\"><span style=\"white-space: pre-wrap;\">ㄴㅇㄹㅇㄹㅇㄴㄴㅇㄹ</span></h1>"
+    }
+  ],
+  "updatedAt": "2026-03-19T16:58:49.749Z"
+}
