@@ -1,0 +1,210 @@
+.rooster-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 14px;
+  background: transparent;
+  user-select: none;
+}
+
+.tb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #475569;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.tb-btn:hover { background: #f1f5f9; color: #0f172a; }
+.tb-btn:active { background: #e2e8f0; }
+
+.tb-fmt { font-size: 14px; font-family: 'Times New Roman', serif; font-style: normal; }
+.tb-small { font-size: 12px; font-weight: 600; color: #64748b; font-family: sans-serif; }
+
+.tb-btn-insert {
+  color: #4f46e5;
+  font-weight: 700;
+}
+.tb-btn-insert:hover { background: #eef2ff; color: #4338ca; }
+
+.tb-divider {
+  width: 1px;
+  height: 20px;
+  background: #cbd5e1;
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+/* 드롭다운 */
+.tb-select {
+  height: 28px;
+  padding: 0 6px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 11px;
+  background: #f8fafc;
+  color: #475569;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s;
+}
+.tb-select:hover { border-color: #6366f1; background: #fff; }
+.tb-select-heading { width: 70px; }
+.tb-select-font { width: 120px; }
+.tb-select-size { width: 46px; }
+
+/* 색상 */
+.tb-color-group {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  height: 26px;
+  width: 28px;
+  justify-content: center;
+  border-radius: 4px;
+}
+.tb-color-group:hover { background: #f3f4f6; }
+.tb-color-label { font-size: 14px; font-weight: 700; pointer-events: none; }
+.tb-color-input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
+/* 표 그리드 픽커 */
+.tb-relative { position: relative; }
+
+.tb-table-picker {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 200;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  min-width: 160px;
+}
+
+.tb-table-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 18px);
+  gap: 2px;
+}
+
+.tb-table-cell {
+  width: 18px;
+  height: 18px;
+  border: 1px solid #d1d5db;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+}
+.tb-table-cell.active {
+  background: #bfdbfe;
+  border-color: #60a5fa;
+}
+.tb-table-cell:hover { border-color: #3b82f6; }
+
+.tb-table-size {
+  text-align: center;
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+/* --- 한글(HWP) 스타일 쪽 나누기 및 여백 가이드라인 --- */
+.page-break-gap {
+  /* 부모 패딩을 무시하고 A4 가로 전체를 채우기 위한 확장 */
+  margin-left: calc(-1 * var(--m-left)) !important;
+  margin-right: calc(-1 * var(--m-right)) !important;
+  width: 21cm !important;
+  
+  /* 위/아래 여백을 벌려 다음/이전 용지와의 간격을 생성 */
+  /* margin-top은 위쪽 종이의 하단 여백 공간 + 약간의 추가 여백 */
+  margin-top: calc(var(--m-bottom) + 24px) !important;
+  /* margin-bottom은 아래쪽 종이의 상단 여백 공간 + 약간의 추가 여백 */
+  margin-bottom: calc(var(--m-top) + 24px) !important;
+  
+  /* 종이가 갈라진 것처럼 보이도록 회색 바탕과 위아래 종이 경계선/그림자 처리 */
+  height: 24px;
+  background-color: #f1f5f9;  /* 외부 바탕과 동일한 회색 */
+  border-top: 1px solid #d1d5db;
+  border-bottom: 1px solid #d1d5db;
+  box-shadow: 
+    inset 0 4px 6px -4px rgba(0, 0, 0, 0.1),
+    inset 0 -4px 6px -4px rgba(0, 0, 0, 0.1);
+  
+  /* 실제 페이지 브레이크 동작 */
+  page-break-after: always;
+  break-after: page;
+  
+  /* 커서 선택 불가 */
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: default;
+  position: relative;
+}
+
+/* 각 페이지(종이) 모서리에 여백 표시(조판 부호 ⌜ ⌝ ⌞ ⌟)를 가상 요소로 구현 */
+/* 이전 용지의 하단 여백 가이드 (⌞ ⌟) */
+/* gap의 바로 위(margin-top 공간 내)에 위치해야 함 */
+.page-break-gap::before {
+  content: "";
+  position: absolute;
+  /* gap의 상단 경계선에서 위로 딱 m-bottom 만큼 올라간 위치가 본문의 진짜 끝부분! */
+  top: calc(-1 * var(--m-bottom) - 12px);
+  left: var(--m-left);
+  right: var(--m-right);
+  height: 10px;
+  pointer-events: none;
+  background: 
+    /* 좌측 하단 ⌞ */
+    linear-gradient(to right, #cbd5e1 1px, transparent 1px) 0 100%,
+    linear-gradient(to top, #cbd5e1 1px, transparent 1px) 0 100%,
+    /* 우측 하단 ⌟ */
+    linear-gradient(to left, #cbd5e1 1px, transparent 1px) 100% 100%,
+    linear-gradient(to top, #cbd5e1 1px, transparent 1px) 100% 100%;
+  background-size: 10px 10px;
+  background-repeat: no-repeat;
+}
+
+/* 다음 용지의 상단 여백 가이드 (⌜ ⌝) */
+/* gap의 바로 아래(margin-bottom 공간 내)에 위치해야 함 */
+.page-break-gap::after {
+  content: "";
+  position: absolute;
+  /* gap의 하단 경계선에서 아래로 딱 m-top 만큼 내려간 위치가 본문의 진짜 시작부분! */
+  bottom: calc(-1 * var(--m-top) - 12px);
+  left: var(--m-left);
+  right: var(--m-right);
+  height: 10px;
+  pointer-events: none;
+  background: 
+    /* 좌측 상단 ⌜ */
+    linear-gradient(to right, #cbd5e1 1px, transparent 1px) 0 0,
+    linear-gradient(to bottom, #cbd5e1 1px, transparent 1px) 0 0,
+    /* 우측 상단 ⌝ */
+    linear-gradient(to left, #cbd5e1 1px, transparent 1px) 100% 0,
+    linear-gradient(to bottom, #cbd5e1 1px, transparent 1px) 100% 0;
+  background-size: 10px 10px;
+  background-repeat: no-repeat;
+}

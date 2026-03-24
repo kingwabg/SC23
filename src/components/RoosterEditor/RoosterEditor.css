@@ -1,0 +1,49 @@
+/* RoosterJS 에디터 영역 */
+.rooster-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  font-family: 'Pretendard', 'Noto Sans KR', Arial, sans-serif;
+  position: relative;  /* absolute 표의 기준 컨테이너 */
+}
+
+.rooster-content {
+  flex: 1;
+  outline: none;
+  padding: 0;
+  min-height: 200px;
+  line-height: 1.7;
+  font-size: 14px;
+  color: #111;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  position: relative;  /* 표 absolute 이동 시 기준점 */
+}
+
+/* 빈 에디터 placeholder */
+.rooster-content:empty::before {
+  content: attr(data-placeholder);
+  color: #aaa;
+  pointer-events: none;
+}
+
+/* 표 기본 스타일 */
+.rooster-content table {
+  border-collapse: collapse;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.rooster-content table td,
+.rooster-content table th {
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  min-width: 30px;
+  word-break: break-word;
+  box-sizing: border-box;
+}
+
+/* RoosterJS TableEditPlugin 리사이즈 핸들 */
+.rooster-content .tableSelected {
+  outline: 2px solid #60a5fa;
+}

@@ -66,6 +66,7 @@ import TabFocusPlugin from './plugins/TabFocusPlugin';
 import TableCellActionMenuPlugin from './plugins/TableActionMenuPlugin';
 import TableCellResizer from './plugins/TableCellResizer';
 import TableFitNestedTablePlugin from './plugins/TableFitNestedTablePlugin';
+import TableResizePlugin from './plugins/TableResizePlugin';
 import TableHoverActionsV2Plugin from './plugins/TableHoverActionsV2Plugin';
 import TableOfContentsPlugin from './plugins/TableOfContentsPlugin';
 import TableScrollShadowPlugin from './plugins/TableScrollShadowPlugin';
@@ -248,6 +249,7 @@ export default function Editor(): JSX.Element {
             {hasFitNestedTables ? <TableFitNestedTablePlugin /> : null}
             <TableCellResizer />
             <TableScrollShadowPlugin />
+            <TableResizePlugin />
             <PollPlugin />
             <TwitterPlugin />
             <YouTubePlugin />

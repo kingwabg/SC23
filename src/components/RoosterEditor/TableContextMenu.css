@@ -1,0 +1,57 @@
+.tbl-ctx-menu {
+  position: fixed;
+  z-index: 9999;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.14);
+  padding: 4px 0;
+  min-width: 180px;
+  font-size: 13px;
+  animation: ctxFadeIn 0.1s ease;
+}
+
+@keyframes ctxFadeIn {
+  from { opacity: 0; transform: scale(0.96) translateY(-4px); }
+  to   { opacity: 1; transform: scale(1)   translateY(0); }
+}
+
+.tbl-ctx-divider {
+  height: 1px;
+  background: #f3f4f6;
+  margin: 3px 0;
+}
+
+.tbl-ctx-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  cursor: pointer;
+  color: #374151;
+  position: relative;
+  transition: background 0.1s;
+  user-select: none;
+}
+.tbl-ctx-item:hover { background: #f0f8ff; color: #1d4ed8; }
+
+.tbl-ctx-icon { font-size: 13px; flex-shrink: 0; width: 16px; text-align: center; }
+.tbl-ctx-label { flex: 1; }
+.tbl-ctx-arrow { color: #9ca3af; font-size: 16px; line-height: 1; }
+
+/* 서브메뉴 */
+.tbl-ctx-has-sub { position: relative; }
+
+.tbl-ctx-submenu {
+  position: absolute;
+  left: 100%;
+  top: -4px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.14);
+  padding: 4px 0;
+  min-width: 160px;
+  z-index: 10000;
+  animation: ctxFadeIn 0.08s ease;
+}

@@ -1,0 +1,79 @@
+/* 이동 전용 엣지 바 */
+.tbl-edge {
+  position: fixed;
+  z-index: 100;
+  pointer-events: all;
+  background: rgba(147, 197, 253, 0.4);
+  border-radius: 2px;
+  cursor: move;
+  transition: background 0.15s;
+}
+.tbl-edge:hover { background: rgba(96, 165, 250, 0.65); }
+
+/* 8방향 리사이즈 핸들 */
+.tbl-handle {
+  position: fixed;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border: 2px solid #60a5fa;
+  border-radius: 3px;
+  z-index: 10000;
+  pointer-events: all;
+  box-shadow: 0 1px 5px rgba(96, 165, 250, 0.4);
+  transition: background 0.15s, transform 0.12s;
+}
+.tbl-handle:hover { background: #60a5fa; transform: scale(1.25); }
+
+.tbl-handle[data-dir="n"]  { cursor: n-resize; }
+.tbl-handle[data-dir="s"]  { cursor: s-resize; }
+.tbl-handle[data-dir="e"]  { cursor: e-resize; }
+.tbl-handle[data-dir="w"]  { cursor: w-resize; }
+.tbl-handle[data-dir="ne"] { cursor: ne-resize; }
+.tbl-handle[data-dir="nw"] { cursor: nw-resize; }
+.tbl-handle[data-dir="se"] { cursor: se-resize; }
+.tbl-handle[data-dir="sw"] { cursor: sw-resize; }
+
+/* 플로팅 액션 바 */
+.tbl-action-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #1e293b;
+  border-radius: 20px;
+  padding: 4px 10px 4px 6px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  animation: tblBarFadeIn 0.15s ease;
+  white-space: nowrap;
+}
+
+@keyframes tblBarFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.tbl-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 14px;
+  background: #334155;
+  color: #e2e8f0;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.tbl-action-btn:hover { background: #475569; }
+.tbl-action-btn.active {
+  background: #2563eb;
+  color: #fff;
+}
+
+.tbl-action-hint {
+  font-size: 11px;
+  color: #94a3b8;
+}

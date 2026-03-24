@@ -1,0 +1,42 @@
+/* 4개의 가장자리 이동 바 */
+.table-edge-bar {
+  position: fixed;
+  z-index: 100;
+  pointer-events: all;
+  background: rgba(147, 197, 253, 0.35);
+  border-radius: 2px;
+  cursor: move;
+  transition: background 0.15s;
+}
+
+.table-edge-bar:hover {
+  background: rgba(96, 165, 250, 0.6);
+}
+
+/* 리사이즈 핸들 */
+.table-resize-handle {
+  position: fixed;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border: 2px solid #60a5fa;
+  border-radius: 3px;
+  z-index: 10000;
+  pointer-events: all;
+  box-shadow: 0 1px 5px rgba(96, 165, 250, 0.35);
+  transition: background 0.15s, transform 0.15s;
+}
+
+.table-resize-handle:hover {
+  background: #60a5fa;
+  transform: scale(1.25);
+}
+
+.table-resize-handle[data-dir="n"]  { cursor: n-resize; }
+.table-resize-handle[data-dir="s"]  { cursor: s-resize; }
+.table-resize-handle[data-dir="e"]  { cursor: e-resize; }
+.table-resize-handle[data-dir="w"]  { cursor: w-resize; }
+.table-resize-handle[data-dir="ne"] { cursor: ne-resize; }
+.table-resize-handle[data-dir="nw"] { cursor: nw-resize; }
+.table-resize-handle[data-dir="se"] { cursor: se-resize; }
+.table-resize-handle[data-dir="sw"] { cursor: sw-resize; }

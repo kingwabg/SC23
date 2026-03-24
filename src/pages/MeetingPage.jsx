@@ -941,82 +941,85 @@ const MeetingPage = () => {
            )}
         </div>
 
-        <div className="hidden md:grid grid-cols-12 gap-8 pt-4">
-           {/* 운영일지 목록 */}
-           <div className="col-span-12 lg:col-span-3">
-              <div className="bg-white rounded-[3rem] border border-slate-100 shadow-2xl h-[950px] overflow-hidden flex flex-col relative">
-                 <div className="p-8 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
-                    <div className="flex items-center gap-3">
-                       <FileText className="w-4 h-4 text-indigo-600" />
-                       <h4 className="text-[12px] font-black text-slate-900 uppercase tracking-widest m-0">운영일지 목록</h4>
-                    </div>
-                    <button 
-                      onClick={handleAddNew}
-                      className="w-8 h-8 bg-indigo-600 text-white rounded-xl flex items-center justify-center hover:bg-black transition-all shadow-lg active:scale-95"
-                      title="신규 일지 추가"
-                    >
-                       <Plus className="w-4 h-4" />
-                    </button>
+        <div className="hidden md:flex gap-6 pt-4 h-screen">
+           {/* 운영일지 목록 (SC23 모던 메일함형 그리드) */}
+           <div className="w-[340px] bg-white border border-slate-200 flex flex-col shrink-0 rounded-3xl overflow-hidden shadow-sm">
+              <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0">
+                 <div className="flex flex-col">
+                    <h2 className="text-[16px] font-black text-slate-900 tracking-tight">운영일지 목록</h2>
+                    <span className="text-[11px] font-bold text-slate-400">Total {filteredMeetings.length} Documents</span>
                  </div>
-                 
-                 {/* 전체 선택 및 일괄 툴바 */}
-                 <div className="px-6 py-4 bg-white border-b border-slate-50 flex justify-between items-center">
-                    <div className="flex items-center gap-2 cursor-pointer" onClick={toggleAll}>
-                       <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${checkedLogs.length > 0 && checkedLogs.length === filteredMeetings.length ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-slate-300'}`}>
-                          {checkedLogs.length === filteredMeetings.length && <CheckSquare className="w-3 h-3" />}
-                       </div>
-                       <span className="text-[11px] font-bold text-slate-500">전체선택</span>
-                    </div>
-                    
-                    <AnimatePresence>
-                      {checkedLogs.length > 0 && (
-                        <motion.div 
-                          initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-                          className="flex items-center gap-2"
-                        >
-                           <button onClick={handleBatchPrint} className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-[10px] font-bold transition-all"><Printer className="w-3 h-3" /> 인쇄</button>
-                           <button onClick={handleBatchDelete} className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-500 rounded-lg text-[10px] font-bold transition-all"><Trash2 className="w-3 h-3" /> 삭제</button>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                 </div>
+                 <button onClick={handleAddNew} className="w-8 h-8 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:scale-105 transition-all flex items-center justify-center">
+                    <Plus className="w-4 h-4" />
+                 </button>
+              </div>
 
-                 <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                    {filteredMeetings.map(m => (
-                      <div 
-                        key={m.id} 
-                        className={`group relative p-5 rounded-3xl cursor-pointer transition-all border flex flex-col gap-3 flex-1 ${selectedLogId === m.id ? 'bg-indigo-600 text-white border-indigo-600 shadow-xl scale-[1.02]' : 'bg-white text-slate-500 border-slate-50 hover:bg-slate-50'}`}
-                      >
-                         <div className="flex justify-between items-start" onClick={() => setSelectedLogId(m.id)}>
-                            <div className="flex items-start gap-3 flex-1">
-                               <div 
-                                 onClick={(e) => toggleCheck(e, m.id)}
-                                 className={`mt-1 flex-shrink-0 w-4 h-4 rounded border flex items-center justify-center transition-all ${checkedLogs.includes(m.id) ? (selectedLogId === m.id ? 'bg-white text-indigo-600 border-white' : 'bg-indigo-600 border-indigo-600 text-white') : (selectedLogId === m.id ? 'border-white/50' : 'border-slate-300')}`}
-                               >
-                                  {checkedLogs.includes(m.id) && <CheckSquare className="w-3 h-3" />}
-                               </div>
-                               <span className="text-[14px] font-black leading-tight pr-2">{m.title}</span>
-                            </div>
-                            <button 
-                              onClick={(e) => { e.stopPropagation(); handleDelete(m.id); }}
-                              className={`w-7 h-7 flex-shrink-0 rounded-lg flex items-center justify-center transition-all ${selectedLogId === m.id ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-slate-50 text-slate-300 hover:bg-rose-50 hover:text-rose-500'}`}
-                            >
-                               <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                         </div>
-                         <div className="flex justify-between items-center" onClick={() => setSelectedLogId(m.id)}>
-                            <span className={`text-[9px] font-black px-2 py-1 rounded-lg uppercase ${m.status === '최종확정' ? 'bg-emerald-500 text-white shadow-lg' : m.status === '확정' ? 'bg-indigo-400 text-white' : 'bg-slate-100 text-slate-400'}`}>{m.status}</span>
-                            <span className="text-[11px] font-bold opacity-40">{m.date}</span>
-                         </div>
-                      </div>
-                    ))}
+              <div className="p-3 bg-slate-50 border-b border-slate-100 flex flex-col gap-2 shrink-0">
+                 <div className="relative">
+                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                   <input type="text" placeholder="제목, 작성자 검색..." className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-[12px] font-bold outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder:font-medium" />
                  </div>
+                 <div className="flex justify-between items-center px-1">
+                    <label className="flex items-center gap-2 cursor-pointer group">
+                       <input type="checkbox" className="w-3.5 h-3.5 accent-indigo-600 cursor-pointer" checked={checkedLogs.length > 0 && checkedLogs.length === filteredMeetings.length} onChange={toggleAll} />
+                       <span className="text-[11px] font-bold text-slate-500 group-hover:text-slate-800 transition-colors">전체선택</span>
+                    </label>
+                    <div className="flex gap-1.5">
+                       {checkedLogs.length > 0 && (
+                          <>
+                             <button onClick={handleBatchPrint} className="text-[11px] font-bold text-slate-600 hover:text-slate-900 flex items-center gap-1 bg-white border border-slate-200 px-2 py-1 rounded">
+                               <Printer className="w-3 h-3" /> 인쇄
+                             </button>
+                             <button onClick={handleBatchDelete} className="text-[11px] font-bold text-rose-500 hover:text-rose-600 flex items-center gap-1 bg-rose-50 px-2 py-1 rounded">
+                               <Trash2 className="w-3 h-3" /> 삭제
+                             </button>
+                          </>
+                       )}
+                    </div>
+                 </div>
+              </div>
+
+              <div className="flex-1 overflow-y-auto custom-scrollbar bg-white">
+                 {filteredMeetings.map((m) => (
+                    <div 
+                       key={m.id} 
+                       onClick={() => setSelectedLogId(m.id)} 
+                       className={`group flex items-start gap-3 p-4 border-b border-slate-100 cursor-pointer transition-all ${selectedLogId === m.id ? 'bg-indigo-50/50 relative' : 'hover:bg-slate-50'}`}
+                    >
+                       {selectedLogId === m.id && <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-600" />}
+                       
+                       <div className="pt-0.5" onClick={(e) => e.stopPropagation()}>
+                          <input type="checkbox" className="w-3.5 h-3.5 cursor-pointer accent-indigo-600" checked={checkedLogs.includes(m.id)} onChange={(e) => toggleCheck(e, m.id)} />
+                       </div>
+                       
+                       <div className="flex-1 flex flex-col gap-1.5 min-w-0">
+                          <div className="flex justify-between items-start gap-2">
+                             <h4 className={`text-[13px] font-black truncate leading-tight ${selectedLogId === m.id ? 'text-indigo-900' : 'text-slate-800'}`}>{m.title}</h4>
+                             <span className={`shrink-0 px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider ${m.status === '최종확정' ? 'bg-emerald-100 text-emerald-700' : (m.status === '확정' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-500')}`}>
+                                {m.status === '최종확정' ? '완료' : (m.status === '확정' ? '결재중' : '작성중')}
+                             </span>
+                          </div>
+                          
+                          <div className="flex justify-between items-end mt-1">
+                             <div className="flex flex-col gap-0.5">
+                                <span className="text-[11px] font-bold text-slate-400 tracking-wide">{m.date}</span>
+                                <div className="flex items-center gap-1.5 text-[11px] font-medium text-slate-500">
+                                   <span className={selectedLogId === m.id ? 'text-indigo-600 font-bold' : ''}>{m.writer}</span>
+                                </div>
+                             </div>
+                             <button onClick={(e) => { e.stopPropagation(); handleDelete(m.id); }} className={`p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all ${selectedLogId === m.id ? 'text-indigo-400 hover:text-rose-500 hover:bg-rose-50' : 'text-slate-300 hover:text-rose-500 hover:bg-rose-50'}`}>
+                                <Trash2 className="w-3.5 h-3.5" />
+                             </button>
+                          </div>
+                       </div>
+                    </div>
+                 ))}
               </div>
            </div>
 
            {/* 작업 영역 */}
-           <div className="col-span-12 lg:col-span-9 space-y-6">
-              <div className="bg-white rounded-[3.5rem] border border-slate-100 shadow-2xl flex flex-col min-h-[950px] overflow-hidden">
+           <div className="flex-1 min-w-0 space-y-6">
+              <div className="bg-[#f0f0f0] rounded-[1rem] border border-slate-300 shadow-md flex flex-col min-h-[950px] overflow-hidden">
                  {/* 결재 영역 */}
                  <div className="p-10 bg-slate-50 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-8">
                     <div>
@@ -1060,17 +1063,66 @@ const MeetingPage = () => {
                  <div className="p-10 space-y-8">
                     <div className="flex justify-between items-end">
                         <div className="flex gap-4">
-                            <div className="bg-slate-50 px-6 py-4 rounded-3xl border border-slate-100">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">일자</span>
-                                <span className="text-sm font-black text-slate-900">{selectedLog?.date}</span>
+                            <div className="bg-white px-6 py-4 rounded-3xl border border-slate-200 shadow-sm focus-within:ring-4 focus-within:ring-indigo-500/10 focus-within:border-indigo-400 transition-all">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">일자</span>
+                                <input 
+                                  type="date" 
+                                  value={selectedLog?.date || ''} 
+                                  onChange={(e) => handleUpdateLog(selectedLog?.id, 'date', e.target.value)}
+                                  className="w-full text-[13px] font-black text-slate-900 bg-transparent border-none outline-none p-0 cursor-pointer"
+                                />
                             </div>
-                            <div className="bg-slate-50 px-6 py-4 rounded-3xl border border-slate-100">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">운영시간</span>
-                                <span className="text-sm font-black text-slate-900">{selectedLog?.startTime} ~ {selectedLog?.endTime} ({getPeriodLabel(selectedLog?.startTime, selectedLog?.endTime)})</span>
+                            
+                            <div className="bg-white px-6 py-4 rounded-3xl border border-slate-200 shadow-sm focus-within:ring-4 focus-within:ring-indigo-500/10 focus-within:border-indigo-400 transition-all flex items-center gap-3">
+                                <div className="flex flex-col">
+                                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">구분</span>
+                                   <select 
+                                     value={getPeriodLabel(selectedLog?.startTime, selectedLog?.endTime) === '학기중' ? '학기중' : '방학중'} 
+                                     onChange={(e) => {
+                                        if (e.target.value === '학기중') {
+                                           handleUpdateLog(selectedLog?.id, 'startTime', '09:00');
+                                           handleUpdateLog(selectedLog?.id, 'endTime', '18:00');
+                                        } else {
+                                           handleUpdateLog(selectedLog?.id, 'startTime', '09:00');
+                                           handleUpdateLog(selectedLog?.id, 'endTime', '15:00');
+                                        }
+                                     }}
+                                     className="w-20 text-[13px] font-black text-slate-900 bg-transparent border-none outline-none p-0 cursor-pointer appearance-none"
+                                   >
+                                      <option value="학기중">학기중</option>
+                                      <option value="방학중">방학중</option>
+                                   </select>
+                                </div>
+                                <div className="w-[1px] h-8 bg-slate-100 mx-2"/>
+                                <div className="flex flex-col min-w-[120px]">
+                                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">단위 시간</span>
+                                   <div className="flex items-center gap-2">
+                                     <input 
+                                       type="time" 
+                                       value={selectedLog?.startTime || '09:00'} 
+                                       onChange={(e) => handleUpdateLog(selectedLog?.id, 'startTime', e.target.value)}
+                                       className="w-16 text-[13px] font-black text-slate-900 bg-transparent border-none outline-none p-0 cursor-pointer text-center"
+                                     />
+                                     <span className="text-slate-400 font-bold text-[10px]">~</span>
+                                     <input 
+                                       type="time" 
+                                       value={selectedLog?.endTime || '18:00'} 
+                                       onChange={(e) => handleUpdateLog(selectedLog?.id, 'endTime', e.target.value)}
+                                       className="w-16 text-[13px] font-black text-slate-900 bg-transparent border-none outline-none p-0 cursor-pointer text-center"
+                                     />
+                                   </div>
+                                </div>
                             </div>
-                            <div className="bg-slate-50 px-6 py-4 rounded-3xl border border-slate-100">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">담당자</span>
-                                <span className="text-sm font-black text-slate-900">{selectedLog?.writer}</span>
+
+                            <div className="bg-white px-6 py-4 rounded-3xl border border-slate-200 shadow-sm focus-within:ring-4 focus-within:ring-indigo-500/10 focus-within:border-indigo-400 transition-all">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">담당자</span>
+                                <input 
+                                  type="text" 
+                                  value={selectedLog?.writer || ''} 
+                                  onChange={(e) => handleUpdateLog(selectedLog?.id, 'writer', e.target.value)}
+                                  className="w-24 text-[13px] font-black text-slate-900 bg-transparent border-none outline-none p-0"
+                                  placeholder="기안자 입력"
+                                />
                             </div>
                         </div>
                         <button onClick={runAutoAggregate} className="flex items-center gap-3 px-8 py-5 bg-emerald-500 text-white rounded-[2rem] text-[11px] font-black shadow-2xl shadow-emerald-500/30 hover:bg-black transition-all">

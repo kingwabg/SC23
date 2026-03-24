@@ -38,7 +38,7 @@ header h1 {
 }
 
 .editor-shell {
-  margin: 20px auto;
+  margin: 0 auto;
   border-radius: 2px;
   max-width: 1100px;
   color: #000;
@@ -67,20 +67,19 @@ header h1 {
 .editor-scroller {
   min-height: 150px;
   max-width: 100%;
+  overflow-x: hidden;
   border: 0;
   display: flex;
   position: relative;
   outline: 0;
   z-index: 0;
-  resize: vertical;
 }
 
 .editor {
   flex: auto;
   max-width: 100%;
   position: relative;
-  resize: vertical;
-  z-index: -1;
+  z-index: 0;
 
   box-sizing: border-box;
   background: #ffffff;
@@ -1838,3 +1837,29 @@ button.item.dropdown-item-active i {
   white-space: nowrap;
   display: inline-block;
 }
+
+/* ── Sticky toolbar ─────────────────────────────── */
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+/* ── Prevent tables from overflowing A4 paper ───── */
+.editor table {
+  max-width: 100%;
+  min-width: 0 !important;
+  box-sizing: border-box;
+}
+
+/* 셀 min-width도 0으로 — 리사이즈 시 내용 잘림 허용 */
+.editor table td,
+.editor table th {
+  min-width: 0 !important;
+  overflow: hidden;
+  word-break: break-word;
+  box-sizing: border-box;
+}
+
