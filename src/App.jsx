@@ -10,7 +10,7 @@ const StatsPage = lazy(() => import('./pages/StatsPage'));
 const StaffPage = lazy(() => import('./pages/StaffPage'));
 const FacilityPage = lazy(() => import('./pages/FacilityPage'));
 const ProgramPage = lazy(() => import('./pages/ProgramPage'));
-const MeetingPage = lazy(() => import('./pages/MeetingPage'));
+const MeetingsPage = lazy(() => import('./pages/MeetingsPage'));
 const CalendarPage = lazy(() => import('./pages/CalendarPage'));
 const IntroPage = lazy(() => import('./pages/IntroPage'));
 const VisitPage = lazy(() => import('./pages/VisitPage'));
@@ -51,7 +51,7 @@ function App() {
         <Route path="/staff" element={<AppRoute element={<ProtectedPage menuKey="staff"><StaffPage /></ProtectedPage>} />} />
         <Route path="/facility" element={<AppRoute element={<ProtectedPage menuKey="facility"><FacilityPage /></ProtectedPage>} />} />
         <Route path="/programs" element={<AppRoute element={<ProtectedPage menuKey="programs"><ProgramPage /></ProtectedPage>} />} />
-        <Route path="/meetings" element={<AppRoute element={<ProtectedPage menuKey="meetings"><MeetingPage /></ProtectedPage>} />} />
+        <Route path="/meetings" element={<AppRoute element={<ProtectedPage menuKey="meetings"><MeetingsPage /></ProtectedPage>} />} />
         <Route path="/calendar" element={<AppRoute element={<ProtectedPage menuKey="calendar"><CalendarPage /></ProtectedPage>} />} />
         <Route
           path="/public-admin"

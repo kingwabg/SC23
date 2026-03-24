@@ -1,0 +1,18 @@
+{
+  "name": "아이숲 그룹웨어",
+  "short_name": "아이숲",
+  "description": "아이숲 그룹웨어 모바일 워크스페이스",
+  "theme_color": "#0f172a",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
