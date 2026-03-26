@@ -1,0 +1,66 @@
+.sc-quick-add-btn {
+  position: fixed;
+  z-index: 10001; /* 가이드라인보다 상위 */
+  cursor: pointer;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease-out;
+}
+
+.sc-quick-add-btn:hover {
+  transform: scale(1.15);
+}
+
+/* 행(Row) 삽입 버튼 스타일 */
+.sc-quick-add-btn.row {
+  width: 24px;
+  height: 24px;
+  transform: translateY(-50%);
+}
+
+.sc-quick-add-btn.row .add-guide-line {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  width: 50px; /* 테이블 쪽으로 살짝 들어오는 가이드 */
+  height: 2px;
+  background-color: #4285f4;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* 열(Col) 삽입 버튼 스타일 */
+.sc-quick-add-btn.col {
+  width: 24px;
+  height: 24px;
+  transform: translateX(-50%);
+}
+
+.sc-quick-add-btn.col .add-guide-line {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  height: 50px;
+  width: 2px;
+  background-color: #4285f4;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.btn-circle {
+  width: 18px;
+  height: 18px;
+  background-color: #4285f4;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border: 1px solid white;
+}
+
+.sc-quick-add-btn:hover .btn-circle {
+  background-color: #1a73e8;
+}

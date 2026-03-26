@@ -179,6 +179,18 @@ export default function RoosterToolbar({ editorRef, margins, setMargins }: Props
     });
   };
 
+  const handleResizeTable = (type: 'width' | 'height', delta: number) => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    editor.focus();
+    const cell = window.getSelection()?.anchorNode?.parentElement?.closest('td, th') as HTMLElement;
+    if (cell) {
+      const cur = type === 'width' ? cell.offsetWidth : cell.offsetHeight;
+      cell.style[type] = `${Math.max(10, cur + delta)}px`;
+      try { (editor as any).takeSnapshot?.(); } catch {}
+    }
+  };
+
   const handleInsertImage = () => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -350,6 +362,26 @@ export default function RoosterToolbar({ editorRef, margins, setMargins }: Props
               <div className="w-8 h-8 bg-slate-100 border border-slate-300 text-slate-600 rounded flex items-center justify-center"><Scissors size={18} strokeWidth={1.5}/></div>
               <span>쪽 나누기</span>
             </button>
+
+            {activeTab === '표' && (
+              <>
+                <div className="w-px h-12 bg-gray-300 mx-2" />
+                <div className="flex flex-col gap-1">
+                  <div className="flex gap-1">
+                    <button title="너비 줄이기" className="w-8 h-7 bg-white border border-gray-300 rounded hover:bg-gray-50 flex items-center justify-center text-[10px] font-bold" onClick={() => handleResizeTable('width', -5)}>W-</button>
+                    <button title="너비 늘리기" className="w-8 h-7 bg-white border border-gray-300 rounded hover:bg-gray-50 flex items-center justify-center text-[10px] font-bold" onClick={() => handleResizeTable('width', 5)}>W+</button>
+                  </div>
+                  <div className="flex gap-1">
+                    <button title="높이 줄이기" className="w-8 h-7 bg-white border border-gray-300 rounded hover:bg-gray-50 flex items-center justify-center text-[10px] font-bold" onClick={() => handleResizeTable('height', -5)}>H-</button>
+                    <button title="높이 늘리기" className="w-8 h-7 bg-white border border-gray-300 rounded hover:bg-gray-50 flex items-center justify-center text-[10px] font-bold" onClick={() => handleResizeTable('height', 5)}>H+</button>
+                  </div>
+                </div>
+                <div className="flex flex-col justify-center ml-1">
+                   <span className="text-[10px] text-slate-400 font-bold leading-none">크기 조절</span>
+                   <span className="text-[9px] text-slate-300 font-medium mt-1">Ctrl + Arrow</span>
+                </div>
+              </>
+            )}
           </>
         )}
 

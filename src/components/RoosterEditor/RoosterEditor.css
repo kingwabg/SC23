@@ -4,7 +4,7 @@
   flex-direction: column;
   height: 100%;
   font-family: 'Pretendard', 'Noto Sans KR', Arial, sans-serif;
-  position: relative;  /* absolute 표의 기준 컨테이너 */
+  position: relative;
 }
 
 .rooster-content {
@@ -17,7 +17,7 @@
   color: #111;
   word-break: break-word;
   overflow-wrap: break-word;
-  position: relative;  /* 표 absolute 이동 시 기준점 */
+  position: relative;
 }
 
 /* 빈 에디터 placeholder */
@@ -32,18 +32,63 @@
   border-collapse: collapse;
   max-width: 100%;
   box-sizing: border-box;
+  table-layout: fixed; /* 리사이즈 시 너비를 고정적으로 유지하기 위해 필수 */
 }
 
 .rooster-content table td,
 .rooster-content table th {
   border: 1px solid #ccc;
-  padding: 8px 12px;
-  min-width: 30px;
-  word-break: break-word;
+  padding: 2px 5px;
+  min-width: 10px;
+  word-break: break-all;
   box-sizing: border-box;
+  overflow: hidden;
+  line-height: 1.2; /* 에디터의 글로벌 줄간격(1.7) 대신 낮은 줄간격 적용 (크기 축소를 위해) */
+  vertical-align: top;
 }
 
-/* RoosterJS TableEditPlugin 리사이즈 핸들 */
-.rooster-content .tableSelected {
-  outline: 2px solid #60a5fa;
+.sc-resize-guide {
+  position: fixed;
+  pointer-events: none;
+  background-color: #4285f4;
+  z-index: 10000;
+  display: none;
+}
+
+.sc-resize-guide.active {
+  display: block;
+}
+
+.sc-resize-guide.vertical {
+  width: 2px;
+}
+
+.sc-resize-guide.horizontal {
+  height: 2px;
+}
+
+/* Google Docs 스타일 셀 범위 선택 강조 */
+.sc-cell-selected {
+  background-color: rgba(66, 133, 244, 0.12) !important;
+  outline: 1.5px solid #4285f4 !important;
+  outline-offset: -1.5px;
+  box-shadow: inset 0 0 0 1000px rgba(66, 133, 244, 0.05); /* 깊이감 */
+  z-index: 5;
+  position: relative;
+}
+
+/* 표 전체 선택 시 외곽선 */
+.sc-selected-table {
+  outline: 2px solid #4285f4 !important;
+  outline-offset: 2px;
+}
+
+/* HWP-style Table Cell Selection */
+.rooster-content table td.sc-selected-cell,
+.rooster-content table th.sc-selected-cell {
+  background-color: rgba(79, 70, 229, 0.15) !important;
+  outline: 2px solid #4f46e5 !important;
+  outline-offset: -2px;
+  position: relative;
+  z-index: 10;
 }

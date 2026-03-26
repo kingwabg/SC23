@@ -1,24 +1,35 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import { createEditor } from 'roosterjs';
-import { undo, redo } from 'roosterjs-content-model-core';
+import { 
+  undo, 
+  redo, 
+} from 'roosterjs-content-model-core';
 import {
   AutoFormatPlugin,
   EditPlugin,
   PastePlugin,
   ShortcutPlugin,
-  TableEditPlugin,
   HyperlinkPlugin,
   ImageEditPlugin,
 } from 'roosterjs-content-model-plugins';
 import type { IEditor } from 'roosterjs-content-model-types';
+import { ScTablePlugin } from './plugins/ScTablePlugin';
+import TableQuickAdd from './TableQuickAdd';
+import TableRuler from './TableRuler';
+import VerticalRuler from './VerticalRuler';
 import './RoosterEditor.css';
 
+/**
+ * HWP 스타일의 고성능 한글 에디터 (RoosterJS 기반)
+ * 리포지토리: https://github.com/microsoft/roosterjs
+ */
 export interface RoosterEditorProps {
   initialHtml?: string;
   onChangeHtml?: (html: string) => void;
   placeholder?: string;
   editorInstanceRef?: React.MutableRefObject<IEditor | null>;
   contentDivRef?: React.MutableRefObject<HTMLDivElement | null>;
+  margins?: { top: number; bottom: number; left: number; right: number };
 }
 
 export default function RoosterEditor({
@@ -27,161 +38,127 @@ export default function RoosterEditor({
   placeholder = '내용을 입력하세요...',
   editorInstanceRef,
   contentDivRef,
+  margins = { top: 20, bottom: 20, left: 25, right: 25 }, // 기본 한글 여백
 }: RoosterEditorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  // 외부에서 contentDivRef로도 접근 가능하게
+  const editorRef = useRef<IEditor | null>(null);
+
+  // 컨테이너 DOM 연결 및 상위로 노출
   const resolvedRef = useCallback((el: HTMLDivElement | null) => {
     (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
     if (contentDivRef) contentDivRef.current = el;
   }, [contentDivRef]);
-  const editorRef = useRef<IEditor | null>(null);
-  const onChangeRef = useRef(onChangeHtml);
-  onChangeRef.current = onChangeHtml;
 
   useEffect(() => {
     if (!containerRef.current) return;
 
+    // 🚀 프로덕션급 테이블 플러그인 주입
+    // 리사이즈 가이드, <colgroup> 제어, 디바운스된 HTML 출력을 모두 플러그인이 담당
+    const tablePlugin = new ScTablePlugin((html) => {
+      onChangeHtml?.(html);
+    });
+
     const plugins = [
-      {
-        getName: () => 'ScTableSanitizerPlugin',
-        initialize: () => {},
-        dispose: () => {},
-        onPluginEvent: (event: any) => {
-          // PluginEventType.BeforePaste === 0
-          if (event.eventType === 0 && event.fragment) {
-            event.fragment.querySelectorAll('table').forEach((table: HTMLElement) => {
-              if (!table.classList.contains('sc-table-standard')) {
-                table.classList.add('sc-table-standard');
-                table.style.width = '100%';
-                table.style.borderCollapse = 'collapse';
-                table.style.border = '2px solid #94a3b8';
-                table.style.marginTop = '16px';
-                table.style.marginBottom = '16px';
-                table.style.tableLayout = '';
-                
-                table.querySelectorAll('tr, td, th').forEach((cellNode: any) => {
-                  const cell = cellNode as HTMLElement;
-                  cell.style.width = '';
-                  cell.style.height = '';
-                  cell.style.border = '1px solid #cbd5e1';
-                  cell.style.padding = '8px 12px';
-                  cell.style.boxSizing = 'border-box';
-                  cell.style.verticalAlign = 'middle';
-                  
-                  const tagName = cell.tagName.toLowerCase();
-                  if (tagName === 'th') {
-                    cell.style.backgroundColor = '#f8f9fa';
-                    cell.style.fontWeight = 'bold';
-                    cell.style.textAlign = 'center';
-                  } else if (tagName === 'td') {
-                    if (cell.style.backgroundColor) cell.style.backgroundColor = ''; 
-                  }
-                });
-              }
-            });
-          }
-        }
-      },
+      tablePlugin,
       new EditPlugin(),
       new PastePlugin(),
-      new AutoFormatPlugin({
-        autoBullet: true,
-        autoNumbering: true,
-        autoLink: true,
-        autoUnlink: false,
-        autoHyphen: true,
-        autoFraction: false,
-        autoOrdinals: false,
-      }),
+      new AutoFormatPlugin(),
       new ShortcutPlugin(),
-      new TableEditPlugin(),        // 표 셀 리사이즈, 행/열 추가/삭제 내장
-      new HyperlinkPlugin(),         // 링크 클릭 시 팝업
-      new ImageEditPlugin({          // 이미지 리사이즈, 회전 내장
-        minWidth: 20,
-        minHeight: 20,
-        preserveRatio: false,
-        disableRotate: false,
-        disableSideResize: false,
-      }),
+      new HyperlinkPlugin(),
+      new ImageEditPlugin(),
     ];
 
+    const initialContent = initialHtml || '';
+    if (containerRef.current.innerHTML !== initialContent) {
+      containerRef.current.innerHTML = initialContent;
+    }
     const editor = createEditor(containerRef.current, plugins);
+
     editorRef.current = editor;
     if (editorInstanceRef) editorInstanceRef.current = editor;
 
-    // 초기 HTML 삽입
-    if (initialHtml) {
-      try {
-        if (typeof (editor as any).setContent === 'function') {
-          (editor as any).setContent(initialHtml);
-        } else {
-          containerRef.current.innerHTML = initialHtml;
-        }
-      } catch {
-        if (containerRef.current) containerRef.current.innerHTML = initialHtml;
-      }
-    }
-
-    // 단축키 지원 (Undo/Redo)
+    // 전역 단축키 (Undo/Redo)
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && !e.altKey) {
-        if (e.key === 'z' || e.key === 'Z') {
-          e.preventDefault();
-          if (e.shiftKey) {
-            redo(editor);
-          } else {
-            undo(editor);
-          }
-        } else if (e.key === 'y' || e.key === 'Y') {
-          e.preventDefault();
-          redo(editor);
-        }
-      }
-    };
-    containerRef.current.addEventListener('keydown', handleKeyDown);
-
-    // 변경사항 상위 컴포넌트로 전달 (DOM Mutation 기반 감지)
-    const handleMutation = () => {
-      if (!containerRef.current || !onChangeRef.current) return;
-      onChangeRef.current(containerRef.current.innerHTML);
+      if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undo(editor); }
+      if (e.ctrlKey && e.key === 'y') { e.preventDefault(); redo(editor); }
     };
 
-    // input 이벤트는 텍스트 입력만 감지하지만, MutationObserver는 툴바에 의한 스타일 변경/표 삽입 등을 모두 감지합니다.
-    const observer = new MutationObserver((mutations) => {
-      // 불필요한 연속 렌더링 방지를 위해 가벼운 디바운스 처리 (선택사항) 또는 즉시 반영
-      handleMutation();
-    });
-
-    observer.observe(containerRef.current, { childList: true, subtree: true, characterData: true, attributes: true });
-    
+    window.addEventListener('keydown', handleKeyDown);
     return () => {
-      observer.disconnect();
-      if (containerRef.current) {
-        containerRef.current.removeEventListener('keydown', handleKeyDown);
-      }
+      window.removeEventListener('keydown', handleKeyDown);
       editor.dispose();
       editorRef.current = null;
-      if (editorInstanceRef) editorInstanceRef.current = null;
     };
-  }, []);
-
-  const prevHtmlRef = useRef(initialHtml);
-  useEffect(() => {
-    if (!containerRef.current || !editorRef.current) return;
-    if (initialHtml === prevHtmlRef.current) return;
-    prevHtmlRef.current = initialHtml;
-    containerRef.current.innerHTML = initialHtml ?? '';
-  }, [initialHtml]);
+  }, [editorInstanceRef]);
 
   return (
-    <div className="rooster-wrapper">
-      <div
-        ref={resolvedRef}
-        className="rooster-content"
-        data-placeholder={placeholder}
-        contentEditable
-        suppressContentEditableWarning
-      />
+    <div className="sc-editor-shell" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', backgroundColor: '#cbd5e1', overflow: 'hidden', position: 'relative' }}>
+      
+      {/* 📏 상단 가로 눈금자 (고정 바) */}
+      <div className="sc-ruler-top-bar" style={{ height: '32px', backgroundColor: '#f8fafc', borderBottom: '1px solid #94a3b8', flexShrink: 0, position: 'relative', zIndex: 1000 }}>
+        <TableRuler editor={editorRef.current} />
+      </div>
+
+      <div className="sc-editor-main-body" style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+
+        {/* 📄 에디터 및 종이 영역 통합 스크롤 (화면상 절대 중앙 정착 시스템) */}
+        <div className="sc-editor-scroll-well" style={{
+          flex: 1,
+          overflow: 'auto',
+          backgroundColor: '#e2e8f0',
+          position: 'relative'
+        }}>
+          {/* 브라우저 화면 전체의 수평 중심을 잡는 정밀 레이어 */}
+          <div className="sc-paper-centrator" style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            minWidth: 'fit-content', // 종이가 화면보다 클 때를 대비
+            width: '100%',
+            padding: '40px 0',
+            boxSizing: 'border-box'
+          }}>
+            {/* 📏 수직 눈금자 + 종이 일체형 블록 (워드/한글 표준 레이아웃) */}
+            <div className="sc-unified-paper-block" style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
+
+              {/* 📏 종이 옆에 찰떡같이 붙은 수직 눈금자 */}
+              <div className="sc-ruler-left-attached" style={{ width: '40px', flexShrink: 0, position: 'sticky', top: 0 }}>
+                <VerticalRuler editor={editorRef.current} />
+              </div>
+
+              {/* 🚀 에디터 본체 = A4 용지 */}
+              <div
+                ref={resolvedRef}
+                className="rooster-content sc-editor-root"
+                contentEditable
+                suppressContentEditableWarning
+                data-placeholder={placeholder}
+                style={{
+                  width: '210mm',
+                  maxWidth: '210mm',
+                  minHeight: '297mm',
+                  backgroundColor: 'white',
+                  boxShadow: '0 10px 35px rgba(0,0,0,0.12)',
+                  padding: `${margins.top}mm ${margins.right}mm ${margins.bottom}mm ${margins.left}mm`,
+                  boxSizing: 'border-box',
+                  outline: 'none',
+                  position: 'relative',
+                  flexShrink: 0,
+                  overflowWrap: 'break-word',
+                  wordBreak: 'break-word',
+                  overflowX: 'hidden'
+                }}
+              >
+                <TableQuickAdd editor={editorRef.current} editorContainer={containerRef.current} />
+                <div id="sc-table-guide" className="sc-resize-guide" />
+              </div>
+            </div>
+
+            {/* 하단 여유 공간 */}
+            <div style={{ height: '60px', flexShrink: 0 }} />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

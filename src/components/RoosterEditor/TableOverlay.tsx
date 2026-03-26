@@ -1,319 +1,210 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import './TableOverlay.css';
-
-type ResizeDir = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw';
-type DragMode = ResizeDir | 'move';
-
-const EDGE = 8;
-function edgeBars(r: DOMRect) {
-  return [
-    {key: 'et', style: {top: r.top - EDGE/2, left: r.left - EDGE/2, width: r.width + EDGE, height: EDGE} as React.CSSProperties},
-    {key: 'eb', style: {top: r.bottom - EDGE/2, left: r.left - EDGE/2, width: r.width + EDGE, height: EDGE} as React.CSSProperties},
-    {key: 'el', style: {top: r.top + EDGE/2, left: r.left - EDGE/2, width: EDGE, height: r.height - EDGE} as React.CSSProperties},
-    {key: 'er', style: {top: r.top + EDGE/2, left: r.right - EDGE/2, width: EDGE, height: r.height - EDGE} as React.CSSProperties},
-  ];
-}
-
-function applyTableWidth(tableEl: HTMLTableElement, newWidth: number) {
-  const currentWidth = tableEl.getBoundingClientRect().width;
-  if (currentWidth <= 0) return;
-  const ratio = newWidth / currentWidth;
-
-  const firstRow = tableEl.rows[0];
-  const cellWidths: number[] = [];
-  if (firstRow) {
-    Array.from(firstRow.cells).forEach(cell => {
-      cellWidths.push(cell.getBoundingClientRect().width);
-    });
-  }
-
-  tableEl.style.tableLayout = 'fixed';
-  tableEl.style.width = `${newWidth}px`;
-  tableEl.style.minWidth = '0';
-
-  if (firstRow) {
-    Array.from(firstRow.cells).forEach((cell, i) => {
-      const cw = cellWidths[i] ?? 0;
-      cell.style.width = `${Math.max(20, cw * ratio)}px`;
-      cell.style.minWidth = '0';
-      cell.style.overflow = 'hidden';
-    });
-  }
-}
-
-// 에디터 안의 모든 블록 레벨 자손을 수집 (줄 단위 세밀한 드롭 위치)
-const BLOCK_TAGS = new Set(['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'LI', 'BLOCKQUOTE', 'PRE', 'DIV', 'TABLE', 'UL', 'OL']);
-
-function collectBlocks(el: Element, table: HTMLTableElement, out: Element[]) {
-  for (const child of Array.from(el.children)) {
-    if (child === table) continue;
-    if (BLOCK_TAGS.has(child.tagName)) {
-      out.push(child);
-      // TABLE 내부나 UL/OL 내부는 더 세밀하게
-      if (child.tagName !== 'TABLE') {
-        collectBlocks(child, table, out);
-      }
-    } else {
-      collectBlocks(child, table, out);
-    }
-  }
-}
-
-/**
- * 마우스 좌표에서 가장 가까운 블록 요소와 삽입 위치 반환
- * 세밀한 블록 (p, div, li 등)을 반환하므로 줄 단위 드롭이 가능
- */
-function findDropTarget(
-  editorEl: HTMLElement,
-  cx: number,
-  cy: number,
-  draggedTable: HTMLTableElement,
-): {element: Element; position: 'before' | 'after'} | null {
-  const blocks: Element[] = [];
-  collectBlocks(editorEl, draggedTable, blocks);
-  if (blocks.length === 0) return null;
-
-  let bestBlock: Element | null = null;
-  let bestDist = Infinity;
-  let bestPos: 'before' | 'after' = 'after';
-
-  for (const block of blocks) {
-    const r = block.getBoundingClientRect();
-    if (r.height === 0) continue;
-    const midY = (r.top + r.bottom) / 2;
-    const dist = Math.abs(cy - midY);
-    if (dist < bestDist) {
-      bestDist = dist;
-      bestBlock = block;
-      bestPos = cy <= midY ? 'before' : 'after';
-    }
-  }
-
-  if (!bestBlock) return null;
-  return {element: bestBlock, position: bestPos};
-}
 
 interface Props {
   editorContainerRef: React.RefObject<HTMLDivElement | null>;
 }
 
-function TableOverlayInner({editorContainerRef}: Props) {
+interface OverlayRect {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+}
+
+export default function TableOverlay({ editorContainerRef }: Props) {
   const [selectedTable, setSelectedTable] = useState<HTMLTableElement | null>(null);
-  const [rect, setRect] = useState<DOMRect | null>(null);
-
-  // 드롭 위치 표시선
-  const [dropLine, setDropLine] = useState<{top: number; left: number; width: number} | null>(null);
-
-  const draggingRef = useRef<{
-    mode: DragMode;
-    startX: number; startY: number;
-    startW: number; startH: number;
-    tableEl: HTMLTableElement;
-    moved: boolean;
-  } | null>(null);
+  const [rect, setRect] = useState<OverlayRect | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isResizing, setIsResizing] = useState<string | null>(null);
+  
+  const startPos = useRef({ x: 0, y: 0, top: 0, left: 0, width: 0, height: 0 });
 
   const updateRect = useCallback(() => {
-    if (selectedTable) setRect(selectedTable.getBoundingClientRect());
-  }, [selectedTable]);
-
-  useEffect(() => {
-    window.addEventListener('scroll', updateRect, true);
-    window.addEventListener('resize', updateRect);
-    return () => {
-      window.removeEventListener('scroll', updateRect, true);
-      window.removeEventListener('resize', updateRect);
-    };
-  }, [updateRect]);
-
-  useEffect(() => { updateRect(); }, [selectedTable, updateRect]);
-
-  useEffect(() => {
-    const root = editorContainerRef.current;
-    if (!root) return;
-
-    const onRootClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const tableEl = target?.closest<HTMLTableElement>('table') ?? null;
-      if (tableEl && root.contains(tableEl)) {
-        setSelectedTable(tableEl);
-      } else {
-        const inUI = target?.closest('.tbl-handle') || target?.closest('.tbl-edge');
-        if (!inUI) setSelectedTable(null);
-      }
-    };
-
-    const onDocClick = (e: MouseEvent) => {
-      if (draggingRef.current) return;
-      const target = e.target as HTMLElement;
-      const inUI = target?.closest('.tbl-handle') || target?.closest('.tbl-edge');
-      if (!root.contains(target) && !inUI) setSelectedTable(null);
-    };
-
-    root.addEventListener('click', onRootClick);
-    document.addEventListener('click', onDocClick);
-    return () => {
-      root.removeEventListener('click', onRootClick);
-      document.removeEventListener('click', onDocClick);
-    };
-  }, [editorContainerRef]);
-
-  const startDrag = useCallback((e: React.MouseEvent, mode: DragMode) => {
-    if (!selectedTable || !rect) return;
-    e.preventDefault();
-    e.stopPropagation();
-
-    draggingRef.current = {
-      mode,
-      startX: e.clientX, startY: e.clientY,
-      startW: rect.width, startH: rect.height,
-      tableEl: selectedTable,
-      moved: false,
-    };
-
-    const onMouseMove = (me: MouseEvent) => {
-      const drag = draggingRef.current;
-      if (!drag) return;
-      const dx = me.clientX - drag.startX;
-      const dy = me.clientY - drag.startY;
-      const d = drag.mode;
-
-      if (d === 'move') {
-        drag.moved = true;
-        const editorEl = editorContainerRef.current;
-        if (!editorEl) return;
-
-        // 드롭 위치 계산
-        const target = findDropTarget(editorEl, me.clientX, me.clientY, drag.tableEl);
-        if (target) {
-          const tr = target.element.getBoundingClientRect();
-          const lineY = target.position === 'before' ? tr.top : tr.bottom;
-          setDropLine({top: lineY, left: tr.left, width: tr.width});
-        } else {
-          setDropLine(null);
-        }
-      } else {
-        // 리사이즈
-        if (d.includes('e') || d.includes('w')) {
-          const newW = Math.max(60, d.includes('e') ? drag.startW + dx : drag.startW - dx);
-          applyTableWidth(drag.tableEl, newW);
-        }
-        if (d.includes('s') || d.includes('n')) {
-          const newH = Math.max(20, d.includes('s') ? drag.startH + dy : drag.startH - dy);
-          drag.tableEl.style.minHeight = '0';
-          drag.tableEl.style.height = `${newH}px`;
-        }
-        setRect(drag.tableEl.getBoundingClientRect());
-      }
-    };
-
-    const onMouseUp = (me: MouseEvent) => {
-      const drag = draggingRef.current;
-      draggingRef.current = null;
-      setDropLine(null);
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-
-      if (drag && drag.mode === 'move' && drag.moved) {
-        const editorEl = editorContainerRef.current;
-        if (!editorEl) return;
-
-        const target = findDropTarget(editorEl, me.clientX, me.clientY, drag.tableEl);
-        if (target) {
-          const {element, position} = target;
-          const parent = element.parentNode;
-          if (parent) {
-            if (position === 'before') {
-              parent.insertBefore(drag.tableEl, element);
-            } else {
-              // element 다음에 삽입
-              const next = element.nextSibling;
-              if (next) {
-                parent.insertBefore(drag.tableEl, next);
-              } else {
-                parent.appendChild(drag.tableEl);
-              }
-            }
-          }
-        }
-      }
-
-      if (selectedTable) setRect(selectedTable.getBoundingClientRect());
-    };
-
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
-  }, [rect, selectedTable, editorContainerRef]);
-
-  const [, forceUpdate] = useState(0);
-  const toggleInline = useCallback(() => {
     if (!selectedTable) return;
-    const isInline = selectedTable.style.display === 'inline-table';
-    if (isInline) {
-      selectedTable.style.display = '';
-      selectedTable.style.verticalAlign = '';
-    } else {
-      selectedTable.style.display = 'inline-table';
-      selectedTable.style.verticalAlign = 'top';
-    }
-    forceUpdate(n => n + 1);
-    setRect(selectedTable.getBoundingClientRect());
+    const tableRect = selectedTable.getBoundingClientRect();
+    
+    setRect({
+      top: tableRect.top + window.scrollY,
+      left: tableRect.left + window.scrollX,
+      width: tableRect.width,
+      height: tableRect.height,
+    });
   }, [selectedTable]);
+
+  useEffect(() => {
+    const container = editorContainerRef.current;
+    if (!container) return;
+
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const table = target.closest('table');
+      if (table) {
+        setSelectedTable(table);
+      } else if (!target.closest('.tbl-overlay-container')) {
+        setSelectedTable(null);
+        setRect(null);
+      }
+    };
+
+    container.addEventListener('mousedown', handleClick);
+    window.addEventListener('resize', updateRect);
+    window.addEventListener('scroll', updateRect, true); // 스크롤 시 위치 동기화
+    
+    return () => {
+      container.removeEventListener('mousedown', handleClick);
+      window.removeEventListener('resize', updateRect);
+      window.removeEventListener('scroll', updateRect, true);
+    };
+  }, [editorContainerRef, updateRect]);
+
+  useEffect(() => {
+    if (selectedTable) {
+      updateRect();
+      const interval = setInterval(updateRect, 30); // 부드러운 추적
+      return () => clearInterval(interval);
+    }
+  }, [selectedTable, updateRect]);
+
+  // ── 드래그 이동 핸들러 ──
+  const onMoveStart = (e: React.MouseEvent) => {
+    if (!selectedTable || !rect) return;
+    e.stopPropagation();
+    setIsDragging(true);
+    
+    const style = window.getComputedStyle(selectedTable);
+    const top = parseInt(style.top) || 0;
+    const left = parseInt(style.left) || 0;
+
+    startPos.current = { x: e.clientX, y: e.clientY, top, left, width: rect.width, height: rect.height };
+
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      if (!editorContainerRef.current) return;
+      const editorRect = editorContainerRef.current.getBoundingClientRect();
+      const dx = moveEvent.clientX - startPos.current.x;
+      const dy = moveEvent.clientY - startPos.current.y;
+      
+      if (selectedTable.style.position !== 'relative' && selectedTable.style.position !== 'absolute') {
+        selectedTable.style.position = 'relative';
+      }
+      
+      // 이동 범위 제한 (용지 안에서만)
+      const tableRect = selectedTable.getBoundingClientRect();
+      let newLeft = startPos.current.left + dx;
+      let newTop = startPos.current.top + dy;
+      
+      // 부모 컨테이너(RoosterEditor) 기준 경계 체크
+      // tableRect.width 등은 렌더링 결과이므로 드래그 중 실시간으로 체크
+      const parentWidth = editorContainerRef.current.clientWidth;
+      const parentHeight = editorContainerRef.current.clientHeight;
+      
+      // 수평 제한
+      if (newLeft < 0) newLeft = 0;
+      if (newLeft + tableRect.width > parentWidth) newLeft = parentWidth - tableRect.width;
+      
+      // 수직 제한
+      // (용지 높이는 Pagination에 의해 늘어나므로 밑으로는 여유가 있을 수 있음)
+      if (newTop < -30) newTop = -30; // 약간의 위쪽 여유
+      
+      selectedTable.style.top = `${newTop}px`;
+      selectedTable.style.left = `${newLeft}px`;
+      updateRect();
+    };
+
+    const onMouseUp = () => {
+      setIsDragging(false);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  };
+
+  // ── 리사이즈 핸들러 ──
+  const onResizeStart = (e: React.MouseEvent, handle: string) => {
+    if (!selectedTable || !rect) return;
+    e.stopPropagation();
+    setIsResizing(handle);
+    
+    startPos.current = { 
+      x: e.clientX, y: e.clientY, 
+      top: rect.top, left: rect.left, 
+      width: rect.width, height: rect.height 
+    };
+
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      if (!editorContainerRef.current) return;
+      const parentWidth = editorContainerRef.current.clientWidth;
+      const dx = moveEvent.clientX - startPos.current.x;
+      const dy = moveEvent.clientY - startPos.current.y;
+      
+      if (handle.includes('e')) {
+        const newWidth = Math.min(parentWidth - (selectedTable.offsetLeft || 0), startPos.current.width + dx);
+        selectedTable.style.width = `${Math.max(10, newWidth)}px`;
+      }
+      if (handle.includes('s')) {
+        // 테이블 높이 조절: 직접 style.height 주입
+        const newHeight = Math.max(10, startPos.current.height + dy);
+        selectedTable.style.height = `${newHeight}px`;
+        // 표 안의 행들이 높이에 맞춰 늘어나도록 강제 (한글 스타일)
+        if (selectedTable.style.height) {
+           selectedTable.style.display = 'table'; // inline-table인 경우 높이 오동작 방지
+        }
+      }
+      if (handle.includes('w')) {
+        const maxDecrease = selectedTable.offsetLeft || 0;
+        const actualDx = Math.max(-maxDecrease, dx);
+        selectedTable.style.width = `${Math.max(10, startPos.current.width - actualDx)}px`;
+      }
+      updateRect();
+    };
+
+    const onMouseUp = () => {
+      setIsResizing(null);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+      // 스냅샷 촬영 (RoosterJS)
+      try {
+        (window as any).roosterEditorInstance?.takeSnapshot();
+      } catch {}
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  };
 
   if (!selectedTable || !rect) return null;
 
-  const isInline = selectedTable.style.display === 'inline-table';
-  
-  // 상단 툴바와 겹치지 않게 여유 공간(110px)을 계산해서, 부족하면 표 아래쪽에 배치
-  const topPos = rect.top - 36;
-  const safeTop = topPos < 110 ? rect.bottom + 12 : topPos;
+  return createPortal(
+    <div 
+      className={`tbl-overlay-container ${isDragging ? 'dragging' : ''} ${isResizing ? 'resizing' : ''}`}
+      style={{
+        position: 'absolute', // body 기준 absolute
+        top: rect.top,
+        left: rect.left,
+        width: rect.width,
+        height: rect.height,
+        pointerEvents: 'none',
+        zIndex: 50000, // 최상단
+      }}
+    >
+      <div className="tbl-overlay-border" />
+      <div className="tbl-move-bar top" onMouseDown={onMoveStart} title="드래그하여 이동" />
+      <div className="tbl-move-bar bottom" onMouseDown={onMoveStart} />
+      <div className="tbl-move-bar left" onMouseDown={onMoveStart} />
+      <div className="tbl-move-bar right" onMouseDown={onMoveStart} />
 
-  return (
-    <>
-      {/* 플로팅 액션 바 */}
-      <div
-        className="tbl-action-bar"
-        style={{
-          position: 'fixed',
-          top: safeTop,
-          left: rect.left,
-          zIndex: 10002,
-        }}
-        onMouseDown={(e) => e.preventDefault()}
-      >
-        <button
-          className={`tbl-action-btn ${isInline ? 'active' : ''}`}
-          title={isInline ? '블록 배치로 전환 (표 단독 줄)' : '인라인 배치로 전환 (표 옆에 다른 요소 배치)'}
-          onClick={toggleInline}
-        >
-          {isInline ? '📄 블록' : '↔ 인라인'}
-        </button>
-        <span className="tbl-action-hint">
-          {isInline ? '표가 한 줄 차지 → 클릭 시 옆에 배치 가능' : '표 옆에 텍스트·표 나란히 배치 가능'}
-        </span>
-      </div>
-
-      {edgeBars(rect).map(({key, style}) => (
-        <div key={key} className="tbl-edge" style={style} onMouseDown={(e) => startDrag(e, 'move')} />
-      ))}
-      {/* 드롭 위치 표시선 */}
-      {dropLine && (
-        <div className="tbl-drop-line" style={{
-          position: 'fixed',
-          top: dropLine.top - 1,
-          left: dropLine.left,
-          width: dropLine.width,
-          height: 2,
-          background: '#2563eb',
-          zIndex: 10001,
-          borderRadius: 2,
-          pointerEvents: 'none',
-        }} />
-      )}
-    </>
+      <div className="tbl-handle nw" onMouseDown={e => onResizeStart(e, 'nw')} />
+      <div className="tbl-handle n"  onMouseDown={e => onResizeStart(e, 'n')} />
+      <div className="tbl-handle ne" onMouseDown={e => onResizeStart(e, 'ne')} />
+      <div className="tbl-handle e"  onMouseDown={e => onResizeStart(e, 'e')} />
+      <div className="tbl-handle se" onMouseDown={e => onResizeStart(e, 'se')} />
+      <div className="tbl-handle s"  onMouseDown={e => onResizeStart(e, 's')} />
+      <div className="tbl-handle sw" onMouseDown={e => onResizeStart(e, 'sw')} />
+      <div className="tbl-handle w"  onMouseDown={e => onResizeStart(e, 'w')} />
+    </div>,
+    document.body
   );
-}
-
-export default function TableOverlay({editorContainerRef}: Props) {
-  return createPortal(<TableOverlayInner editorContainerRef={editorContainerRef} />, document.body);
 }

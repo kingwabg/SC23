@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import RoosterApp from '../components/RoosterEditor/RoosterApp';
+import UploadSidebar from '../components/RoosterEditor/UploadSidebar';
 import { 
   FileText, 
   Search, 
@@ -27,6 +28,8 @@ const MeetingsPage = () => {
   const [showBatchDeleteModal, setShowBatchDeleteModal] = useState(false);
   const [meetings, setMeetings] = useState([]);
   const [selectedMeetingId, setSelectedMeetingId] = useState(null);
+  const [rightTab, setRightTab] = useState('info'); // info | uploads
+  const editorRef = useRef(null);
 
   useEffect(() => {
     const fetchMeetings = async () => {
@@ -354,6 +357,7 @@ const MeetingsPage = () => {
               <RoosterApp
                 key={selectedMeetingId}
                 initialHtml={selectedMeeting?.content || initialTemplate}
+                editorInstanceRef={editorRef}
                 onChangeHtml={(htmlContent) => {
                   contentRef.current = htmlContent;
                 }}
@@ -363,103 +367,138 @@ const MeetingsPage = () => {
         </div>
       </div>
 
-      {/* Right Column: Metadata */}
+      {/* Right Column: Metadata & Uploads */}
       <div className="w-80 bg-white border-l border-slate-200 flex flex-col shrink-0">
-        <div className="p-8 space-y-10 overflow-y-auto custom-scrollbar">
-           <section className="space-y-6">
-              <div className="flex items-center gap-2 pb-4 border-b border-slate-100">
-                <Database className="w-4 h-4 text-slate-400" />
-                <h5 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Document Meta</h5>
-              </div>
-              
-              <div className="space-y-5">
-                <div className="space-y-1.5 focus-within:text-indigo-600 transition-colors">
-                  <label className="text-[10px] font-black text-inherit uppercase tracking-widest px-1">기안 연월일</label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-400 pointer-events-none" />
-                    <input 
-                      type="date" 
-                      value={selectedMeeting?.date || ''} 
-                      onChange={(e) => handleUpdateField('date', e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 rounded-xl pl-10 pr-3 py-2.5 text-xs font-bold text-slate-700 outline-none transition-all cursor-pointer"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5 focus-within:text-indigo-600 transition-colors">
-                  <label className="text-[10px] font-black text-inherit uppercase tracking-widest px-1">운영 상태 및 시간</label>
-                  <div className="flex gap-2">
-                     <select 
-                       value={selectedMeeting?.termType || '학기중'} 
-                       onChange={(e) => handleUpdateField('termType', e.target.value)}
-                       className="w-24 bg-slate-50 border border-slate-200 focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 rounded-xl px-2 py-2.5 text-xs font-bold text-slate-700 outline-none transition-all cursor-pointer appearance-none text-center"
-                     >
-                        <option value="학기중">학기중</option>
-                        <option value="방학중">방학중</option>
-                        <option value="기타">기타</option>
-                     </select>
-                     <div className="flex-1 bg-slate-50 border border-slate-200 focus-within:border-indigo-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-indigo-500/10 rounded-xl px-3 py-2.5 flex items-center gap-1 transition-all">
-                        <input 
-                          type="text" 
-                          value={selectedMeeting?.startTime || '09:00'} 
-                          onChange={(e) => handleUpdateField('startTime', e.target.value)}
-                          className="w-full bg-transparent text-xs font-bold text-slate-700 outline-none text-center"
-                          placeholder="시작"
-                        />
-                        <span className="text-slate-400 font-black text-xs">~</span>
-                        <input 
-                          type="text" 
-                          value={selectedMeeting?.endTime || '18:00'} 
-                          onChange={(e) => handleUpdateField('endTime', e.target.value)}
-                          className="w-full bg-transparent text-xs font-bold text-slate-700 outline-none text-center"
-                          placeholder="종료"
-                        />
-                     </div>
-                  </div>
-                </div>
-
-                <div className="space-y-1.5 focus-within:text-emerald-600 transition-colors">
-                  <label className="text-[10px] font-black text-inherit uppercase tracking-widest px-1">기안자</label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-400 pointer-events-none" />
-                    <input 
-                      type="text" 
-                      value={selectedMeeting?.author || ''} 
-                      onChange={(e) => handleUpdateField('author', e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 focus:border-emerald-400 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 rounded-xl pl-10 pr-3 py-2.5 text-xs font-bold text-slate-700 outline-none transition-all"
-                      placeholder="기안자 이름"
-                    />
-                  </div>
-                </div>
-              </div>
-           </section>
-
-           <section className="space-y-6">
-              <div className="flex items-center gap-2 pb-4 border-b border-slate-100">
-                <ShieldCheck className="w-4 h-4 text-slate-400" />
-                <h5 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Approval Matrix</h5>
-              </div>
-              <div className="bg-slate-900 rounded-2xl p-6 text-white space-y-4 shadow-xl">
-                 <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-black text-xs">장</div>
-                    <div>
-                       <p className="text-[11px] font-bold">시설장 검토 대기</p>
-                       <p className="text-[9px] text-slate-500 uppercase tracking-widest">Pending Boss</p>
-                    </div>
-                 </div>
-                 <div className="pt-4 border-t border-white/10">
-                    <button className="w-full py-2 bg-white/10 hover:bg-white/20 transition-all rounded-lg text-[10px] font-black uppercase tracking-widest">결재 요청하기</button>
-                 </div>
-              </div>
-           </section>
-
-           <div className="p-8 bg-indigo-50 rounded-3xl space-y-3 relative overflow-hidden group">
-              <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-indigo-100 rounded-full blur-2xl group-hover:scale-150 transition-all" />
-              <h6 className="text-[10px] font-black text-indigo-600 uppercase tracking-widest relative z-10">Smart AI Assistant</h6>
-              <p className="text-[11px] font-bold text-slate-400 leading-relaxed relative z-10">회의록 내용을 기반으로 아동별 관찰일지를 자동 생성할 수 있습니다.</p>
-              <button className="flex items-center gap-2 text-indigo-600 text-[10px] font-black uppercase tracking-widest mt-2 relative z-10">일지 생성 실행 <ArrowRight className="w-3 h-3" /></button>
-           </div>
+        {/* 사이드바 탭 헤더 */}
+        <div className="flex border-b border-slate-100">
+          <button 
+            onClick={() => setRightTab('info')}
+            className={`flex-1 py-4 text-[11px] font-black uppercase tracking-widest transition-all ${rightTab === 'info' ? 'text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50/30' : 'text-slate-400 hover:text-slate-600'}`}
+          >
+            기안 정보
+          </button>
+          <button 
+            onClick={() => setRightTab('uploads')}
+            className={`flex-1 py-4 text-[11px] font-black uppercase tracking-widest transition-all ${rightTab === 'uploads' ? 'text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50/30' : 'text-slate-400 hover:text-slate-600'}`}
+          >
+            이미지 뱅크
+          </button>
         </div>
+
+        {rightTab === 'info' ? (
+          <div className="p-8 space-y-10 overflow-y-auto custom-scrollbar flex-1">
+             <section className="space-y-6">
+                <div className="flex items-center gap-2 pb-4 border-b border-slate-100">
+                  <Database className="w-4 h-4 text-slate-400" />
+                  <h5 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Document Meta</h5>
+                </div>
+                
+                <div className="space-y-5">
+                  <div className="space-y-1.5 focus-within:text-indigo-600 transition-colors">
+                    <label className="text-[10px] font-black text-inherit uppercase tracking-widest px-1">기안 연월일</label>
+                    <div className="relative">
+                      <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-400 pointer-events-none" />
+                      <input 
+                        type="date" 
+                        value={selectedMeeting?.date ? selectedMeeting.date.replace(/\./g, '-') : ''} 
+                        onChange={(e) => handleUpdateField('date', e.target.value)}
+                        className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 rounded-xl pl-10 pr-3 py-2.5 text-xs font-bold text-slate-700 outline-none transition-all cursor-pointer"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5 focus-within:text-indigo-600 transition-colors">
+                    <label className="text-[10px] font-black text-inherit uppercase tracking-widest px-1">운영 상태 및 시간</label>
+                    <div className="flex gap-2">
+                       <select 
+                         value={selectedMeeting?.termType || '학기중'} 
+                         onChange={(e) => handleUpdateField('termType', e.target.value)}
+                         className="w-24 bg-slate-50 border border-slate-200 focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 rounded-xl px-2 py-2.5 text-xs font-bold text-slate-700 outline-none transition-all cursor-pointer appearance-none text-center"
+                       >
+                          <option value="학기중">학기중</option>
+                          <option value="방학중">방학중</option>
+                          <option value="기타">기타</option>
+                       </select>
+                       <div className="flex-1 bg-slate-50 border border-slate-200 focus-within:border-indigo-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-indigo-500/10 rounded-xl px-3 py-2.5 flex items-center gap-1 transition-all">
+                          <input 
+                            type="text" 
+                            value={selectedMeeting?.startTime || '09:00'} 
+                            onChange={(e) => handleUpdateField('startTime', e.target.value)}
+                            className="w-full bg-transparent text-xs font-bold text-slate-700 outline-none text-center"
+                            placeholder="시작"
+                          />
+                          <span className="text-slate-400 font-black text-xs">~</span>
+                          <input 
+                            type="text" 
+                            value={selectedMeeting?.endTime || '18:00'} 
+                            onChange={(e) => handleUpdateField('endTime', e.target.value)}
+                            className="w-full bg-transparent text-xs font-bold text-slate-700 outline-none text-center"
+                            placeholder="종료"
+                          />
+                       </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5 focus-within:text-emerald-600 transition-colors">
+                    <label className="text-[10px] font-black text-inherit uppercase tracking-widest px-1">기안자</label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-400 pointer-events-none" />
+                      <input 
+                        type="text" 
+                        value={selectedMeeting?.author || ''} 
+                        onChange={(e) => handleUpdateField('author', e.target.value)}
+                        className="w-full bg-slate-50 border border-slate-200 focus:border-emerald-400 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 rounded-xl pl-10 pr-3 py-2.5 text-xs font-bold text-slate-700 outline-none transition-all"
+                        placeholder="기안자 이름"
+                      />
+                    </div>
+                  </div>
+                </div>
+             </section>
+
+             <section className="space-y-6">
+                <div className="flex items-center gap-2 pb-4 border-b border-slate-100">
+                  <ShieldCheck className="w-4 h-4 text-slate-400" />
+                  <h5 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Approval Matrix</h5>
+                </div>
+                <div className="bg-slate-900 rounded-2xl p-6 text-white space-y-4 shadow-xl">
+                   <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-black text-xs">장</div>
+                      <div>
+                         <p className="text-[11px] font-bold">시설장 검토 대기</p>
+                         <p className="text-[9px] text-slate-500 uppercase tracking-widest">Pending Boss</p>
+                      </div>
+                   </div>
+                   <div className="pt-4 border-t border-white/10">
+                      <button className="w-full py-2 bg-white/10 hover:bg-white/20 transition-all rounded-lg text-[10px] font-black uppercase tracking-widest">결재 요청하기</button>
+                   </div>
+                </div>
+             </section>
+
+             <div className="p-8 bg-indigo-50 rounded-3xl space-y-3 relative overflow-hidden group">
+                <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-indigo-100 rounded-full blur-2xl group-hover:scale-150 transition-all" />
+                <h6 className="text-[10px] font-black text-indigo-600 uppercase tracking-widest relative z-10">Smart AI Assistant</h6>
+                <p className="text-[11px] font-bold text-slate-400 leading-relaxed relative z-10">회의록 내용을 기반으로 아동별 관찰일지를 자동 생성할 수 있습니다.</p>
+                <button className="flex items-center gap-2 text-indigo-600 text-[10px] font-black uppercase tracking-widest mt-2 relative z-10">일지 생성 실행 <ArrowRight className="w-3 h-3" /></button>
+             </div>
+          </div>
+        ) : (
+          <UploadSidebar onInsertImage={(url) => {
+             const editor = editorRef.current;
+             if (!editor) return;
+             
+             // RoosterJS V9 insertImage logic (simplified or via content model)
+             // context.editor.insertImage(url)
+             // 여기서 직접 DOM에 삽입하거나 RoosterJS API 활용
+             try {
+                // v9에서는 insertImage가 core-api에 있음. 여기서는 직접 간단히 삽입
+                editor.focus();
+                const img = `<img src="${url}" style="max-width: 100%; border: none; outline: none; margin: 10px 0;" />`;
+                document.execCommand('insertHTML', false, img);
+             } catch (err) {
+                console.error('이미지 삽입 실패:', err);
+             }
+          }} />
+        )}
       </div>
 
       {/* Delete Single Modal */}

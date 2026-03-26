@@ -1,57 +1,172 @@
-.tbl-ctx-menu {
-  position: fixed;
-  z-index: 9999;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.14);
-  padding: 4px 0;
-  min-width: 180px;
-  font-size: 13px;
-  animation: ctxFadeIn 0.1s ease;
+/* ── react-contexify 기본 스타일 커스텀 오버라이드 ── */
+.tbl-ctx-root.contexify {
+  --contexify-menu-bgColor: #ffffff;
+  --contexify-separator-color: #f1f5f9;
+  --contexify-item-color: #1e293b;
+  --contexify-activeItem-color: #1d4ed8;
+  --contexify-activeItem-bgColor: #eff6ff;
+  --contexify-rightSlot-color: #94a3b8;
+  --contexify-activeRightSlot-color: #3b82f6;
+  --contexify-arrow-color: #94a3b8;
+  --contexify-activeArrow-color: #3b82f6;
+  z-index: 99999 !important;
+  border-radius: 12px !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08), 0 16px 48px -4px rgba(0,0,0,0.18) !important;
+  padding: 6px !important;
+  min-width: 220px !important;
+  font-family: 'Pretendard', 'Noto Sans KR', system-ui, sans-serif !important;
+  font-size: 13px !important;
 }
 
-@keyframes ctxFadeIn {
-  from { opacity: 0; transform: scale(0.96) translateY(-4px); }
+/* 서브메뉴 패널 */
+.tbl-ctx-root .contexify_submenu {
+  z-index: 100000 !important;
+  border-radius: 10px !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08), 0 16px 48px -4px rgba(0,0,0,0.18) !important;
+  padding: 6px !important;
+  min-width: 200px !important;
+}
+
+/* 아이템 */
+.tbl-ctx-root .contexify_item {
+  border-radius: 7px !important;
+  padding: 0 !important;
+}
+.tbl-ctx-root .contexify_itemContent {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 8px 12px !important;
+  font-weight: 450 !important;
+}
+
+/* 서브메뉴 제목 */
+.tbl-ctx-root .contexify_submenu-wrapper .contexify_itemContent {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 8px 12px !important;
+}
+
+/* 위험 항목 (삭제) */
+.tbl-ctx-root .danger-item .contexify_itemContent,
+.tbl-ctx-root .danger-item.contexify_item:not([data-disabled]) .contexify_itemContent { color: #dc2626 !important; }
+.tbl-ctx-root .danger-item.contexify_item:hover .contexify_itemContent { color: #b91c1c !important; }
+.tbl-ctx-root .danger-item.contexify_item:hover { --contexify-activeItem-bgColor: #fef2f2 !important; }
+
+/* 위험 서브메뉴 레이블 */
+.tbl-ctx-root .danger-label { color: #dc2626; }
+
+/* 구분선 */
+.tbl-ctx-root .contexify_separator { background: #f1f5f9 !important; margin: 4px 0 !important; }
+
+/* 힌트 텍스트 */
+.tbl-ctx-root .ctx-hint {
+  padding: 8px 12px;
+  font-size: 11px;
+  color: #64748b;
+  background-color: #f8fafc;
+  margin: 4px 6px;
+  border-radius: 8px;
+  line-height: 1.5;
+  white-space: normal;
+  word-break: keep-all;
+  border: 1px dashed #e2e8f0;
+}
+
+/* 표 크기 조절 가이드 라인 */
+.sc-resize-guide {
+  position: absolute;
+  background-color: #4f46e5;
+  pointer-events: none;
+  z-index: 99999;
+  display: none;
+  opacity: 0.5;
+}
+.sc-resize-guide.active {
+  display: block;
+}
+.sc-resize-guide.vertical {
+  width: 2px;
+  cursor: col-resize;
+}
+.sc-resize-guide.horizontal {
+  height: 2px;
+  cursor: row-resize;
+}
+
+/* ══════ 색상 피커 패널 ══════ */
+.tbl-color-panel {
+  position: fixed;
+  z-index: 22000;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 8px 48px -4px rgba(0,0,0,0.22);
+  padding: 16px;
+  width: 240px;
+  animation: colorPanelFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: 'Pretendard', system-ui, sans-serif;
+}
+@keyframes colorPanelFadeIn {
+  from { opacity: 0; transform: scale(0.95) translateY(-4px); }
   to   { opacity: 1; transform: scale(1)   translateY(0); }
 }
-
-.tbl-ctx-divider {
-  height: 1px;
-  background: #f3f4f6;
-  margin: 3px 0;
+.tbl-color-panel-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
 }
-
-.tbl-ctx-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 14px;
+.tbl-color-presets {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 5px;
+  margin-bottom: 12px;
+}
+.tbl-color-preset {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  border: 1.5px solid rgba(0,0,0,0.1);
   cursor: pointer;
-  color: #374151;
-  position: relative;
-  transition: background 0.1s;
-  user-select: none;
+  transition: transform 0.1s, box-shadow 0.1s;
+  padding: 0;
+  display: flex; align-items: center; justify-content: center;
 }
-.tbl-ctx-item:hover { background: #f0f8ff; color: #1d4ed8; }
-
-.tbl-ctx-icon { font-size: 13px; flex-shrink: 0; width: 16px; text-align: center; }
-.tbl-ctx-label { flex: 1; }
-.tbl-ctx-arrow { color: #9ca3af; font-size: 16px; line-height: 1; }
-
-/* 서브메뉴 */
-.tbl-ctx-has-sub { position: relative; }
-
-.tbl-ctx-submenu {
-  position: absolute;
-  left: 100%;
-  top: -4px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.14);
-  padding: 4px 0;
-  min-width: 160px;
-  z-index: 10000;
-  animation: ctxFadeIn 0.08s ease;
+.tbl-color-preset:hover { transform: scale(1.18); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+.tbl-color-none-line {
+  display: block; width: 80%; height: 2px;
+  background: #ef4444; transform: rotate(-45deg); border-radius: 2px;
 }
+.tbl-color-divider { height: 1px; background: #f1f5f9; margin: 0 0 12px 0; }
+
+/* react-colorful */
+.tbl-color-picker-wrap .react-colorful { width: 100% !important; height: 160px !important; border-radius: 8px !important; margin-bottom: 12px; }
+.tbl-color-picker-wrap .react-colorful__saturation { border-radius: 8px 8px 0 0 !important; }
+.tbl-color-picker-wrap .react-colorful__hue { height: 12px !important; border-radius: 0 0 8px 8px !important; }
+.tbl-color-picker-wrap .react-colorful__pointer { width: 18px !important; height: 18px !important; }
+
+/* 입력 행 */
+.tbl-color-input-row { display: flex; align-items: center; gap: 8px; }
+.tbl-color-preview { width: 28px; height: 28px; border-radius: 6px; border: 1.5px solid rgba(0,0,0,0.1); flex-shrink: 0; }
+.tbl-color-hex-input {
+  flex: 1; height: 30px;
+  border: 1.5px solid #e2e8f0; border-radius: 7px;
+  padding: 0 8px; font-size: 13px;
+  font-family: 'JetBrains Mono', monospace; color: #334155;
+  outline: none; background: #f8fafc;
+  transition: border-color 0.15s;
+}
+.tbl-color-hex-input:focus { border-color: #3b82f6; background: #fff; }
+.tbl-color-apply-btn {
+  height: 30px; padding: 0 12px;
+  background: #3b82f6; color: #fff;
+  border: none; border-radius: 7px;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: background 0.15s; white-space: nowrap;
+}
+.tbl-color-apply-btn:hover { background: #2563eb; }

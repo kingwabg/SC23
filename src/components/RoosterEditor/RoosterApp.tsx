@@ -17,65 +17,27 @@ export default function RoosterApp({ initialHtml, onChangeHtml }: RoosterAppProp
   const [margins, setMargins] = useState({ top: 20, bottom: 20, left: 25, right: 25 }); // mm 단위
 
   return (
-    <div className="relative flex flex-col min-h-full items-center">
-      {/* Full-width Hancom-style Ribbon Toolbar */}
-      <div className="sticky top-0 z-50 w-full border-b border-slate-300 shadow-sm bg-white">
+    <div className="sc-app-outer-shell" style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', backgroundColor: '#cbd5e1', overflow: 'hidden' }}>
+      {/* 🚀 상단 리본 메뉴 (고정 - 최우선 순위 부여) */}
+      <div className="sc-app-toolbar-fixed" style={{ flexShrink: 0, zIndex: 2000, borderBottom: '1px solid #cbd5e1', backgroundColor: 'white' }}>
         <RoosterToolbar editorRef={editorRef} margins={margins} setMargins={setMargins} />
       </div>
 
-      {/* A4 Paper Editor */}
-      <div 
-        className="bg-white ring-1 ring-slate-900/5 shadow-2xl shadow-indigo-900/10 rounded-xl relative mt-8"
-        style={{ 
-          width: '21cm', 
-          minHeight: '29.7cm', 
-          padding: `var(--m-top) var(--m-right) var(--m-bottom) var(--m-left)`,
-          marginBottom: '4rem',
-          transition: 'padding 0.2s',
-          '--m-top': `${margins.top}mm`,
-          '--m-bottom': `${margins.bottom}mm`,
-          '--m-left': `${margins.left}mm`,
-          '--m-right': `${margins.right}mm`,
-        } as React.CSSProperties}
-      >
+      {/* 📄 한컴/구글독스 스타일 워크스페이스 (에디터가 전체 통제) */}
+      <div className="sc-app-editor-full" style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
         <RoosterEditor
           initialHtml={initialHtml}
           onChangeHtml={onChangeHtml}
           editorInstanceRef={editorRef}
           contentDivRef={contentDivRef}
+          margins={margins}
         />
-        {/* 표 클릭 시 이동 오버레이 */}
+        
+        {/* 오버레이 유틸리티: 에디터와 한 몸으로 작동 */}
         <TableOverlay editorContainerRef={contentDivRef} />
-        {/* 표 우클릭 컨텍스트 메뉴 */}
         <TableContextMenu editorContainerRef={contentDivRef} editorRef={editorRef} />
-
-        {/* Margin Guide Lines (한글 HWP 스타일 여백 가이드라인 - 모서리만 표시) */}
-        <div 
-          className="absolute pointer-events-none transition-all duration-200 z-10"
-          style={{
-            top: `${margins.top}mm`,
-            bottom: `${margins.bottom}mm`,
-            left: `${margins.left}mm`,
-            right: `${margins.right}mm`,
-            background: `
-              linear-gradient(to right, #cbd5e1 1px, transparent 1px) 0 0,
-              linear-gradient(to bottom, #cbd5e1 1px, transparent 1px) 0 0,
-              linear-gradient(to left, #cbd5e1 1px, transparent 1px) 100% 0,
-              linear-gradient(to bottom, #cbd5e1 1px, transparent 1px) 100% 0,
-              linear-gradient(to right, #cbd5e1 1px, transparent 1px) 0 100%,
-              linear-gradient(to top, #cbd5e1 1px, transparent 1px) 0 100%,
-              linear-gradient(to left, #cbd5e1 1px, transparent 1px) 100% 100%,
-              linear-gradient(to top, #cbd5e1 1px, transparent 1px) 100% 100%
-            `,
-            backgroundSize: '10px 10px',
-            backgroundRepeat: 'no-repeat'
-          }}
-        />
+        <PaginationEngine editorRef={editorRef} />
       </div>
-
-      {/* 페이지네이션 보정 엔진: 삽입된 쪽 나누기(<hr class="page-break-gap">)의 margin-top을 물리적 A4 배수에 맞게 주기적으로 재계산합니다. */}
-      {/* RoosterJS가 inline-style을 날려버리는 것을 방지하고, 에디팅 중에도 종이가 항상 297mm 단위로 갈라지게 만듭니다. */}
-      <PaginationEngine editorRef={editorRef} />
     </div>
   );
 }
@@ -88,7 +50,7 @@ function PaginationEngine({ editorRef }: { editorRef: React.RefObject<any> }) {
 
     const recalculatePageBreaks = () => {
       const editorDiv = editorRef.current?.getDocument()?.body;
-      const paperDiv = document.querySelector('.rooster-paper') as HTMLElement;
+      const paperDiv = document.querySelector('.sc-editor-root') as HTMLElement;
       if (!editorDiv || !paperDiv) return;
 
       const gaps = editorDiv.querySelectorAll('hr.page-break-gap') as NodeListOf<HTMLElement>;
