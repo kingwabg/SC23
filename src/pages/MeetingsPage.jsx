@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import RoosterApp from '../components/RoosterEditor/RoosterApp';
 import UploadSidebar from '../components/RoosterEditor/UploadSidebar';
+import EditorAdapter, { EDITOR_ENGINE } from '../features/editor/adapters/EditorAdapter';
+import { getMeetingsEditorEngine, isWebHwpPreviewEnabled } from '../features/editor/config/webhwpConfig';
+import { createHtmlDocumentBody } from '../features/editor/types';
 import { 
   FileText, 
   Search, 
@@ -20,6 +22,99 @@ import {
   Trash2
 } from 'lucide-react';
 import { authApi } from '../utils/apiClient';
+import { exportContent } from 'roosterjs-content-model-core';
+
+const EDITOR_OVERRIDE_STORAGE_KEY = 'meetingsEditorEngineOverride';
+
+const getStoredEditorOverride = () => {
+  if (typeof window === 'undefined') return '';
+  const stored = window.localStorage.getItem(EDITOR_OVERRIDE_STORAGE_KEY) || '';
+  return stored === EDITOR_ENGINE.ROOSTER ? stored : '';
+};
+
+const hydrateMeetingContentFromDocument = async (meeting, fallbackHtml) => {
+  if (!meeting?.documentId) {
+    return meeting?.content || fallbackHtml;
+  }
+
+  try {
+    const response = await authApi(`/api/documents/${meeting.documentId}?includeBody=true`);
+    if (response?.body?.kind === 'html') {
+      return response.body.html || fallbackHtml;
+    }
+  } catch (error) {
+    console.warn('문서 본문을 불러오지 못해 회의록 캐시 내용을 사용합니다.', error);
+  }
+
+  return meeting?.content || fallbackHtml;
+};
+
+const persistMeetingDocument = async (meeting, html, engine) => {
+  if (meeting?.documentId) {
+    const response = await authApi(`/api/documents/${meeting.documentId}/body`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        title: meeting.title || '',
+        ownerType: 'meeting',
+        ownerId: String(meeting.id),
+        engine,
+        body: {
+          kind: 'html',
+          html,
+        },
+      }),
+    });
+    return response.document;
+  }
+
+  const response = await authApi('/api/documents', {
+    method: 'POST',
+    body: JSON.stringify({
+      document: {
+        ownerType: 'meeting',
+        ownerId: String(meeting.id),
+        title: meeting.title || '',
+        engine,
+      },
+      body: {
+        kind: 'html',
+        html,
+      },
+    }),
+  });
+
+  return response.document;
+};
+
+const resolveCurrentEditorHtml = (editor, fallbackHtml = '') => {
+  if (!editor) return fallbackHtml;
+
+  if (typeof editor.getCurrentHtml === 'function') {
+    try {
+      return editor.getCurrentHtml() || fallbackHtml;
+    } catch (error) {
+      console.warn('커스텀 에디터 HTML 추출에 실패했습니다.', error);
+    }
+  }
+
+  try {
+    return exportContent(editor) || fallbackHtml;
+  } catch (error) {
+    console.warn('Rooster 에디터 HTML 추출에 실패했습니다.', error);
+  }
+
+  try {
+    const body = editor.getDocument?.().body;
+    const root = body?.querySelector?.('.sc-editor-root');
+    if (root?.innerHTML) {
+      return root.innerHTML;
+    }
+  } catch (error) {
+    console.warn('에디터 DOM HTML 추출에 실패했습니다.', error);
+  }
+
+  return fallbackHtml;
+};
 
 const MeetingsPage = () => {
   const [showSaveModal, setShowSaveModal] = useState(false);
@@ -29,7 +124,12 @@ const MeetingsPage = () => {
   const [meetings, setMeetings] = useState([]);
   const [selectedMeetingId, setSelectedMeetingId] = useState(null);
   const [rightTab, setRightTab] = useState('info'); // info | uploads
+  const [isDocumentLoading, setIsDocumentLoading] = useState(false);
+  const [editorPreviewEngine, setEditorPreviewEngine] = useState(() => getStoredEditorOverride());
   const editorRef = useRef(null);
+  const loadedDocumentIdsRef = useRef(new Set());
+  const defaultEditorEngine = getMeetingsEditorEngine();
+  const webHwpPreviewEnabled = isWebHwpPreviewEnabled();
 
   useEffect(() => {
     const fetchMeetings = async () => {
@@ -193,24 +293,83 @@ const MeetingsPage = () => {
     contentRef.current = selectedMeeting?.content || initialTemplate;
   }, [selectedMeetingId, selectedMeeting, initialTemplate]);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    const syncSelectedMeetingDocument = async () => {
+      if (!selectedMeeting?.documentId) return;
+      if (loadedDocumentIdsRef.current.has(selectedMeeting.documentId)) return;
+
+      setIsDocumentLoading(true);
+      const html = await hydrateMeetingContentFromDocument(selectedMeeting, initialTemplate);
+      if (cancelled) return;
+
+      loadedDocumentIdsRef.current.add(selectedMeeting.documentId);
+      contentRef.current = html;
+      setMeetings((prev) => prev.map((meeting) => (
+        meeting.id === selectedMeeting.id
+          ? { ...meeting, content: html }
+          : meeting
+      )));
+      setIsDocumentLoading(false);
+    };
+
+    syncSelectedMeetingDocument().catch(() => {
+      if (!cancelled) setIsDocumentLoading(false);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedMeeting, initialTemplate]);
+
+  const selectedDocumentValue = createHtmlDocumentBody(selectedMeeting?.content || initialTemplate);
+  const resolvedEditorEngine = editorPreviewEngine || defaultEditorEngine;
+  const persistedDocumentEngine = resolvedEditorEngine;
+
+  const handlePreviewEngineChange = (engine) => {
+    setEditorPreviewEngine(engine);
+    if (typeof window !== 'undefined') {
+      if (engine) {
+        window.localStorage.setItem(EDITOR_OVERRIDE_STORAGE_KEY, engine);
+      } else {
+        window.localStorage.removeItem(EDITOR_OVERRIDE_STORAGE_KEY);
+      }
+    }
+  };
+
   const handleSave = () => {
     setShowConfirmModal(true);
   };
 
   const executeSave = async () => {
-    const content = contentRef.current;
     const targetMeeting = meetings.find(m => m.id === selectedMeetingId);
     if (!targetMeeting) return;
+    const content = resolveCurrentEditorHtml(editorRef.current, contentRef.current || targetMeeting.content || initialTemplate);
+    contentRef.current = content;
 
     const updatedMeeting = { ...targetMeeting, content };
     setMeetings(prev => prev.map(m => m.id === selectedMeetingId ? updatedMeeting : m));
     setShowConfirmModal(false);
 
     try {
+      const document = await persistMeetingDocument(updatedMeeting, content, persistedDocumentEngine);
+      const meetingUpdates = {
+        ...updatedMeeting,
+        documentId: document.id,
+        document,
+      };
+
       await authApi(`/api/meetings/${selectedMeetingId}`, {
         method: 'PATCH',
-        body: JSON.stringify({ updates: updatedMeeting })
+        body: JSON.stringify({ updates: meetingUpdates })
       });
+      loadedDocumentIdsRef.current.add(document.id);
+      setMeetings(prev => prev.map(m => (
+        m.id === selectedMeetingId
+          ? { ...meetingUpdates }
+          : m
+      )));
     } catch (e) {
       await authApi('/api/meetings', {
         method: 'POST',
@@ -235,7 +394,14 @@ const MeetingsPage = () => {
       content: initialTemplate
     };
     try {
-      await authApi('/api/meetings', { method: 'POST', body: JSON.stringify({ meeting: newDoc }) });
+      const created = await authApi('/api/meetings', { method: 'POST', body: JSON.stringify({ meeting: newDoc }) });
+      const createdMeeting = created?.meeting || newDoc;
+      setMeetings([createdMeeting, ...meetings]);
+      if (createdMeeting.documentId) {
+        loadedDocumentIdsRef.current.add(createdMeeting.documentId);
+      }
+      setSelectedMeetingId(createdMeeting.id);
+      return;
     } catch(err) {}
     
     setMeetings([newDoc, ...meetings]);
@@ -344,22 +510,43 @@ const MeetingsPage = () => {
                 placeholder="문서 제목을 입력하세요"
               />
            </div>
-           <div className="flex gap-2 shrink-0">
+           <div className="flex items-center gap-3 shrink-0">
+              {webHwpPreviewEnabled && (
+                <div className="hidden items-center rounded-2xl border border-slate-200 bg-slate-50 p-1 md:flex">
+                  <button
+                    onClick={() => handlePreviewEngineChange(EDITOR_ENGINE.ROOSTER)}
+                    className={`rounded-xl px-3 py-2 text-[11px] font-black transition-all ${resolvedEditorEngine === EDITOR_ENGINE.ROOSTER ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
+                  >
+                    Rooster
+                  </button>
+                  <button
+                    onClick={() => handlePreviewEngineChange(EDITOR_ENGINE.WEBHWP)}
+                    className={`rounded-xl px-3 py-2 text-[11px] font-black transition-all ${resolvedEditorEngine === EDITOR_ENGINE.WEBHWP ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
+                  >
+                    WebHwp
+                  </button>
+                </div>
+              )}
               <button onClick={() => window.print()} className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all"><Printer className="w-4 h-4" /> 인쇄</button>
               <button onClick={handleSave} className="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white rounded-xl text-xs font-black shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 transition-all"><Save className="w-4 h-4" /> 기록 저장</button>
            </div>
         </div>
 
         <div className="flex-1 flex flex-col overflow-hidden bg-[radial-gradient(#d1d5db_1px,transparent_1px)] [background-size:24px_24px]">
-          {/* RoosterJS Editor — TableEditPlugin 내장으로 표 성능 최적화 */}
           <div className="flex flex-col flex-1 overflow-hidden">
             <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar" style={{scrollbarGutter: 'stable'}}>
-              <RoosterApp
+              {isDocumentLoading && (
+                <div className="border-b border-slate-200 bg-amber-50 px-4 py-2 text-[11px] font-bold text-amber-700">
+                  문서 본문을 불러오는 중입니다...
+                </div>
+              )}
+              <EditorAdapter
                 key={selectedMeetingId}
-                initialHtml={selectedMeeting?.content || initialTemplate}
+                engine={resolvedEditorEngine}
+                value={selectedDocumentValue}
                 editorInstanceRef={editorRef}
-                onChangeHtml={(htmlContent) => {
-                  contentRef.current = htmlContent;
+                onChange={(nextValue) => {
+                  contentRef.current = nextValue?.html || '';
                 }}
               />
             </div>
@@ -485,13 +672,16 @@ const MeetingsPage = () => {
           <UploadSidebar onInsertImage={(url) => {
              const editor = editorRef.current;
              if (!editor) return;
-             
-             // RoosterJS V9 insertImage logic (simplified or via content model)
-             // context.editor.insertImage(url)
-             // 여기서 직접 DOM에 삽입하거나 RoosterJS API 활용
+
+             if (typeof editor.insertImage === 'function') {
+                editor.insertImage({ src: url, altText: 'uploaded image' });
+                return;
+             }
+
              try {
-                // v9에서는 insertImage가 core-api에 있음. 여기서는 직접 간단히 삽입
-                editor.focus();
+                if (typeof editor.focus === 'function') {
+                  editor.focus();
+                }
                 const img = `<img src="${url}" style="max-width: 100%; border: none; outline: none; margin: 10px 0;" />`;
                 document.execCommand('insertHTML', false, img);
              } catch (err) {

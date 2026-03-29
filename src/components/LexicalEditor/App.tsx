@@ -41,7 +41,7 @@ import {
   configExtension,
   defineExtension,
 } from 'lexical';
-import {type JSX, useMemo} from 'react';
+import {type JSX, type MutableRefObject, useMemo} from 'react';
 
 import {isDevPlayground} from './appSettings';
 import {buildHTMLConfig} from './buildHTMLConfig';
@@ -56,6 +56,7 @@ import {PlaygroundAutoLinkExtension} from './plugins/AutoLinkExtension';
 import {DateTimeExtension} from './plugins/DateTimeExtension';
 import DocsPlugin from './plugins/DocsPlugin';
 import {DragDropPasteExtension} from './plugins/DragDropPasteExtension';
+import EditorBridgePlugin from './plugins/EditorBridgePlugin';
 import {EmojisExtension} from './plugins/EmojisExtension';
 import {ImagesExtension} from './plugins/ImagesExtension';
 import {PlaygroundMarkdownShortcutsExtension} from './plugins/MarkdownShortcutsExtension';
@@ -214,7 +215,15 @@ function buildExtensionFromSettings(
   });
 }
 
-function App({initialHtml, onChangeHtml}: {initialHtml?: string, onChangeHtml?: (html: string) => void}): JSX.Element {
+function App({
+  initialHtml,
+  onChangeHtml,
+  editorInstanceRef,
+}: {
+  initialHtml?: string,
+  onChangeHtml?: (html: string) => void,
+  editorInstanceRef?: MutableRefObject<any>,
+}): JSX.Element {
   const {
     settings: {isCollab, emptyEditor, isRichText, measureTypingPerf},
   } = useSettings();
@@ -230,6 +239,7 @@ function App({initialHtml, onChangeHtml}: {initialHtml?: string, onChangeHtml?: 
         <ToolbarContext>
           <div className="editor-shell">
             <Editor />
+            <EditorBridgePlugin editorInstanceRef={editorInstanceRef} />
             <HtmlSyncPlugin initialHtml={initialHtml} onChangeHtml={onChangeHtml} />
           </div>
         </ToolbarContext>
@@ -241,13 +251,22 @@ function App({initialHtml, onChangeHtml}: {initialHtml?: string, onChangeHtml?: 
 interface PlaygroundAppProps {
   initialHtml?: string;
   onChangeHtml?: (html: string) => void;
+  editorInstanceRef?: MutableRefObject<any>;
 }
 
-export default function PlaygroundApp({initialHtml, onChangeHtml}: PlaygroundAppProps): JSX.Element {
+export default function PlaygroundApp({
+  initialHtml,
+  onChangeHtml,
+  editorInstanceRef,
+}: PlaygroundAppProps): JSX.Element {
   return (
     <SettingsContext>
       <FlashMessageContext>
-        <App initialHtml={initialHtml} onChangeHtml={onChangeHtml} />
+        <App
+          initialHtml={initialHtml}
+          onChangeHtml={onChangeHtml}
+          editorInstanceRef={editorInstanceRef}
+        />
       </FlashMessageContext>
     </SettingsContext>
   );

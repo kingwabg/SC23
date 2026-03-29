@@ -1,0 +1,10 @@
+[Git Workflow Rules]
+Always run `git branch --show-current` to verify the current branch before modifying files.
+NEVER push, commit, or write code directly on the `main` branch.
+All new work must be isolated in a dedicated feature branch.
+
+[Operational Protocol]
+1. Complete one user-requested task at a time.
+2. After completing any coding task or meaningful milestone, trigger the Telegram notification script.
+3. Use `npm run notify:telegram -- "<short summary>"`.
+4. If the Telegram notification fails, report that failure in the final response.

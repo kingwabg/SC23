@@ -20,7 +20,7 @@ export default defineConfig({
     strictPort: true,
     origin: 'http://localhost:5173',
     watch: {
-      ignored: ['**/server/db/**'],
+      ignored: ['**/server/db/**', '**/server/storage/**'],
     },
     hmr: {
       host: 'localhost',

@@ -24,11 +24,12 @@
   position: absolute;
   left: 20px;
   top: 50%;
-  width: 50px; /* 테이블 쪽으로 살짝 들어오는 가이드 */
+  width: var(--sc-quick-add-line-length, 50px);
   height: 2px;
   background-color: #4285f4;
   opacity: 0.4;
   pointer-events: none;
+  transform: translateY(-50%);
 }
 
 /* 열(Col) 삽입 버튼 스타일 */
@@ -42,11 +43,12 @@
   position: absolute;
   top: 20px;
   left: 50%;
-  height: 50px;
+  height: var(--sc-quick-add-line-length, 50px);
   width: 2px;
   background-color: #4285f4;
   opacity: 0.4;
   pointer-events: none;
+  transform: translateX(-50%);
 }
 
 .btn-circle {

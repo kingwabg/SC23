@@ -1,17 +1,26 @@
 import React from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
+import { clearAuthSession, getAccessToken, hasMenuPermission, isAuthenticated } from '../utils/auth';
 
-// 개발 모드: 로그인 없이 ADMIN으로 바로 접근
-// localStorage에 가짜 세션 세팅
-if (!localStorage.getItem('userRole')) {
-  localStorage.setItem('userRole', 'ADMIN');
-  localStorage.setItem('currentUser', JSON.stringify({
-    id: 1, name: '시스템 관리자', role: 'ADMIN', email: 'admin@forest.kr',
-    permissions: {}
-  }));
-  localStorage.setItem('accessToken', 'dev-bypass-token');
-}
+const DEV_BYPASS_TOKEN = 'dev-bypass-token';
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, menuKey }) => {
+  const location = useLocation();
+  const accessToken = getAccessToken();
+
+  if (accessToken === DEV_BYPASS_TOKEN) {
+    clearAuthSession();
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  if (menuKey && !hasMenuPermission(menuKey)) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return children;
 };
 

@@ -1,9 +1,16 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import { createEditor } from 'roosterjs';
 import { 
+  exportContent,
   undo, 
   redo, 
 } from 'roosterjs-content-model-core';
+import {
+  contentModelToDom,
+  createDomToModelContext,
+  createModelToDomContext,
+  domToContentModel,
+} from 'roosterjs-content-model-dom';
 import {
   AutoFormatPlugin,
   EditPlugin,
@@ -42,6 +49,21 @@ export default function RoosterEditor({
 }: RoosterEditorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<IEditor | null>(null);
+  const lastAppliedExternalHtmlRef = useRef(initialHtml || '');
+
+  const createContentModelFromHtml = useCallback((html: string) => {
+    const source = document.createElement('div');
+    source.innerHTML = html || '<div><br></div>';
+    return domToContentModel(source, createDomToModelContext());
+  }, []);
+
+  const applyHtmlToEditorRoot = useCallback((container: HTMLDivElement, html: string) => {
+    const model = createContentModelFromHtml(html);
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
+    contentModelToDom(document, container, model, createModelToDomContext());
+  }, [createContentModelFromHtml]);
 
   // 컨테이너 DOM 연결 및 상위로 노출
   const resolvedRef = useCallback((el: HTMLDivElement | null) => {
@@ -69,18 +91,56 @@ export default function RoosterEditor({
     ];
 
     const initialContent = initialHtml || '';
-    if (containerRef.current.innerHTML !== initialContent) {
-      containerRef.current.innerHTML = initialContent;
-    }
-    const editor = createEditor(containerRef.current, plugins);
+    const editor = createEditor(
+      containerRef.current,
+      plugins,
+      createContentModelFromHtml(initialContent),
+    );
 
     editorRef.current = editor;
+    (editor as any).getCurrentHtml = () => exportContent(editor);
     if (editorInstanceRef) editorInstanceRef.current = editor;
+    lastAppliedExternalHtmlRef.current = initialContent;
 
     // 전역 단축키 (Undo/Redo)
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undo(editor); }
-      if (e.ctrlKey && e.key === 'y') { e.preventDefault(); redo(editor); }
+      const target = e.target as HTMLElement | null;
+      const inEditorUi = Boolean(
+        target?.closest('.sc-editor-shell') ||
+        target?.closest('.rooster-toolbar') ||
+        target?.closest('.contexify'),
+      );
+      const inPlainFormField = Boolean(
+        target?.closest('input, textarea, select, option') &&
+        !target?.closest('.sc-editor-shell') &&
+        !target?.closest('.rooster-toolbar'),
+      );
+
+      if (!inEditorUi && !editor.hasFocus()) {
+        if (inPlainFormField) {
+          return;
+        }
+        return;
+      }
+
+      const usesPrimaryModifier = e.ctrlKey || e.metaKey;
+      if (!usesPrimaryModifier || e.altKey) {
+        return;
+      }
+
+      const key = e.key.toLowerCase();
+      if (key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        undo(editor);
+        return;
+      }
+
+      if (key === 'y' || (key === 'z' && e.shiftKey)) {
+        e.preventDefault();
+        e.stopPropagation();
+        redo(editor);
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -88,8 +148,41 @@ export default function RoosterEditor({
       window.removeEventListener('keydown', handleKeyDown);
       editor.dispose();
       editorRef.current = null;
+      if (editorInstanceRef?.current === editor) {
+        editorInstanceRef.current = null;
+      }
     };
   }, [editorInstanceRef]);
+
+  useEffect(() => {
+    const editor = editorRef.current;
+    const container = containerRef.current;
+    const nextHtml = initialHtml || '';
+
+    if (!editor || !container) {
+      lastAppliedExternalHtmlRef.current = nextHtml;
+      return;
+    }
+
+    if (nextHtml === lastAppliedExternalHtmlRef.current) {
+      return;
+    }
+
+    let currentHtml = '';
+    try {
+      currentHtml = exportContent(editor) || '';
+    } catch {
+      currentHtml = container.innerHTML || '';
+    }
+
+    if (currentHtml === nextHtml) {
+      lastAppliedExternalHtmlRef.current = nextHtml;
+      return;
+    }
+
+    applyHtmlToEditorRoot(container, nextHtml);
+    lastAppliedExternalHtmlRef.current = nextHtml;
+  }, [applyHtmlToEditorRoot, initialHtml]);
 
   return (
     <div className="sc-editor-shell" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', backgroundColor: '#cbd5e1', overflow: 'hidden', position: 'relative' }}>
@@ -148,10 +241,9 @@ export default function RoosterEditor({
                   wordBreak: 'break-word',
                   overflowX: 'hidden'
                 }}
-              >
-                <TableQuickAdd editor={editorRef.current} editorContainer={containerRef.current} />
-                <div id="sc-table-guide" className="sc-resize-guide" />
-              </div>
+              />
+              <TableQuickAdd editor={editorRef.current} editorContainer={containerRef.current} />
+              <div id="sc-table-guide" className="sc-resize-guide" />
             </div>
 
             {/* 하단 여유 공간 */}

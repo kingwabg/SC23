@@ -7,6 +7,8 @@
     "dev": "vite",
     "dev:api": "node server/groupware-api.js",
     "test:db": "node server/test-postgres-connection.js",
+    "notify:telegram": "node scripts/notify-telegram.mjs",
+    "test:telegram": "node scripts/test-telegram.mjs",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"

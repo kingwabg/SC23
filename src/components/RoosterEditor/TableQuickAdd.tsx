@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { IEditor } from 'roosterjs-content-model-types';
 import { Plus } from 'lucide-react';
+import type { ScTableEngine } from './plugins/ScTableEngine';
 import './TableQuickAdd.css';
 
 interface QuickAddProps {
@@ -15,6 +16,8 @@ interface HoverState {
   y: number;
   index: number;
   table: HTMLTableElement;
+  tableWidth: number;
+  tableHeight: number;
 }
 
 /**
@@ -28,6 +31,17 @@ const TableQuickAdd: React.FC<QuickAddProps> = ({ editor, editorContainer }) => 
     if (!editorContainer || !editor) return;
 
     const target = e.target as HTMLElement;
+    const selectedTable = editorContainer.querySelector('table.sc-selected-table') as HTMLTableElement | null;
+
+    if (selectedTable || target.closest('.tbl-overlay-container')) {
+      setHover(null);
+      return;
+    }
+
+    if (target.closest('.sc-quick-add-btn')) {
+      return;
+    }
+
     const table = target.closest('table') as HTMLTableElement;
     if (!table) {
       setHover(null);
@@ -55,7 +69,9 @@ const TableQuickAdd: React.FC<QuickAddProps> = ({ editor, editorContainer }) => 
           x: tableRect.left - 25, 
           y: rowY, 
           index: i, 
-          table 
+          table,
+          tableWidth: tableRect.width,
+          tableHeight: tableRect.height,
         });
         return;
       }
@@ -77,7 +93,9 @@ const TableQuickAdd: React.FC<QuickAddProps> = ({ editor, editorContainer }) => 
                 x: colX,
                 y: tableRect.top - 25,
                 index: i,
-                table
+                table,
+                tableWidth: tableRect.width,
+                tableHeight: tableRect.height,
             });
             return;
         }
@@ -92,44 +110,45 @@ const TableQuickAdd: React.FC<QuickAddProps> = ({ editor, editorContainer }) => 
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [editorContainer, handleMouseMove]);
 
+  useEffect(() => {
+    if (!editorContainer) return;
+
+    const clearOnTableSelect = () => {
+      if (editorContainer.querySelector('table.sc-selected-table')) {
+        setHover(null);
+      }
+    };
+
+    editorContainer.addEventListener('mousedown', clearOnTableSelect);
+    document.addEventListener('selectionchange', clearOnTableSelect);
+
+    return () => {
+      editorContainer.removeEventListener('mousedown', clearOnTableSelect);
+      document.removeEventListener('selectionchange', clearOnTableSelect);
+    };
+  }, [editorContainer]);
+
   const onAddClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!hover || !editor) return;
 
     editor.focus();
+    const engine = (editor as any).scTableEngine as ScTableEngine | undefined;
+    if (!engine) return;
+
+    try {
+      editor.takeSnapshot();
+    } catch {}
+
     const { type, index, table } = hover;
-    
-    if (type === 'row') {
-      const targetRow = table.rows[index] || table.rows[index - 1];
-      const cell = targetRow.cells[0];
-      const rect = cell.getBoundingClientRect();
-      const event = new MouseEvent('mousedown', { bubbles: true, clientX: rect.left + 5, clientY: rect.top + 5 });
-      cell.dispatchEvent(event);
-      
-      const newRow = table.insertRow(index);
-      for(let i=0; i<targetRow.cells.length; i++) {
-        const c = newRow.insertCell();
-        c.style.border = '1px solid #cbd5e1';
-        c.style.padding = '5px';
-      }
-    } else {
-      const colgroup = table.querySelector('colgroup');
-      if (colgroup) {
-         const newCol = document.createElement('col');
-         newCol.style.width = '120px';
-         if (index >= colgroup.children.length) colgroup.appendChild(newCol);
-         else colgroup.insertBefore(newCol, colgroup.children[index]);
-      }
-      
-      Array.from(table.rows).forEach(row => {
-        const c = row.insertCell(index);
-        c.style.border = '1px solid #cbd5e1';
-        c.style.padding = '5px';
-      });
+    const changed = type === 'row'
+      ? engine.insertRowAt(index, table)
+      : engine.insertColumnAt(index, table);
+
+    if (changed) {
+      editor.triggerEvent(10 as any /* Edit */, {});
     }
 
-    editor.takeSnapshot();
-    editor.triggerEvent(10 as any /* Edit */, {});
     setHover(null);
   };
 
@@ -138,7 +157,12 @@ const TableQuickAdd: React.FC<QuickAddProps> = ({ editor, editorContainer }) => 
   return createPortal(
     <div 
       className={`sc-quick-add-btn ${hover.type}`}
-      style={{ left: hover.x, top: hover.y }}
+      style={{
+        left: hover.x,
+        top: hover.y,
+        ['--sc-quick-add-line-length' as '--sc-quick-add-line-length']:
+          `${Math.ceil((hover.type === 'row' ? hover.tableWidth : hover.tableHeight) + 8)}px`,
+      }}
       onClick={onAddClick}
     >
       <div className="btn-circle">

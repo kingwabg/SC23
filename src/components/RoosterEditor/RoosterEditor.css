@@ -47,6 +47,132 @@
   vertical-align: top;
 }
 
+.rooster-content table.sc-table-fit-width {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.rooster-content table.sc-table-header-row tr:first-child > td,
+.rooster-content table.sc-table-header-row tr:first-child > th {
+  background: #eef2ff !important;
+  color: #312e81;
+  font-weight: 700;
+  text-align: center;
+}
+
+.rooster-content table.sc-table-zebra tr:nth-child(even) > td,
+.rooster-content table.sc-table-zebra tr:nth-child(even) > th {
+  background: #f8fafc;
+}
+
+.rooster-content table.sc-table-preset-meeting {
+  border-color: #94a3b8;
+}
+
+.rooster-content table.sc-table-preset-meeting td,
+.rooster-content table.sc-table-preset-meeting th {
+  border-color: #94a3b8;
+}
+
+.rooster-content table.sc-table-preset-meeting tr > :nth-child(odd) {
+  background: #f8fafc;
+  font-weight: 700;
+  text-align: center;
+}
+
+.rooster-content table.sc-table-first-column tr > :first-child {
+  background: #f8fafc;
+  font-weight: 700;
+  text-align: center;
+}
+
+.rooster-content table.sc-table-density-compact td,
+.rooster-content table.sc-table-density-compact th {
+  padding: 2px 5px !important;
+}
+
+.rooster-content table.sc-table-density-comfortable td,
+.rooster-content table.sc-table-density-comfortable th {
+  padding: 6px 10px !important;
+}
+
+.rooster-content table.sc-table-density-spacious td,
+.rooster-content table.sc-table-density-spacious th {
+  padding: 10px 14px !important;
+}
+
+.rooster-content table.sc-table-template-minutes tr:nth-child(5) > td,
+.rooster-content table.sc-table-template-minutes tr:nth-child(6) > td {
+  vertical-align: top;
+}
+
+.rooster-content table.sc-table-template-approval {
+  border-color: #94a3b8;
+}
+
+.rooster-content table.sc-table-template-approval td,
+.rooster-content table.sc-table-template-approval th {
+  border-color: #94a3b8;
+}
+
+.rooster-content table.sc-table-template-approval tr:first-child > th,
+.rooster-content table.sc-table-template-approval tr:nth-child(3) > th,
+.rooster-content table.sc-table-template-approval tr:nth-child(4) > th,
+.rooster-content table.sc-table-template-approval tr:nth-child(5) > th,
+.rooster-content table.sc-table-template-approval tr:nth-child(6) > th {
+  background: #f8fafc;
+  font-weight: 700;
+  text-align: center;
+}
+
+.rooster-content table.sc-table-template-approval tr:nth-child(2) > td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.rooster-content table.sc-table-template-agenda tr:first-child > th,
+.rooster-content table.sc-table-template-attendance tr:first-child > th {
+  background: #e8f0fe !important;
+  color: #1d4ed8;
+}
+
+.rooster-content table.sc-table-template-agenda tr > :first-child,
+.rooster-content table.sc-table-template-attendance tr > :first-child {
+  text-align: center;
+  font-weight: 700;
+}
+
+.rooster-content table.sc-table-template-agenda td:nth-child(5),
+.rooster-content table.sc-table-template-attendance td:nth-child(4) {
+  text-align: center;
+}
+
+.rooster-content table.sc-table-template-approval-request {
+  border-color: #94a3b8;
+}
+
+.rooster-content table.sc-table-template-approval-request td,
+.rooster-content table.sc-table-template-approval-request th {
+  border-color: #94a3b8;
+}
+
+.rooster-content table.sc-table-template-approval-request tr > :nth-child(odd) {
+  background: #f8fafc;
+  font-weight: 700;
+  text-align: center;
+}
+
+.rooster-content table.sc-table-template-comparison tr:first-child > th {
+  background: #e0f2fe !important;
+  color: #0f4c81;
+}
+
+.rooster-content table.sc-table-template-comparison tr > :first-child {
+  background: #f8fafc;
+  font-weight: 700;
+  text-align: center;
+}
+
 .sc-resize-guide {
   position: fixed;
   pointer-events: none;
@@ -79,8 +205,7 @@
 
 /* 표 전체 선택 시 외곽선 */
 .sc-selected-table {
-  outline: 2px solid #4285f4 !important;
-  outline-offset: 2px;
+  outline: none !important;
 }
 
 /* HWP-style Table Cell Selection */

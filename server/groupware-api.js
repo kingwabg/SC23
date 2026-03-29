@@ -6,6 +6,37 @@ import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import pg from 'pg';
+import { getTelegramPublicConfig, sendTelegramMessage } from './telegram.js';
+
+const loadLocalEnvFile = (fileName) => {
+  const filePath = path.resolve(fileName);
+  if (!fs.existsSync(filePath)) return;
+
+  const lines = fs.readFileSync(filePath, 'utf-8').split(/\r?\n/);
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith('#')) continue;
+
+    const separatorIndex = line.indexOf('=');
+    if (separatorIndex === -1) continue;
+
+    const key = line.slice(0, separatorIndex).trim();
+    if (!key || process.env[key] != null) continue;
+
+    let value = line.slice(separatorIndex + 1).trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"'))
+      || (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+
+    process.env[key] = value;
+  }
+};
+
+loadLocalEnvFile('.env');
+loadLocalEnvFile('.env.local');
 
 const app = express();
 const PORT = Number(process.env.AUTH_API_PORT || 5050);
@@ -18,6 +49,13 @@ const BCRYPT_ROUNDS = Number(process.env.BCRYPT_ROUNDS || 10);
 const DATABASE_URL = process.env.DATABASE_URL || '';
 const POSTGRES_SSL = process.env.POSTGRES_SSL === 'true';
 const STATE_TABLE = process.env.PG_STATE_TABLE || 'app_state';
+const WEBHWP_ENABLED = process.env.WEBHWP_ENABLED === 'true';
+const WEBHWP_SCRIPT_URL = process.env.WEBHWP_SCRIPT_URL || '';
+const WEBHWP_SERVICE_URL = process.env.WEBHWP_SERVICE_URL || '';
+const WEBHWP_CLIENT_ID = process.env.WEBHWP_CLIENT_ID || '';
+const WEBHWP_CLIENT_SECRET = process.env.WEBHWP_CLIENT_SECRET || '';
+const WEBHWP_MEETING_TEMPLATE = process.env.WEBHWP_MEETING_TEMPLATE || 'meeting-default';
+const WEBHWP_BOOTSTRAP_MODE = process.env.WEBHWP_BOOTSTRAP_MODE || 'server';
 const pgPool = DATABASE_URL ? new pg.Pool({
   connectionString: DATABASE_URL,
   ssl: POSTGRES_SSL ? { rejectUnauthorized: false } : undefined,
@@ -29,9 +67,11 @@ const refreshDbFile = path.join(dbDir, 'refresh-sessions.json');
 const childrenDbFile = path.join(dbDir, 'children-db.json');
 const staffDbFile = path.join(dbDir, 'staff-db.json');
 const meetingsDbFile = path.join(dbDir, 'meetings-db.json');
+const documentsDbFile = path.join(dbDir, 'documents-db.json');
 const programsDbFile = path.join(dbDir, 'programs-db.json');
 const calendarDbFile = path.join(dbDir, 'calendar-db.json');
 const auditDbFile = path.join(dbDir, 'audit-db.json');
+const documentsStorageDir = path.resolve('server', 'storage', 'documents');
 
 app.use(cors({ origin: CLIENT_ORIGIN, credentials: true }));
 app.use(express.json());
@@ -139,6 +179,10 @@ const ensureDbFiles = () => {
     writeJson(meetingsDbFile, { meetings: [], updatedAt: null });
   }
 
+  if (!fs.existsSync(documentsDbFile)) {
+    writeJson(documentsDbFile, { documents: [], updatedAt: null });
+  }
+
   if (!fs.existsSync(programsDbFile)) {
     writeJson(programsDbFile, { programs: [], updatedAt: null });
   }
@@ -149,6 +193,10 @@ const ensureDbFiles = () => {
 
   if (!fs.existsSync(auditDbFile)) {
     writeJson(auditDbFile, { logs: [], updatedAt: null });
+  }
+
+  if (!fs.existsSync(documentsStorageDir)) {
+    fs.mkdirSync(documentsStorageDir, { recursive: true });
   }
 };
 
@@ -210,6 +258,16 @@ const saveMeetingsDb = async (db) => {
   if (pgPool) return writeState('meetings', db);
   writeJson(meetingsDbFile, db);
 };
+const loadDocumentsDb = async () => (
+  pgPool
+    ? readState('documents', { documents: [], updatedAt: null })
+    : readJson(documentsDbFile, { documents: [], updatedAt: null })
+);
+const saveDocumentsDb = async (db) => {
+  db.updatedAt = new Date().toISOString();
+  if (pgPool) return writeState('documents', db);
+  writeJson(documentsDbFile, db);
+};
 const loadProgramsDb = async () => (
   pgPool
     ? readState('programs', { programs: [], updatedAt: null })
@@ -246,6 +304,214 @@ const formatKoreanDate = (date) => date.toLocaleDateString('ko-KR', {
   day: 'numeric',
   weekday: 'short',
 });
+
+const DOCUMENT_KIND = {
+  HTML: 'html',
+  HWPX: 'hwpx',
+};
+
+const DOCUMENT_ENGINE = {
+  ROOSTER: 'rooster',
+  WEBHWP: 'webhwp',
+};
+
+const normalizeDocumentKind = (value) => (
+  value === DOCUMENT_KIND.HWPX ? DOCUMENT_KIND.HWPX : DOCUMENT_KIND.HTML
+);
+
+const ensureDocumentsStorageDir = () => {
+  if (!fs.existsSync(documentsStorageDir)) {
+    fs.mkdirSync(documentsStorageDir, { recursive: true });
+  }
+};
+
+const makeDocumentFileName = (documentId, kind) => `${documentId}.${kind === DOCUMENT_KIND.HWPX ? 'hwpx' : 'html'}`;
+
+const makeDocumentFilePath = (documentId, kind) => path.join(documentsStorageDir, makeDocumentFileName(documentId, kind));
+
+const createDocumentRecord = ({
+  id,
+  ownerType = null,
+  ownerId = null,
+  engine = DOCUMENT_ENGINE.ROOSTER,
+  kind = DOCUMENT_KIND.HTML,
+  title = '',
+} = {}) => {
+  const resolvedKind = normalizeDocumentKind(kind);
+  const now = new Date().toISOString();
+  return {
+    id: id || `doc_${crypto.randomUUID()}`,
+    ownerType,
+    ownerId: ownerId != null ? String(ownerId) : null,
+    title,
+    engine,
+    kind: resolvedKind,
+    storageType: 'file',
+    fileName: null,
+    filePath: null,
+    mimeType: resolvedKind === DOCUMENT_KIND.HWPX ? 'application/hancom-hwpx' : 'text/html; charset=utf-8',
+    version: 0,
+    createdAt: now,
+    updatedAt: now,
+  };
+};
+
+const getDocumentPublicMeta = (documentRecord) => {
+  if (!documentRecord) return null;
+  const { id, ownerType, ownerId, title, engine, kind, storageType, fileName, mimeType, version, createdAt, updatedAt } = documentRecord;
+  return { id, ownerType, ownerId, title, engine, kind, storageType, fileName, mimeType, version, createdAt, updatedAt };
+};
+
+const loadDocumentBody = (documentRecord) => {
+  if (!documentRecord?.filePath || !fs.existsSync(documentRecord.filePath)) {
+    return documentRecord?.kind === DOCUMENT_KIND.HWPX
+      ? { kind: DOCUMENT_KIND.HWPX, contentBase64: '' }
+      : { kind: DOCUMENT_KIND.HTML, html: '' };
+  }
+
+  if (documentRecord.kind === DOCUMENT_KIND.HWPX) {
+    return {
+      kind: DOCUMENT_KIND.HWPX,
+      contentBase64: fs.readFileSync(documentRecord.filePath).toString('base64'),
+    };
+  }
+
+  return {
+    kind: DOCUMENT_KIND.HTML,
+    html: fs.readFileSync(documentRecord.filePath, 'utf-8'),
+  };
+};
+
+const writeDocumentBodyToStorage = (documentRecord, body) => {
+  ensureDocumentsStorageDir();
+  const resolvedKind = normalizeDocumentKind(body?.kind || documentRecord.kind);
+  const filePath = makeDocumentFilePath(documentRecord.id, resolvedKind);
+  const fileName = makeDocumentFileName(documentRecord.id, resolvedKind);
+
+  if (resolvedKind === DOCUMENT_KIND.HWPX) {
+    const contentBase64 = typeof body?.contentBase64 === 'string' ? body.contentBase64 : '';
+    fs.writeFileSync(filePath, Buffer.from(contentBase64, 'base64'));
+  } else {
+    const html = typeof body?.html === 'string' ? body.html : '';
+    fs.writeFileSync(filePath, html, 'utf-8');
+  }
+
+  if (documentRecord.filePath && documentRecord.filePath !== filePath && fs.existsSync(documentRecord.filePath)) {
+    fs.rmSync(documentRecord.filePath, { force: true });
+  }
+
+  documentRecord.kind = resolvedKind;
+  documentRecord.storageType = 'file';
+  documentRecord.filePath = filePath;
+  documentRecord.fileName = fileName;
+  documentRecord.mimeType = resolvedKind === DOCUMENT_KIND.HWPX ? 'application/hancom-hwpx' : 'text/html; charset=utf-8';
+  documentRecord.updatedAt = new Date().toISOString();
+  return documentRecord;
+};
+
+const removeDocumentFile = (documentRecord) => {
+  if (documentRecord?.filePath && fs.existsSync(documentRecord.filePath)) {
+    fs.rmSync(documentRecord.filePath, { force: true });
+  }
+};
+
+const upsertDocumentRecord = async ({ existingDocumentId = null, ownerType = null, ownerId = null, title = '', engine, body }) => {
+  const documentsDb = await loadDocumentsDb();
+  let documentRecord = existingDocumentId
+    ? documentsDb.documents.find((item) => item.id === existingDocumentId)
+    : null;
+
+  if (!documentRecord) {
+    documentRecord = createDocumentRecord({
+      id: existingDocumentId || undefined,
+      ownerType,
+      ownerId,
+      engine: engine || DOCUMENT_ENGINE.ROOSTER,
+      kind: body?.kind || DOCUMENT_KIND.HTML,
+      title,
+    });
+    documentsDb.documents.push(documentRecord);
+  }
+
+  documentRecord.ownerType = ownerType ?? documentRecord.ownerType ?? null;
+  documentRecord.ownerId = ownerId != null ? String(ownerId) : (documentRecord.ownerId ?? null);
+  documentRecord.title = title || documentRecord.title || '';
+  documentRecord.engine = engine || documentRecord.engine || DOCUMENT_ENGINE.ROOSTER;
+
+  if (body) {
+    writeDocumentBodyToStorage(documentRecord, body);
+  }
+
+  documentRecord.version = Number(documentRecord.version || 0) + (body ? 1 : 0);
+  if (!documentRecord.createdAt) documentRecord.createdAt = new Date().toISOString();
+  documentRecord.updatedAt = new Date().toISOString();
+
+  await saveDocumentsDb(documentsDb);
+  return documentRecord;
+};
+
+const hydrateMeetingWithDocument = async (meeting, documentsDb) => {
+  if (!meeting || typeof meeting !== 'object') return meeting;
+
+  const resolvedMeeting = { ...meeting };
+  if (!resolvedMeeting.documentId) {
+    if (typeof resolvedMeeting.content !== 'string' || resolvedMeeting.content.length === 0) {
+      return resolvedMeeting;
+    }
+    const documentRecord = await upsertDocumentRecord({
+      ownerType: 'meeting',
+      ownerId: resolvedMeeting.id,
+      title: resolvedMeeting.title || '',
+      engine: DOCUMENT_ENGINE.ROOSTER,
+      body: { kind: DOCUMENT_KIND.HTML, html: resolvedMeeting.content },
+    });
+    resolvedMeeting.documentId = documentRecord.id;
+    resolvedMeeting.document = getDocumentPublicMeta(documentRecord);
+    return resolvedMeeting;
+  }
+
+  const documentRecord = (documentsDb?.documents || []).find((item) => item.id === resolvedMeeting.documentId);
+  if (!documentRecord) return resolvedMeeting;
+
+  resolvedMeeting.document = getDocumentPublicMeta(documentRecord);
+  if (documentRecord.kind === DOCUMENT_KIND.HTML) {
+    resolvedMeeting.content = loadDocumentBody(documentRecord).html;
+  }
+
+  return resolvedMeeting;
+};
+
+const migrateMeetingDocuments = async () => {
+  const meetingsDb = await loadMeetingsDb();
+  const documentsDb = await loadDocumentsDb();
+  let meetingsChanged = false;
+
+  for (let i = 0; i < meetingsDb.meetings.length; i += 1) {
+    const meeting = meetingsDb.meetings[i];
+    if (!meeting || typeof meeting !== 'object') continue;
+    if (meeting.documentId || typeof meeting.content !== 'string' || meeting.content.length === 0) continue;
+
+    const documentRecord = createDocumentRecord({
+      ownerType: 'meeting',
+      ownerId: meeting.id,
+      engine: DOCUMENT_ENGINE.ROOSTER,
+      kind: DOCUMENT_KIND.HTML,
+      title: meeting.title || '',
+    });
+    writeDocumentBodyToStorage(documentRecord, { kind: DOCUMENT_KIND.HTML, html: meeting.content });
+    documentsDb.documents.push(documentRecord);
+    meetingsDb.meetings[i] = {
+      ...meeting,
+      documentId: documentRecord.id,
+    };
+    meetingsChanged = true;
+  }
+
+  if (meetingsChanged) {
+    await saveDocumentsDb(documentsDb);
+    await saveMeetingsDb(meetingsDb);
+  }
+};
 
 const sanitizeAuditDetails = (details) => {
   if (!details || typeof details !== 'object') return details;
@@ -435,10 +701,12 @@ await seedPostgresFromJsonIfEmpty('refresh', refreshDbFile, { sessions: [] });
 await seedPostgresFromJsonIfEmpty('children', childrenDbFile, { children: [], scanLogs: [], updatedAt: null });
 await seedPostgresFromJsonIfEmpty('staff', staffDbFile, { staff: [], updatedAt: null });
 await seedPostgresFromJsonIfEmpty('meetings', meetingsDbFile, { meetings: [], updatedAt: null });
+await seedPostgresFromJsonIfEmpty('documents', documentsDbFile, { documents: [], updatedAt: null });
 await seedPostgresFromJsonIfEmpty('programs', programsDbFile, { programs: [], updatedAt: null });
 await seedPostgresFromJsonIfEmpty('calendar', calendarDbFile, { calendarUrl: '', events: [], updatedAt: null });
 await seedPostgresFromJsonIfEmpty('audit', auditDbFile, { logs: [], updatedAt: null });
 await migrateAuthDb();
+await migrateMeetingDocuments();
 
 app.get('/health', (_, res) => {
   res.json({ ok: true, service: 'groupware-auth-api-jwt', provider: pgPool ? 'postgres' : 'json' });
@@ -529,6 +797,193 @@ app.post('/api/auth/logout', async (req, res) => {
   }
 
   return res.json({ ok: true });
+});
+
+app.get('/api/webhwp/config', authMiddleware, async (_, res) => {
+  return res.json({
+    enabled: WEBHWP_ENABLED,
+    bootstrapMode: WEBHWP_BOOTSTRAP_MODE,
+    scriptUrl: WEBHWP_SCRIPT_URL,
+    serviceUrl: WEBHWP_SERVICE_URL,
+    templates: {
+      meeting: WEBHWP_MEETING_TEMPLATE,
+    },
+    readiness: {
+      hasServiceUrl: Boolean(WEBHWP_SERVICE_URL),
+      hasScriptUrl: Boolean(WEBHWP_SCRIPT_URL),
+      hasClientCredentials: Boolean(WEBHWP_CLIENT_ID && WEBHWP_CLIENT_SECRET),
+    },
+  });
+});
+
+app.get('/api/notifications/telegram/config', authMiddleware, adminOnly, async (_, res) => {
+  return res.json(getTelegramPublicConfig());
+});
+
+app.post('/api/notifications/telegram/test', authMiddleware, adminOnly, async (req, res) => {
+  const message =
+    String(req.body?.message || '').trim() ||
+    `SC23 테스트 알림\n관리자: ${req.auth.sub}\n시각: ${new Date().toLocaleString('ko-KR', {
+      timeZone: 'Asia/Seoul',
+    })}`;
+
+  try {
+    const result = await sendTelegramMessage({ message });
+    return res.json({
+      ok: true,
+      delivered: true,
+      messageId: result.messageId,
+      chatId: result.chatId,
+    });
+  } catch (error) {
+    return res.status(503).json({
+      ok: false,
+      delivered: false,
+      message: error instanceof Error ? error.message : String(error),
+      config: getTelegramPublicConfig(),
+    });
+  }
+});
+
+app.get('/api/documents', authMiddleware, async (req, res) => {
+  const documentsDb = await loadDocumentsDb();
+  const ownerType = String(req.query.ownerType || '').trim();
+  const ownerId = String(req.query.ownerId || '').trim();
+
+  let documents = Array.isArray(documentsDb.documents) ? documentsDb.documents : [];
+  if (ownerType) {
+    documents = documents.filter((item) => item.ownerType === ownerType);
+  }
+  if (ownerId) {
+    documents = documents.filter((item) => String(item.ownerId) === ownerId);
+  }
+
+  return res.json({
+    documents: documents.map(getDocumentPublicMeta),
+    updatedAt: documentsDb.updatedAt || null,
+  });
+});
+
+app.post('/api/documents', authMiddleware, async (req, res) => {
+  const { document, body } = req.body || {};
+  if (!document || typeof document !== 'object') {
+    return res.status(400).json({ message: 'document 객체가 필요합니다.' });
+  }
+
+  const documentRecord = await upsertDocumentRecord({
+    existingDocumentId: document.id || null,
+    ownerType: document.ownerType || null,
+    ownerId: document.ownerId ?? null,
+    title: document.title || '',
+    engine: document.engine || DOCUMENT_ENGINE.ROOSTER,
+    body: body || { kind: document.kind || DOCUMENT_KIND.HTML, html: '' },
+  });
+
+  await recordAuditLog(req, {
+    module: 'documents',
+    action: 'CREATE',
+    targetType: 'document',
+    targetId: documentRecord.id,
+    targetLabel: documentRecord.title || documentRecord.fileName || documentRecord.id,
+    details: { ownerType: documentRecord.ownerType, ownerId: documentRecord.ownerId, kind: documentRecord.kind },
+  });
+
+  return res.status(201).json({
+    document: getDocumentPublicMeta(documentRecord),
+    body: loadDocumentBody(documentRecord),
+  });
+});
+
+app.get('/api/documents/:id', authMiddleware, async (req, res) => {
+  const { id } = req.params;
+  const includeBody = String(req.query.includeBody || 'false') === 'true';
+  const documentsDb = await loadDocumentsDb();
+  const documentRecord = documentsDb.documents.find((item) => item.id === id);
+
+  if (!documentRecord) {
+    return res.status(404).json({ message: '문서를 찾을 수 없습니다.' });
+  }
+
+  return res.json({
+    document: getDocumentPublicMeta(documentRecord),
+    body: includeBody ? loadDocumentBody(documentRecord) : undefined,
+  });
+});
+
+app.put('/api/documents/:id/body', authMiddleware, async (req, res) => {
+  const { id } = req.params;
+  const { body, title, ownerType, ownerId, engine } = req.body || {};
+  if (!body || typeof body !== 'object') {
+    return res.status(400).json({ message: 'body 객체가 필요합니다.' });
+  }
+
+  const documentRecord = await upsertDocumentRecord({
+    existingDocumentId: id,
+    ownerType: ownerType || null,
+    ownerId: ownerId ?? null,
+    title: title || '',
+    engine: engine || DOCUMENT_ENGINE.ROOSTER,
+    body,
+  });
+
+  await recordAuditLog(req, {
+    module: 'documents',
+    action: 'BODY_UPDATE',
+    targetType: 'document',
+    targetId: documentRecord.id,
+    targetLabel: documentRecord.title || documentRecord.fileName || documentRecord.id,
+    details: { version: documentRecord.version, kind: documentRecord.kind },
+  });
+
+  return res.json({
+    document: getDocumentPublicMeta(documentRecord),
+    body: loadDocumentBody(documentRecord),
+  });
+});
+
+app.post('/api/documents/:id/clone', authMiddleware, async (req, res) => {
+  const { id } = req.params;
+  const { ownerType = null, ownerId = null, title = '' } = req.body || {};
+  const documentsDb = await loadDocumentsDb();
+  const sourceDocument = documentsDb.documents.find((item) => item.id === id);
+
+  if (!sourceDocument) {
+    return res.status(404).json({ message: '복제할 문서를 찾을 수 없습니다.' });
+  }
+
+  const clonedDocument = await upsertDocumentRecord({
+    ownerType,
+    ownerId,
+    title: title || sourceDocument.title || '',
+    engine: sourceDocument.engine,
+    body: loadDocumentBody(sourceDocument),
+  });
+
+  await recordAuditLog(req, {
+    module: 'documents',
+    action: 'CLONE',
+    targetType: 'document',
+    targetId: clonedDocument.id,
+    targetLabel: clonedDocument.title || clonedDocument.fileName || clonedDocument.id,
+    details: { sourceDocumentId: sourceDocument.id },
+  });
+
+  return res.status(201).json({
+    document: getDocumentPublicMeta(clonedDocument),
+    body: loadDocumentBody(clonedDocument),
+  });
+});
+
+app.get('/api/documents/:id/download', authMiddleware, async (req, res) => {
+  const { id } = req.params;
+  const documentsDb = await loadDocumentsDb();
+  const documentRecord = documentsDb.documents.find((item) => item.id === id);
+
+  if (!documentRecord || !documentRecord.filePath || !fs.existsSync(documentRecord.filePath)) {
+    return res.status(404).json({ message: '다운로드할 문서를 찾을 수 없습니다.' });
+  }
+
+  return res.download(documentRecord.filePath, documentRecord.fileName || path.basename(documentRecord.filePath));
 });
 
 app.get('/api/children', authMiddleware, async (req, res) => {
@@ -787,8 +1242,25 @@ app.put('/api/staff/bulk', authMiddleware, async (req, res) => {
 
 app.get('/api/meetings', authMiddleware, async (req, res) => {
   const meetingsDb = await loadMeetingsDb();
+  const documentsDb = await loadDocumentsDb();
+  const meetings = [];
+  let changed = false;
+
+  for (const meeting of Array.isArray(meetingsDb.meetings) ? meetingsDb.meetings : []) {
+    const hydratedMeeting = await hydrateMeetingWithDocument(meeting, documentsDb);
+    meetings.push(hydratedMeeting);
+    if (hydratedMeeting.documentId && hydratedMeeting.documentId !== meeting.documentId) {
+      changed = true;
+    }
+  }
+
+  if (changed) {
+    meetingsDb.meetings = meetings.map(({ document, ...meeting }) => meeting);
+    await saveMeetingsDb(meetingsDb);
+  }
+
   return res.json({
-    meetings: Array.isArray(meetingsDb.meetings) ? meetingsDb.meetings : [],
+    meetings,
     updatedAt: meetingsDb.updatedAt || null,
   });
 });
@@ -807,18 +1279,31 @@ app.post('/api/meetings', authMiddleware, async (req, res) => {
     return res.status(409).json({ message: '이미 존재하는 회의/문서 ID입니다.' });
   }
 
-  meetingsDb.meetings.push(meeting);
+  let nextMeeting = { ...meeting };
+  if (typeof nextMeeting.content === 'string') {
+    const documentRecord = await upsertDocumentRecord({
+      existingDocumentId: nextMeeting.documentId || null,
+      ownerType: 'meeting',
+      ownerId: nextMeeting.id,
+      title: nextMeeting.title || '',
+      engine: nextMeeting.document?.engine || DOCUMENT_ENGINE.ROOSTER,
+      body: { kind: DOCUMENT_KIND.HTML, html: nextMeeting.content },
+    });
+    nextMeeting.documentId = documentRecord.id;
+  }
+
+  meetingsDb.meetings.push(nextMeeting);
   await saveMeetingsDb(meetingsDb);
   await recordAuditLog(req, {
     module: 'meetings',
     action: 'CREATE',
     targetType: 'meeting',
-    targetId: meeting.id,
-    targetLabel: meeting.title,
-    details: { meeting: { id: meeting.id, type: meeting.type, status: meeting.status } },
+    targetId: nextMeeting.id,
+    targetLabel: nextMeeting.title,
+    details: { meeting: { id: nextMeeting.id, type: nextMeeting.type, status: nextMeeting.status, documentId: nextMeeting.documentId || null } },
   });
 
-  return res.status(201).json({ meeting, updatedAt: meetingsDb.updatedAt });
+  return res.status(201).json({ meeting: await hydrateMeetingWithDocument(nextMeeting, await loadDocumentsDb()), updatedAt: meetingsDb.updatedAt });
 });
 
 app.patch('/api/meetings/:id', authMiddleware, async (req, res) => {
@@ -834,21 +1319,35 @@ app.patch('/api/meetings/:id', authMiddleware, async (req, res) => {
     return res.status(404).json({ message: '회의/문서를 찾을 수 없습니다.' });
   }
 
-  meetingsDb.meetings[index] = {
+  const nextMeeting = {
     ...meetingsDb.meetings[index],
     ...updates,
   };
+
+  if (typeof updates.content === 'string') {
+    const documentRecord = await upsertDocumentRecord({
+      existingDocumentId: nextMeeting.documentId || null,
+      ownerType: 'meeting',
+      ownerId: nextMeeting.id,
+      title: nextMeeting.title || '',
+      engine: nextMeeting.document?.engine || DOCUMENT_ENGINE.ROOSTER,
+      body: { kind: DOCUMENT_KIND.HTML, html: updates.content },
+    });
+    nextMeeting.documentId = documentRecord.id;
+  }
+
+  meetingsDb.meetings[index] = nextMeeting;
   await saveMeetingsDb(meetingsDb);
   await recordAuditLog(req, {
     module: 'meetings',
     action: 'UPDATE',
     targetType: 'meeting',
-    targetId: meetingsDb.meetings[index].id,
-    targetLabel: meetingsDb.meetings[index].title,
+    targetId: nextMeeting.id,
+    targetLabel: nextMeeting.title,
     details: { updates },
   });
 
-  return res.json({ meeting: meetingsDb.meetings[index], updatedAt: meetingsDb.updatedAt });
+  return res.json({ meeting: await hydrateMeetingWithDocument(nextMeeting, await loadDocumentsDb()), updatedAt: meetingsDb.updatedAt });
 });
 
 app.delete('/api/meetings/:id', authMiddleware, async (req, res) => {
@@ -863,6 +1362,17 @@ app.delete('/api/meetings/:id', authMiddleware, async (req, res) => {
   const deletedMeeting = meetingsDb.meetings.find((item) => String(item.id) === String(id));
   meetingsDb.meetings = nextMeetings;
   await saveMeetingsDb(meetingsDb);
+
+  if (deletedMeeting?.documentId) {
+    const documentsDb = await loadDocumentsDb();
+    const documentRecord = documentsDb.documents.find((item) => item.id === deletedMeeting.documentId);
+    if (documentRecord && documentRecord.ownerType === 'meeting' && String(documentRecord.ownerId) === String(id)) {
+      removeDocumentFile(documentRecord);
+      documentsDb.documents = documentsDb.documents.filter((item) => item.id !== deletedMeeting.documentId);
+      await saveDocumentsDb(documentsDb);
+    }
+  }
+
   await recordAuditLog(req, {
     module: 'meetings',
     action: 'DELETE',
@@ -881,7 +1391,23 @@ app.put('/api/meetings/bulk', authMiddleware, async (req, res) => {
   }
 
   const meetingsDb = await loadMeetingsDb();
-  meetingsDb.meetings = meetings;
+  const nextMeetings = [];
+  for (const meeting of meetings) {
+    const nextMeeting = { ...meeting };
+    if (typeof nextMeeting.content === 'string') {
+      const documentRecord = await upsertDocumentRecord({
+        existingDocumentId: nextMeeting.documentId || null,
+        ownerType: 'meeting',
+        ownerId: nextMeeting.id,
+        title: nextMeeting.title || '',
+        engine: nextMeeting.document?.engine || DOCUMENT_ENGINE.ROOSTER,
+        body: { kind: DOCUMENT_KIND.HTML, html: nextMeeting.content },
+      });
+      nextMeeting.documentId = documentRecord.id;
+    }
+    nextMeetings.push(nextMeeting);
+  }
+  meetingsDb.meetings = nextMeetings;
   await saveMeetingsDb(meetingsDb);
   await recordAuditLog(req, {
     module: 'meetings',
@@ -894,7 +1420,7 @@ app.put('/api/meetings/bulk', authMiddleware, async (req, res) => {
 
   return res.json({
     ok: true,
-    count: meetings.length,
+    count: nextMeetings.length,
     updatedAt: meetingsDb.updatedAt,
   });
 });

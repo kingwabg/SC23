@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import type { IEditor } from 'roosterjs-content-model-types';
 import {
   toggleBold,
@@ -25,6 +25,7 @@ import {
   changeFontSize,
   setHeadingLevel,
 } from 'roosterjs-content-model-api';
+import { undo, redo } from 'roosterjs-content-model-core';
 import {
   Undo2, Redo2, Bold, Italic, Underline, Strikethrough,
   AlignLeft, AlignCenter, AlignRight, AlignJustify,
@@ -32,6 +33,11 @@ import {
   Quote, Table, Image as ImageIcon, Link2, Link2Off,
   Eraser, Scissors, Subscript, Superscript
 } from 'lucide-react';
+import type { ScTableEngine } from './plugins/ScTableEngine';
+import TableCreateModal, { type TableCreateConfig } from './TableCreateModal';
+import TableSplitModal from './TableSplitModal';
+import { buildTableTemplateHtml, TABLE_TEMPLATES, type TableTemplateId } from './TableTemplates';
+import { mmToPx } from './utils/TableUtils';
 import './RoosterToolbar.css';
 
 interface Margins { top: number; bottom: number; left: number; right: number; }
@@ -52,12 +58,215 @@ const HEADINGS: { label: string; level: 0 | 1 | 2 | 3 | 4 | 5 | 6 }[] = [
   { label: '제목 4', level: 4 },
 ];
 
+const TABLE_DENSITY_CLASSES = [
+  'sc-table-density-compact',
+  'sc-table-density-comfortable',
+  'sc-table-density-spacious',
+] as const;
+
+type TableDensity = 'compact' | 'comfortable' | 'spacious' | '';
+
+const SHORTCUT_GUIDE_SECTIONS = [
+  {
+    title: '웹한글 기준 조작',
+    badge: 'Official',
+    tone: 'official' as const,
+    description: '공식 도움말에서 바로 확인된 표 조작입니다.',
+    items: [
+      { keys: ['Shift', 'Esc'], label: '표에서 빠져나오기', detail: '표 밖으로 커서를 이동합니다.' },
+      { keys: ['F5'], label: '선택 범위 확장', detail: '셀에서 시작해 행, 열, 표까지 순환합니다.' },
+      { keys: ['Shift', 'F5'], label: '선택 범위 역순환', detail: '표, 열, 행, 셀 방향으로 되돌립니다.' },
+    ],
+  },
+  {
+    title: 'SC23 표 이동',
+    badge: 'SC23',
+    tone: 'app' as const,
+    description: '한컴 표 크기 조절 규칙에 맞춰 현재 표 엔진에 연결한 단축키입니다.',
+    items: [
+      { keys: ['Tab'], label: '다음 셀 이동', detail: '현재 셀 기준 다음 칸으로 이동합니다.' },
+      { keys: ['Shift', 'Tab'], label: '이전 셀 이동', detail: '현재 셀 기준 이전 칸으로 이동합니다.' },
+      { keys: ['Ctrl', 'Arrow'], label: '줄/칸 전체와 표 크기 조절', detail: '선택한 줄이나 칸 전체를 조절하고 표 전체 크기도 함께 바뀝니다.' },
+      { keys: ['Alt', 'Arrow'], label: '줄/칸 전체만 조절', detail: '표 전체 크기는 유지하고 이웃 줄이나 칸이 반대로 보정됩니다.' },
+      { keys: ['Shift', 'Arrow'], label: '현재 셀만 조절', detail: '현재 셀과 바로 이웃한 셀 하나만 함께 조절됩니다.' },
+      { keys: ['Shift', 'Drag'], label: '현재 셀 경계 조절', detail: 'Shift를 누른 채 표 경계를 잡으면 현재 셀 경계만 직접 늘이거나 줄입니다.' },
+      { keys: ['Ctrl', 'Shift', 'Arrow'], label: '행 / 열 삽입', detail: '방향에 맞는 위치로 행이나 열을 추가합니다.' },
+    ],
+  },
+  {
+    title: 'SC23 표 서식',
+    badge: 'SC23',
+    tone: 'app' as const,
+    description: '현재 구현된 표 기능을 키보드로 바로 쓰도록 추가 매핑했습니다.',
+    items: [
+      { keys: ['Ctrl', 'Alt', 'M'], label: '셀 합치기', detail: '선택한 셀 영역을 병합합니다.' },
+      { keys: ['Ctrl', 'Alt', 'U'], label: '병합 해제', detail: '현재 병합된 셀을 다시 풀어냅니다.' },
+      { keys: ['Ctrl', 'Alt', 'F'], label: '표 폭 맞춤', detail: '표를 문단 폭 기준으로 다시 맞춥니다.' },
+      { keys: ['Ctrl', 'Alt', 'C'], label: '균등 열', detail: '선택한 열 너비를 같게 정리합니다.' },
+      { keys: ['Ctrl', 'Alt', 'R'], label: '균등 행', detail: '선택한 행 높이를 같게 정리합니다.' },
+      { keys: ['Ctrl', 'Alt', 'H'], label: '머리행 토글', detail: '첫 줄 머리행 강조를 켜고 끕니다.' },
+      { keys: ['Ctrl', 'Alt', 'Z'], label: '줄무늬 토글', detail: '행 줄무늬 스타일을 켜고 끕니다.' },
+      { keys: ['Ctrl', 'Alt', 'T'], label: '회의록형 적용', detail: '회의록형 프리셋과 폭 맞춤을 한 번에 적용합니다.' },
+      { keys: ['Ctrl', 'Alt', '1 / 2 / 3'], label: '밀도 설정', detail: '촘촘, 보통, 넉넉 밀도를 빠르게 바꿉니다.' },
+      { keys: ['Ctrl', 'Alt', '0'], label: '기본 표로 초기화', detail: '현재 표의 빠른 스타일을 기본 상태로 되돌립니다.' },
+    ],
+  },
+] as const;
+
+const getSelectionElement = () => {
+  const selection = window.getSelection();
+  if (!selection?.anchorNode) return null;
+  return selection.anchorNode.nodeType === Node.TEXT_NODE
+    ? selection.anchorNode.parentElement
+    : (selection.anchorNode as HTMLElement);
+};
+
+const getSafeEditorDocument = (editor: IEditor | null) => {
+  if (!editor) return null;
+  try {
+    return editor.getDocument();
+  } catch {
+    return null;
+  }
+};
+
+const getTableEngine = (editor: IEditor | null) => {
+  return (editor as any)?.scTableEngine as ScTableEngine | undefined;
+};
+
+const getLogicalColumnCount = (table: HTMLTableElement) => {
+  const firstRow = table.rows[0];
+  if (!firstRow) return 0;
+
+  return Array.from(firstRow.cells).reduce(
+    (count, cell) => count + (cell.colSpan || 1),
+    0,
+  );
+};
+
+const ensureColgroup = (table: HTMLTableElement) => {
+  const count = getLogicalColumnCount(table);
+  if (!count) return [] as HTMLTableColElement[];
+
+  let colgroup = table.querySelector('colgroup');
+  if (!colgroup) {
+    colgroup = table.ownerDocument.createElement('colgroup');
+    table.prepend(colgroup);
+  }
+
+  while (colgroup.children.length < count) {
+    colgroup.appendChild(table.ownerDocument.createElement('col'));
+  }
+
+  while (colgroup.children.length > count) {
+    colgroup.lastChild?.remove();
+  }
+
+  return Array.from(colgroup.children) as HTMLTableColElement[];
+};
+
+const removeDensityClasses = (table: HTMLTableElement) => {
+  TABLE_DENSITY_CLASSES.forEach(className => table.classList.remove(className));
+};
+
+const triggerTableChange = (editor: IEditor | null) => {
+  if (!getSafeEditorDocument(editor)) return;
+  try {
+    editor.takeSnapshot();
+    editor.triggerEvent(10 as any, {});
+    editor.focus();
+  } catch {}
+};
+
+const findActiveTable = (editor: IEditor | null) => {
+  const doc = getSafeEditorDocument(editor) || document;
+  const selectedTable = doc.querySelector('.sc-selected-table') as HTMLTableElement | null;
+  if (selectedTable) return selectedTable;
+  const selectedCellTable = doc.querySelector('.sc-cell-selected')?.closest('table') as HTMLTableElement | null;
+  if (selectedCellTable) return selectedCellTable;
+  return getSelectionElement()?.closest('table') as HTMLTableElement | null;
+};
+
+const insertHtmlAtSelection = (editor: IEditor, html: string) => {
+  const doc = editor.getDocument();
+  const container = doc.createElement('div');
+  container.innerHTML = html;
+
+  const fragment = doc.createDocumentFragment();
+  let lastNode: ChildNode | null = null;
+
+  while (container.firstChild) {
+    lastNode = fragment.appendChild(container.firstChild);
+  }
+
+  const selection = doc.getSelection?.() ?? window.getSelection();
+  if (selection && selection.rangeCount > 0) {
+    const range = selection.getRangeAt(0);
+    range.deleteContents();
+    range.insertNode(fragment);
+
+    if (lastNode) {
+      const nextRange = doc.createRange();
+      nextRange.setStartAfter(lastNode);
+      nextRange.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(nextRange);
+    }
+  } else {
+    doc.body.appendChild(fragment);
+  }
+};
+
+const focusTableCell = (table: HTMLTableElement) => {
+  const targetCell =
+    (table.querySelector('td') as HTMLTableCellElement | null) ||
+    (table.querySelector('th') as HTMLTableCellElement | null);
+
+  if (!targetCell) {
+    return;
+  }
+
+  const selection = targetCell.ownerDocument.getSelection?.() ?? window.getSelection();
+  if (!selection) {
+    return;
+  }
+
+  const range = targetCell.ownerDocument.createRange();
+  range.selectNodeContents(targetCell);
+  range.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(range);
+};
+
+function TableActionPill({
+  active = false,
+  disabled = false,
+  onClick,
+  children,
+}: {
+  active?: boolean;
+  disabled?: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={onClick}
+      className={`tb-table-pill ${active ? 'active' : ''} ${disabled ? 'disabled' : ''}`}
+    >
+      {children}
+    </button>
+  );
+}
+
 // 표 삽입 그리드 팝업
 function TableGridPicker({ onSelect, onClose }: { onSelect: (r: number, c: number) => void; onClose: () => void }) {
   const [hover, setHover] = useState({ r: 0, c: 0 });
   const MAX = 8;
   return (
-    <div className="tb-table-picker" onMouseLeave={onClose}>
+    <div className="tb-table-picker">
       <div className="tb-table-grid">
         {Array.from({ length: MAX }).map((_, r) =>
           Array.from({ length: MAX }).map((_, c) => (
@@ -160,36 +369,446 @@ export default function RoosterToolbar({ editorRef, margins, setMargins }: Props
   const [activeTab, setActiveTab] = useState('입력');
   const [showTablePicker, setShowTablePicker] = useState(false);
   const [showMarginPicker, setShowMarginPicker] = useState(false);
+  const [showTableCreateModal, setShowTableCreateModal] = useState(false);
+  const [showSplitModal, setShowSplitModal] = useState(false);
+  const [tableCreateSeed, setTableCreateSeed] = useState({ rows: 3, cols: 3 });
+  const [tableUi, setTableUi] = useState({
+    hasTable: false,
+    isHeaderRow: false,
+    isZebra: false,
+    isFitWidth: false,
+    isMeetingPreset: false,
+    density: '' as TableDensity,
+  });
   const fontColorRef = useRef<HTMLInputElement>(null);
   const bgColorRef = useRef<HTMLInputElement>(null);
 
+  const handleToolbarMouseDownCapture = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('input, select, option, textarea, label')) {
+      return;
+    }
+
+    e.preventDefault();
+  }, []);
+
   const cmd = useCallback(<T extends unknown[]>(fn: (editor: IEditor, ...args: T) => void, ...args: T) => {
     const editor = editorRef.current;
-    if (!editor) return;
+    if (!getSafeEditorDocument(editor)) return;
     editor.focus();
     fn(editor, ...args);
   }, [editorRef]);
 
-  const handleInsertTable = (rows: number, cols: number) => {
-    cmd(insertTable, cols, rows, {
+  const applyCreatedTableConfig = useCallback((table: HTMLTableElement, config: TableCreateConfig) => {
+    table.classList.add('sc-table-standard');
+    table.classList.remove(
+      'sc-table-fit-width',
+      'sc-table-header-row',
+      'sc-table-preset-meeting',
+      'sc-table-first-column'
+    );
+    removeDensityClasses(table);
+
+    if (config.hasHeaderRow) {
+      table.classList.add('sc-table-header-row');
+    }
+
+    if (config.hasFirstColumn) {
+      table.classList.add('sc-table-first-column');
+    }
+
+    if (config.preset === 'meeting') {
+      table.classList.add('sc-table-preset-meeting');
+    }
+
+    table.classList.add(`sc-table-density-${config.density}`);
+    table.style.tableLayout = 'fixed';
+    table.style.maxWidth = '100%';
+    table.style.display = config.inline ? 'inline-table' : 'table';
+
+    const rows = Array.from(table.rows);
+    const cols = ensureColgroup(table);
+    const rowHeightPx = mmToPx(config.rowHeightMm);
+    rows.forEach(row => {
+      row.style.height = `${rowHeightPx}px`;
+    });
+
+    if (config.widthMode === 'fit') {
+      table.classList.add('sc-table-fit-width');
+      table.style.width = '100%';
+      table.style.maxWidth = '100%';
+      if (cols.length > 0) {
+        const width = 100 / cols.length;
+        cols.forEach(col => {
+          col.style.width = `${width}%`;
+        });
+      }
+    } else {
+      const widthPx = mmToPx(config.widthMm);
+      table.style.width = `${widthPx}px`;
+      const colWidth = cols.length > 0 ? Math.max(48, widthPx / cols.length) : widthPx;
+      cols.forEach(col => {
+        col.style.width = `${colWidth}px`;
+      });
+    }
+  }, []);
+
+  const applyTemplateTableConfig = useCallback((table: HTMLTableElement, templateId: TableTemplateId) => {
+    table.classList.add('sc-table-standard');
+    table.style.tableLayout = 'fixed';
+    table.style.width = '100%';
+    table.style.maxWidth = '100%';
+    table.style.display = 'table';
+    removeDensityClasses(table);
+    table.classList.remove('sc-table-fit-width', 'sc-table-header-row', 'sc-table-preset-meeting');
+
+    const cols = ensureColgroup(table);
+    const rows = Array.from(table.rows);
+
+    if (templateId === 'meetingSummary') {
+      table.classList.add('sc-table-fit-width', 'sc-table-preset-meeting', 'sc-table-density-comfortable', 'sc-table-template-minutes');
+      const widths = [18, 32, 18, 32];
+      cols.forEach((col, index) => {
+        col.style.width = `${widths[index] ?? (100 / Math.max(1, cols.length))}%`;
+      });
+      rows.forEach((row, index) => {
+        row.style.height = `${index >= 4 ? 56 : 42}px`;
+      });
+    } else if (templateId === 'agendaTracker') {
+      table.classList.add('sc-table-fit-width', 'sc-table-header-row', 'sc-table-density-comfortable', 'sc-table-template-agenda');
+      const widths = [12, 34, 22, 16, 16];
+      cols.forEach((col, index) => {
+        col.style.width = `${widths[index] ?? (100 / Math.max(1, cols.length))}%`;
+      });
+      rows.forEach((row, index) => {
+        row.style.height = `${index === 0 ? 40 : 46}px`;
+      });
+    } else if (templateId === 'attendanceSheet') {
+      table.classList.add('sc-table-fit-width', 'sc-table-header-row', 'sc-table-density-comfortable', 'sc-table-template-attendance');
+      const widths = [18, 22, 22, 18, 20];
+      cols.forEach((col, index) => {
+        col.style.width = `${widths[index] ?? (100 / Math.max(1, cols.length))}%`;
+      });
+      rows.forEach((row, index) => {
+        row.style.height = `${index === 0 ? 40 : 48}px`;
+      });
+    } else if (templateId === 'approvalLine') {
+      table.classList.add('sc-table-fit-width', 'sc-table-density-comfortable', 'sc-table-template-approval');
+      const widths = [18, 27.33, 27.33, 27.33];
+      cols.forEach((col, index) => {
+        col.style.width = `${widths[index] ?? (100 / Math.max(1, cols.length))}%`;
+      });
+      rows.forEach((row, index) => {
+        row.style.height = `${index === 1 ? 68 : index >= 4 ? 50 : 40}px`;
+      });
+    } else if (templateId === 'approvalRequest') {
+      table.classList.add('sc-table-fit-width', 'sc-table-density-comfortable', 'sc-table-template-approval-request');
+      const widths = [17, 33, 17, 33];
+      cols.forEach((col, index) => {
+        col.style.width = `${widths[index] ?? (100 / Math.max(1, cols.length))}%`;
+      });
+      rows.forEach((row, index) => {
+        row.style.height = `${index >= 3 ? 54 : 42}px`;
+      });
+    } else if (templateId === 'comparison') {
+      table.classList.add('sc-table-fit-width', 'sc-table-header-row', 'sc-table-density-comfortable', 'sc-table-template-comparison');
+      const widths = [22, 26, 26, 26];
+      cols.forEach((col, index) => {
+        col.style.width = `${widths[index] ?? (100 / Math.max(1, cols.length))}%`;
+      });
+      rows.forEach(row => {
+        row.style.height = '42px';
+      });
+    }
+  }, []);
+
+  const syncTableUi = useCallback(() => {
+    const table = findActiveTable(editorRef.current);
+    if (!table) {
+      setTableUi({
+        hasTable: false,
+        isHeaderRow: false,
+        isZebra: false,
+        isFitWidth: false,
+        isMeetingPreset: false,
+        density: '',
+      });
+      return;
+    }
+
+    const density =
+      table.classList.contains('sc-table-density-compact')
+        ? 'compact'
+        : table.classList.contains('sc-table-density-comfortable')
+          ? 'comfortable'
+          : table.classList.contains('sc-table-density-spacious')
+            ? 'spacious'
+            : '';
+
+    setTableUi({
+      hasTable: true,
+      isHeaderRow: table.classList.contains('sc-table-header-row'),
+      isZebra: table.classList.contains('sc-table-zebra'),
+      isFitWidth: table.classList.contains('sc-table-fit-width'),
+      isMeetingPreset: table.classList.contains('sc-table-preset-meeting'),
+      density,
+    });
+  }, [editorRef]);
+
+  useEffect(() => {
+    syncTableUi();
+
+    const handleSelectionChange = () => syncTableUi();
+    const handlePointerUp = () => syncTableUi();
+    const handleKeyUp = () => syncTableUi();
+
+    document.addEventListener('selectionchange', handleSelectionChange);
+    window.addEventListener('pointerup', handlePointerUp, true);
+    window.addEventListener('keyup', handleKeyUp, true);
+
+    const timer = window.setInterval(syncTableUi, 400);
+
+    return () => {
+      document.removeEventListener('selectionchange', handleSelectionChange);
+      window.removeEventListener('pointerup', handlePointerUp, true);
+      window.removeEventListener('keyup', handleKeyUp, true);
+      window.clearInterval(timer);
+    };
+  }, [syncTableUi]);
+
+  const insertConfiguredTable = useCallback((config: TableCreateConfig) => {
+    const editor = editorRef.current;
+    if (!getSafeEditorDocument(editor)) return;
+
+    try {
+      editor.takeSnapshot();
+    } catch {}
+
+    editor.focus();
+    insertTable(editor, config.cols, config.rows, {
       borderColor: '#555',
-      hasHeaderRow: false,
-      hasFirstColumn: false,
+      hasHeaderRow: config.hasHeaderRow,
+      hasFirstColumn: config.hasFirstColumn,
       tableStyleName: 'Default',
     });
-  };
+
+    const table = findActiveTable(editor);
+    if (table) {
+      applyCreatedTableConfig(table, config);
+      getTableEngine(editor)?.buildModel(table);
+      getTableEngine(editor)?.syncToDOM();
+      getTableEngine(editor)?.deselectAllTables();
+      table.classList.add('sc-selected-table');
+      focusTableCell(table);
+    }
+
+    try {
+      editor.triggerEvent(10 as any, {});
+      editor.focus();
+    } catch {}
+
+    syncTableUi();
+  }, [applyCreatedTableConfig, editorRef, syncTableUi]);
+
+  const handleInsertTable = useCallback((rows: number, cols: number) => {
+    setTableCreateSeed({ rows, cols });
+    insertConfiguredTable({
+      rows,
+      cols,
+      widthMode: 'fit',
+      widthMm: 160,
+      rowHeightMm: 10,
+      hasHeaderRow: false,
+      hasFirstColumn: false,
+      preset: 'plain',
+      density: 'comfortable',
+      inline: false,
+    });
+  }, [insertConfiguredTable]);
+
+  const handleInsertTableTemplate = useCallback((templateId: TableTemplateId) => {
+    const editor = editorRef.current;
+    if (!getSafeEditorDocument(editor)) return;
+
+    const token = `sc-table-template-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+    try {
+      editor.takeSnapshot();
+    } catch {}
+
+    editor.focus();
+    insertHtmlAtSelection(editor, buildTableTemplateHtml(templateId, token));
+
+    const doc = editor.getDocument();
+    const table = doc.querySelector(`[data-sc-template-token="${token}"]`) as HTMLTableElement | null;
+
+    if (table) {
+      applyTemplateTableConfig(table, templateId);
+      table.removeAttribute('data-sc-template-token');
+      getTableEngine(editor)?.buildModel(table);
+      getTableEngine(editor)?.syncToDOM();
+      getTableEngine(editor)?.deselectAllTables();
+      table.classList.add('sc-selected-table');
+      focusTableCell(table);
+    }
+
+    try {
+      editor.triggerEvent(10 as any, {});
+      editor.focus();
+    } catch {}
+
+    setShowTablePicker(false);
+    syncTableUi();
+  }, [applyTemplateTableConfig, editorRef, syncTableUi]);
+
+  const withSelectedTable = useCallback((mutate: (table: HTMLTableElement, editor: IEditor) => void) => {
+    const editor = editorRef.current;
+    if (!getSafeEditorDocument(editor)) return;
+    const table = findActiveTable(editor);
+    if (!editor || !table) return;
+
+    mutate(table, editor);
+    triggerTableChange(editor);
+    syncTableUi();
+  }, [editorRef, syncTableUi]);
+
+  const withTableEngine = useCallback((mutate: (engine: ScTableEngine, editor: IEditor) => boolean) => {
+    const editor = editorRef.current;
+    if (!getSafeEditorDocument(editor)) return;
+    const engine = getTableEngine(editor);
+    if (!editor || !engine) return;
+
+    try {
+      editor.takeSnapshot();
+    } catch {}
+
+    if (!mutate(engine, editor)) return;
+
+    try {
+      editor.triggerEvent(10 as any, {});
+      editor.focus();
+    } catch {}
+    syncTableUi();
+  }, [editorRef, syncTableUi]);
+
+  const applyTableAwareAlignment = useCallback((alignment: 'left' | 'center' | 'right' | 'justify') => {
+    const editor = editorRef.current;
+    if (!getSafeEditorDocument(editor)) return;
+
+    const engine = getTableEngine(editor);
+    const activeTable = findActiveTable(editor);
+
+    if (editor && engine && activeTable) {
+      try {
+        editor.takeSnapshot();
+      } catch {}
+
+      if (engine.setSelectionTextAlign(alignment)) {
+        try {
+          editor.triggerEvent(10 as any, {});
+          editor.focus();
+        } catch {}
+        syncTableUi();
+        return;
+      }
+    }
+
+    cmd(setAlignment, alignment);
+  }, [cmd, editorRef, syncTableUi]);
+
+  const handleToggleTableClass = useCallback((className: string) => {
+    withSelectedTable((table) => {
+      table.classList.toggle(className);
+    });
+  }, [withSelectedTable]);
+
+  const handleSetTableDensity = useCallback((density: Exclude<TableDensity, ''>) => {
+    withSelectedTable((table) => {
+      removeDensityClasses(table);
+      table.classList.add(`sc-table-density-${density}`);
+    });
+  }, [withSelectedTable]);
+
+  const handleResetTableStyle = useCallback(() => {
+    withSelectedTable((table) => {
+      table.classList.remove('sc-table-header-row', 'sc-table-zebra', 'sc-table-fit-width', 'sc-table-preset-meeting');
+      removeDensityClasses(table);
+    });
+  }, [withSelectedTable]);
+
+  const handleFitTableWidth = useCallback(() => {
+    withTableEngine((engine) => engine.fitTableWidth());
+  }, [withTableEngine]);
+
+  const handleDistributeColumns = useCallback(() => {
+    withTableEngine((engine) => engine.distributeColumns());
+  }, [withTableEngine]);
+
+  const handleDistributeRows = useCallback(() => {
+    withTableEngine((engine) => engine.distributeRows());
+  }, [withTableEngine]);
+
+  const handleApplyMeetingPreset = useCallback(() => {
+    withSelectedTable((table) => {
+      table.classList.add('sc-table-preset-meeting', 'sc-table-header-row', 'sc-table-fit-width');
+      removeDensityClasses(table);
+      table.classList.add('sc-table-density-comfortable');
+      table.style.width = '100%';
+      table.style.maxWidth = '100%';
+      table.style.tableLayout = 'fixed';
+
+      const cols = ensureColgroup(table);
+      if (cols.length > 0) {
+        const width = 100 / cols.length;
+        cols.forEach(col => {
+          col.style.width = `${width}%`;
+        });
+      }
+    });
+  }, [withSelectedTable]);
 
   const handleResizeTable = (type: 'width' | 'height', delta: number) => {
-    const editor = editorRef.current;
-    if (!editor) return;
-    editor.focus();
-    const cell = window.getSelection()?.anchorNode?.parentElement?.closest('td, th') as HTMLElement;
-    if (cell) {
-      const cur = type === 'width' ? cell.offsetWidth : cell.offsetHeight;
-      cell.style[type] = `${Math.max(10, cur + delta)}px`;
-      try { (editor as any).takeSnapshot?.(); } catch {}
-    }
+    withTableEngine((engine) => (
+      type === 'width' ? engine.adjustColumnWidths(delta) : engine.adjustRowHeights(delta)
+    ));
   };
+
+  const handleInsertRowAbove = useCallback(() => {
+    withTableEngine((engine) => engine.insertRow('above'));
+  }, [withTableEngine]);
+
+  const handleInsertRowBelow = useCallback(() => {
+    withTableEngine((engine) => engine.insertRow('below'));
+  }, [withTableEngine]);
+
+  const handleInsertColumnLeft = useCallback(() => {
+    withTableEngine((engine) => engine.insertColumn('left'));
+  }, [withTableEngine]);
+
+  const handleInsertColumnRight = useCallback(() => {
+    withTableEngine((engine) => engine.insertColumn('right'));
+  }, [withTableEngine]);
+
+  const handleDeleteRows = useCallback(() => {
+    withTableEngine((engine) => engine.deleteRows());
+  }, [withTableEngine]);
+
+  const handleDeleteColumns = useCallback(() => {
+    withTableEngine((engine) => engine.deleteColumns());
+  }, [withTableEngine]);
+
+  const handleMergeCells = useCallback(() => {
+    withTableEngine((engine) => engine.mergeSelection());
+  }, [withTableEngine]);
+
+  const handleSplitCells = useCallback(() => {
+    withTableEngine((engine) => engine.splitSelection());
+  }, [withTableEngine]);
+
+  const handleSplitCellCustom = useCallback((rows: number, cols: number) => {
+    withTableEngine((engine) => engine.splitActiveCell(rows, cols));
+    setShowSplitModal(false);
+  }, [withTableEngine]);
 
   const handleInsertImage = () => {
     const input = document.createElement('input');
@@ -275,10 +894,13 @@ export default function RoosterToolbar({ editorRef, margins, setMargins }: Props
   const strokeW = 2.5;
 
   return (
-    <div className="w-full bg-[#f8f9fa] border-b border-gray-300 font-sans text-xs select-none flex flex-col items-start pb-0 z-20">
+    <div
+      className="rooster-toolbar w-full bg-[#f8f9fa] border-b border-gray-300 font-sans text-xs select-none flex flex-col items-start pb-0 z-20"
+      onMouseDownCapture={handleToolbarMouseDownCapture}
+    >
       {/* 1. 탭 메뉴 */}
       <div className="flex px-3 pt-2 border-b border-gray-300 gap-1 bg-white items-end w-full">
-        {['파일', '편집', '보기', '입력', '서식', '쪽', '표', '검토', '도구'].map((tab) => {
+        {['파일', '편집', '보기', '입력', '서식', '쪽', '표', '검토', '도구', '도움말'].map((tab) => {
           const isActive = activeTab === tab;
           return (
             <div 
@@ -310,11 +932,11 @@ export default function RoosterToolbar({ editorRef, margins, setMargins }: Props
 
         {activeTab === '편집' && (
           <>
-            <button className="flex flex-col items-center justify-center min-w-[56px] h-[60px] gap-1.5 hover:bg-[#e2e8f0] rounded transition-colors text-gray-600" onClick={() => cmd((e) => { e.focus(); document.execCommand('undo'); })}>
+            <button className="flex flex-col items-center justify-center min-w-[56px] h-[60px] gap-1.5 hover:bg-[#e2e8f0] rounded transition-colors text-gray-600" onClick={() => cmd((e) => { e.focus(); undo(e); })}>
               <div className="w-8 h-8 bg-white border border-gray-300 shadow-sm rounded flex items-center justify-center"><Undo2 size={18} strokeWidth={1.5}/></div>
               <span>되돌리기</span>
             </button>
-            <button className="flex flex-col items-center justify-center min-w-[56px] h-[60px] gap-1.5 hover:bg-[#e2e8f0] rounded transition-colors text-gray-600" onClick={() => cmd((e) => { e.focus(); document.execCommand('redo'); })}>
+            <button className="flex flex-col items-center justify-center min-w-[56px] h-[60px] gap-1.5 hover:bg-[#e2e8f0] rounded transition-colors text-gray-600" onClick={() => cmd((e) => { e.focus(); redo(e); })}>
               <div className="w-8 h-8 bg-white border border-gray-300 shadow-sm rounded flex items-center justify-center"><Redo2 size={18} strokeWidth={1.5}/></div>
               <span>다시실행</span>
             </button>
@@ -330,7 +952,7 @@ export default function RoosterToolbar({ editorRef, margins, setMargins }: Props
           </>
         )}
 
-        {(activeTab === '입력' || activeTab === '표' || activeTab === '도구' || activeTab === '보기' || activeTab === '검토') && (
+        {(activeTab === '입력' || activeTab === '도구' || activeTab === '보기' || activeTab === '검토') && (
           <>
             <div className="tb-relative" style={{ position: 'relative', height: '60px' }}>
               <button className="flex flex-col items-center justify-center min-w-[56px] h-full gap-1.5 hover:bg-[#e2e8f0] rounded transition-colors text-gray-600" onClick={() => setShowTablePicker(p => !p)}>
@@ -338,8 +960,35 @@ export default function RoosterToolbar({ editorRef, margins, setMargins }: Props
                 <span>표 ▼</span>
               </button>
               {showTablePicker && (
-                <div className="absolute top-[100%] left-0 z-[9999]">
-                   <TableGridPicker onSelect={handleInsertTable} onClose={() => setShowTablePicker(false)} />
+                <div className="tb-table-picker-popover">
+                  <div className="tb-table-picker-wrap">
+                    <TableGridPicker onSelect={handleInsertTable} onClose={() => setShowTablePicker(false)} />
+                    <button
+                      type="button"
+                      className="tb-table-advanced-btn"
+                      onClick={() => {
+                        setTableCreateSeed({ rows: 3, cols: 3 });
+                        setShowTablePicker(false);
+                        setShowTableCreateModal(true);
+                      }}
+                    >
+                      상세 옵션으로 만들기
+                    </button>
+                    <div className="tb-table-template-section">
+                      <div className="tb-table-template-title">빠른 템플릿</div>
+                      {TABLE_TEMPLATES.map((template) => (
+                        <button
+                          key={template.id}
+                          type="button"
+                          className="tb-table-template-btn"
+                          onClick={() => handleInsertTableTemplate(template.id)}
+                        >
+                          <strong>{template.label}</strong>
+                          <span>{template.description}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -362,27 +1011,147 @@ export default function RoosterToolbar({ editorRef, margins, setMargins }: Props
               <div className="w-8 h-8 bg-slate-100 border border-slate-300 text-slate-600 rounded flex items-center justify-center"><Scissors size={18} strokeWidth={1.5}/></div>
               <span>쪽 나누기</span>
             </button>
-
-            {activeTab === '표' && (
-              <>
-                <div className="w-px h-12 bg-gray-300 mx-2" />
-                <div className="flex flex-col gap-1">
-                  <div className="flex gap-1">
-                    <button title="너비 줄이기" className="w-8 h-7 bg-white border border-gray-300 rounded hover:bg-gray-50 flex items-center justify-center text-[10px] font-bold" onClick={() => handleResizeTable('width', -5)}>W-</button>
-                    <button title="너비 늘리기" className="w-8 h-7 bg-white border border-gray-300 rounded hover:bg-gray-50 flex items-center justify-center text-[10px] font-bold" onClick={() => handleResizeTable('width', 5)}>W+</button>
-                  </div>
-                  <div className="flex gap-1">
-                    <button title="높이 줄이기" className="w-8 h-7 bg-white border border-gray-300 rounded hover:bg-gray-50 flex items-center justify-center text-[10px] font-bold" onClick={() => handleResizeTable('height', -5)}>H-</button>
-                    <button title="높이 늘리기" className="w-8 h-7 bg-white border border-gray-300 rounded hover:bg-gray-50 flex items-center justify-center text-[10px] font-bold" onClick={() => handleResizeTable('height', 5)}>H+</button>
-                  </div>
-                </div>
-                <div className="flex flex-col justify-center ml-1">
-                   <span className="text-[10px] text-slate-400 font-bold leading-none">크기 조절</span>
-                   <span className="text-[9px] text-slate-300 font-medium mt-1">Ctrl + Arrow</span>
-                </div>
-              </>
-            )}
           </>
+        )}
+
+        {activeTab === '표' && (
+          <div className="tb-table-ribbon">
+            <section className="tb-table-panel tb-table-panel-insert">
+              <div className="tb-table-panel-head">
+                <div className="tb-table-panel-title">표 삽입</div>
+                <p className="tb-table-panel-hint">빠른 표 생성과 회의록 템플릿을 한곳에 모았습니다.</p>
+              </div>
+
+              <div className="tb-table-insert-actions">
+                <div className="tb-relative">
+                  <button className="tb-table-primary" onClick={() => setShowTablePicker(p => !p)}>
+                    <span className="tb-table-primary-icon"><Table size={18} strokeWidth={1.7} /></span>
+                    <span className="tb-table-primary-copy">
+                      <strong>표 만들기</strong>
+                      <small>그리드와 템플릿</small>
+                    </span>
+                  </button>
+
+                  {showTablePicker && (
+                    <div className="tb-table-picker-popover">
+                      <div className="tb-table-picker-wrap">
+                        <div className="tb-table-picker-main">
+                          <TableGridPicker onSelect={handleInsertTable} onClose={() => setShowTablePicker(false)} />
+                          <button
+                            type="button"
+                            className="tb-table-advanced-btn"
+                            onClick={() => {
+                              setTableCreateSeed({ rows: 3, cols: 3 });
+                              setShowTablePicker(false);
+                              setShowTableCreateModal(true);
+                            }}
+                          >
+                            상세 옵션으로 만들기
+                          </button>
+                        </div>
+
+                        <div className="tb-table-template-section">
+                          <div className="tb-table-template-title">빠른 템플릿</div>
+                          {TABLE_TEMPLATES.map((template) => (
+                            <button
+                              key={template.id}
+                              type="button"
+                              className="tb-table-template-btn"
+                              onClick={() => {
+                                handleInsertTableTemplate(template.id);
+                                setShowTablePicker(false);
+                              }}
+                            >
+                              <strong>{template.label}</strong>
+                              <span>{template.description}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  className="tb-table-secondary"
+                  onClick={() => {
+                    setTableCreateSeed({ rows: 3, cols: 3 });
+                    setShowTableCreateModal(true);
+                  }}
+                >
+                  상세 옵션
+                </button>
+              </div>
+
+              <div className="tb-table-template-row">
+                {TABLE_TEMPLATES.slice(0, 4).map((template) => (
+                  <button
+                    key={template.id}
+                    type="button"
+                    className="tb-table-template-chip"
+                    onClick={() => handleInsertTableTemplate(template.id)}
+                  >
+                    {template.quickLabel}
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <section className="tb-table-panel">
+              <div className="tb-table-panel-head">
+                <div className="tb-table-panel-title">구조 편집</div>
+                <p className="tb-table-panel-hint">행, 열, 병합과 삭제를 빠르게 처리합니다.</p>
+              </div>
+              <div className="tb-table-action-grid">
+                <TableActionPill disabled={!tableUi.hasTable} onClick={handleInsertRowAbove}>행 위</TableActionPill>
+                <TableActionPill disabled={!tableUi.hasTable} onClick={handleInsertRowBelow}>행 아래</TableActionPill>
+                <TableActionPill disabled={!tableUi.hasTable} onClick={handleInsertColumnLeft}>열 왼쪽</TableActionPill>
+                <TableActionPill disabled={!tableUi.hasTable} onClick={handleInsertColumnRight}>열 오른쪽</TableActionPill>
+                <TableActionPill disabled={!tableUi.hasTable} onClick={handleMergeCells}>셀 합치기</TableActionPill>
+                <TableActionPill disabled={!tableUi.hasTable} onClick={handleSplitCells}>병합 해제</TableActionPill>
+                <TableActionPill disabled={!tableUi.hasTable} onClick={() => setShowSplitModal(true)}>셀 나누기</TableActionPill>
+                <TableActionPill disabled={!tableUi.hasTable} onClick={handleDeleteRows}>행 삭제</TableActionPill>
+                <TableActionPill disabled={!tableUi.hasTable} onClick={handleDeleteColumns}>열 삭제</TableActionPill>
+              </div>
+            </section>
+
+            <section className="tb-table-panel">
+              <div className="tb-table-panel-head">
+                <div className="tb-table-panel-title">크기와 배치</div>
+                <p className="tb-table-panel-hint">선택 영역 크기를 고르고 균등 정렬을 맞춥니다.</p>
+              </div>
+              <div className="tb-table-action-grid">
+                <TableActionPill disabled={!tableUi.hasTable} onClick={handleDistributeColumns}>균등 열</TableActionPill>
+                <TableActionPill disabled={!tableUi.hasTable} onClick={handleDistributeRows}>균등 행</TableActionPill>
+                <TableActionPill disabled={!tableUi.hasTable} active={tableUi.isFitWidth} onClick={handleFitTableWidth}>폭 맞춤</TableActionPill>
+                <TableActionPill disabled={!tableUi.hasTable} onClick={() => handleResizeTable('width', -8)}>폭 -</TableActionPill>
+                <TableActionPill disabled={!tableUi.hasTable} onClick={() => handleResizeTable('width', 8)}>폭 +</TableActionPill>
+                <TableActionPill disabled={!tableUi.hasTable} onClick={() => handleResizeTable('height', -6)}>높이 -</TableActionPill>
+                <TableActionPill disabled={!tableUi.hasTable} onClick={() => handleResizeTable('height', 6)}>높이 +</TableActionPill>
+              </div>
+            </section>
+
+            <section className="tb-table-panel">
+              <div className="tb-table-panel-head">
+                <div className="tb-table-panel-title">스타일</div>
+                <p className="tb-table-panel-hint">회의록형 스타일과 밀도 프리셋을 빠르게 적용합니다.</p>
+              </div>
+              <div className="tb-table-action-grid">
+                <TableActionPill disabled={!tableUi.hasTable} active={tableUi.isMeetingPreset} onClick={handleApplyMeetingPreset}>회의록형</TableActionPill>
+                <TableActionPill disabled={!tableUi.hasTable} active={tableUi.isHeaderRow} onClick={() => handleToggleTableClass('sc-table-header-row')}>머리행</TableActionPill>
+                <TableActionPill disabled={!tableUi.hasTable} active={tableUi.isZebra} onClick={() => handleToggleTableClass('sc-table-zebra')}>줄무늬</TableActionPill>
+                <TableActionPill disabled={!tableUi.hasTable} active={tableUi.density === 'compact'} onClick={() => handleSetTableDensity('compact')}>촘촘</TableActionPill>
+                <TableActionPill disabled={!tableUi.hasTable} active={tableUi.density === 'comfortable'} onClick={() => handleSetTableDensity('comfortable')}>보통</TableActionPill>
+                <TableActionPill disabled={!tableUi.hasTable} active={tableUi.density === 'spacious'} onClick={() => handleSetTableDensity('spacious')}>넉넉</TableActionPill>
+                <TableActionPill disabled={!tableUi.hasTable} onClick={handleResetTableStyle}>기본 표</TableActionPill>
+              </div>
+            </section>
+
+            <div className="tb-table-note">
+              `F5` 셀 확장, `Shift+Esc` 종료, `Alt/Ctrl/Shift+방향키` 이동과 삽입을 그대로 지원합니다.
+            </div>
+          </div>
         )}
 
         {activeTab === '서식' && (
@@ -411,15 +1180,15 @@ export default function RoosterToolbar({ editorRef, margins, setMargins }: Props
               <span>배경 색상</span>
             </div>
             <div className="w-px h-12 bg-gray-300 mx-1" />
-            <button className="flex flex-col items-center justify-center min-w-[56px] h-[60px] gap-1.5 hover:bg-[#e2e8f0] rounded transition-colors text-gray-600" onClick={() => cmd(setAlignment, 'left')}>
+            <button className="flex flex-col items-center justify-center min-w-[56px] h-[60px] gap-1.5 hover:bg-[#e2e8f0] rounded transition-colors text-gray-600" onClick={() => applyTableAwareAlignment('left')}>
               <div className="w-8 h-8 bg-white border border-gray-300 shadow-sm rounded flex items-center justify-center text-gray-600"><AlignLeft size={18}/></div>
               <span>왼쪽상단</span>
             </button>
-            <button className="flex flex-col items-center justify-center min-w-[56px] h-[60px] gap-1.5 hover:bg-[#e2e8f0] rounded transition-colors text-gray-600" onClick={() => cmd(setAlignment, 'center')}>
+            <button className="flex flex-col items-center justify-center min-w-[56px] h-[60px] gap-1.5 hover:bg-[#e2e8f0] rounded transition-colors text-gray-600" onClick={() => applyTableAwareAlignment('center')}>
               <div className="w-8 h-8 bg-white border border-gray-300 shadow-sm rounded flex items-center justify-center text-gray-600"><AlignCenter size={18}/></div>
               <span>가운데</span>
             </button>
-            <button className="flex flex-col items-center justify-center min-w-[56px] h-[60px] gap-1.5 hover:bg-[#e2e8f0] rounded transition-colors text-gray-600" onClick={() => cmd(setAlignment, 'right')}>
+            <button className="flex flex-col items-center justify-center min-w-[56px] h-[60px] gap-1.5 hover:bg-[#e2e8f0] rounded transition-colors text-gray-600" onClick={() => applyTableAwareAlignment('right')}>
               <div className="w-8 h-8 bg-white border border-gray-300 shadow-sm rounded flex items-center justify-center text-gray-600"><AlignRight size={18}/></div>
               <span>오른쪽</span>
             </button>
@@ -450,12 +1219,51 @@ export default function RoosterToolbar({ editorRef, margins, setMargins }: Props
             </button>
           </>
         )}
+
+        {activeTab === '도움말' && (
+          <div className="tb-help-board">
+            {SHORTCUT_GUIDE_SECTIONS.map((section) => (
+              <section key={section.title} className="tb-help-card">
+                <div className="tb-help-card-head">
+                  <div>
+                    <div className="tb-help-title">{section.title}</div>
+                    <p className="tb-help-description">{section.description}</p>
+                  </div>
+                  <span className={`tb-help-badge ${section.tone}`}>{section.badge}</span>
+                </div>
+
+                <div className="tb-help-list">
+                  {section.items.map((item) => (
+                    <div key={`${section.title}-${item.label}`} className="tb-help-item">
+                      <div className="tb-help-item-main">
+                        <strong>{item.label}</strong>
+                        <span>{item.detail}</span>
+                      </div>
+                      <div className="tb-help-keys">
+                        {item.keys.map((key) => (
+                          <kbd key={`${item.label}-${key}`} className="tb-help-kbd">
+                            {key}
+                          </kbd>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ))}
+
+            <div className="tb-help-note">
+              웹한글 공식 도움말 기준으로 `Shift+Esc`는 표 밖으로 빠져나오는 동작이고, 표 선택은 `F5`를 반복해 확장하는 흐름입니다.
+              브라우저 환경에서는 일부 조합이 시스템 또는 브라우저 기본 단축키와 겹칠 수 있어, 현재 SC23에서는 충돌이 적은 조합 위주로 추가 매핑했습니다.
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 3. 소형 서식 툴바 (하단) */}
       <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white w-full h-auto min-h-[40px] flex-wrap shadow-sm z-10 relative">
-        <button className="flex items-center justify-center w-7 h-7 hover:bg-gray-100 rounded text-gray-600" onClick={() => cmd((e) => { e.focus(); document.execCommand('undo'); })}><Undo2 size={15} strokeWidth={2}/></button>
-        <button className="flex items-center justify-center w-7 h-7 hover:bg-gray-100 rounded text-gray-600" onClick={() => cmd((e) => { e.focus(); document.execCommand('redo'); })}><Redo2 size={15} strokeWidth={2}/></button>
+        <button className="flex items-center justify-center w-7 h-7 hover:bg-gray-100 rounded text-gray-600" onClick={() => cmd((e) => { e.focus(); undo(e); })}><Undo2 size={15} strokeWidth={2}/></button>
+        <button className="flex items-center justify-center w-7 h-7 hover:bg-gray-100 rounded text-gray-600" onClick={() => cmd((e) => { e.focus(); redo(e); })}><Redo2 size={15} strokeWidth={2}/></button>
         
         <div className="w-px h-5 bg-gray-300 mx-1" />
         
@@ -492,10 +1300,10 @@ export default function RoosterToolbar({ editorRef, margins, setMargins }: Props
 
         <div className="w-px h-5 bg-gray-300 mx-1" />
 
-        <button className="flex items-center justify-center w-7 h-7 hover:bg-gray-100 rounded text-gray-600" onClick={() => cmd(setAlignment, 'left')}><AlignLeft size={16}/></button>
-        <button className="flex items-center justify-center w-7 h-7 hover:bg-gray-100 rounded text-gray-600" onClick={() => cmd(setAlignment, 'center')}><AlignCenter size={16}/></button>
-        <button className="flex items-center justify-center w-7 h-7 hover:bg-gray-100 rounded text-gray-600" onClick={() => cmd(setAlignment, 'right')}><AlignRight size={16}/></button>
-        <button className="flex items-center justify-center w-7 h-7 hover:bg-gray-100 rounded text-gray-600" onClick={() => cmd(setAlignment, 'justify')}><AlignJustify size={16}/></button>
+        <button className="flex items-center justify-center w-7 h-7 hover:bg-gray-100 rounded text-gray-600" onClick={() => applyTableAwareAlignment('left')}><AlignLeft size={16}/></button>
+        <button className="flex items-center justify-center w-7 h-7 hover:bg-gray-100 rounded text-gray-600" onClick={() => applyTableAwareAlignment('center')}><AlignCenter size={16}/></button>
+        <button className="flex items-center justify-center w-7 h-7 hover:bg-gray-100 rounded text-gray-600" onClick={() => applyTableAwareAlignment('right')}><AlignRight size={16}/></button>
+        <button className="flex items-center justify-center w-7 h-7 hover:bg-gray-100 rounded text-gray-600" onClick={() => applyTableAwareAlignment('justify')}><AlignJustify size={16}/></button>
 
         <div className="w-px h-5 bg-gray-300 mx-1" />
 
@@ -507,6 +1315,25 @@ export default function RoosterToolbar({ editorRef, margins, setMargins }: Props
         <div className="w-px h-5 bg-gray-300 mx-1" />
         <button className="flex items-center justify-center w-7 h-7 hover:bg-gray-100 rounded text-gray-600" onClick={() => cmd(clearFormat)} title="서식 지우기"><Eraser size={15}/></button>
       </div>
+
+      {showSplitModal && (
+        <TableSplitModal
+          onClose={() => setShowSplitModal(false)}
+          onApply={handleSplitCellCustom}
+        />
+      )}
+
+      {showTableCreateModal && (
+        <TableCreateModal
+          initialRows={tableCreateSeed.rows}
+          initialCols={tableCreateSeed.cols}
+          onClose={() => setShowTableCreateModal(false)}
+          onApply={(config) => {
+            insertConfiguredTable(config);
+            setShowTableCreateModal(false);
+          }}
+        />
+      )}
     </div>
   );
 }

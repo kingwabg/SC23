@@ -9,15 +9,17 @@ import './RoosterApp.css';
 export interface RoosterAppProps {
   initialHtml?: string;
   onChangeHtml?: (html: string) => void;
+  editorInstanceRef?: React.MutableRefObject<IEditor | null>;
 }
 
-export default function RoosterApp({ initialHtml, onChangeHtml }: RoosterAppProps) {
-  const editorRef = useRef<IEditor | null>(null);
+export default function RoosterApp({ initialHtml, onChangeHtml, editorInstanceRef }: RoosterAppProps) {
+  const localEditorRef = useRef<IEditor | null>(null);
+  const editorRef = editorInstanceRef || localEditorRef;
   const contentDivRef = useRef<HTMLDivElement | null>(null);
   const [margins, setMargins] = useState({ top: 20, bottom: 20, left: 25, right: 25 }); // mm 단위
 
   return (
-    <div className="sc-app-outer-shell" style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', backgroundColor: '#cbd5e1', overflow: 'hidden' }}>
+    <div className="sc-app-outer-shell" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', minWidth: 0, backgroundColor: '#cbd5e1', overflow: 'hidden' }}>
       {/* 🚀 상단 리본 메뉴 (고정 - 최우선 순위 부여) */}
       <div className="sc-app-toolbar-fixed" style={{ flexShrink: 0, zIndex: 2000, borderBottom: '1px solid #cbd5e1', backgroundColor: 'white' }}>
         <RoosterToolbar editorRef={editorRef} margins={margins} setMargins={setMargins} />
@@ -34,7 +36,7 @@ export default function RoosterApp({ initialHtml, onChangeHtml }: RoosterAppProp
         />
         
         {/* 오버레이 유틸리티: 에디터와 한 몸으로 작동 */}
-        <TableOverlay editorContainerRef={contentDivRef} />
+        <TableOverlay editorContainerRef={contentDivRef} editorRef={editorRef} />
         <TableContextMenu editorContainerRef={contentDivRef} editorRef={editorRef} />
         <PaginationEngine editorRef={editorRef} />
       </div>
@@ -48,8 +50,16 @@ function PaginationEngine({ editorRef }: { editorRef: React.RefObject<any> }) {
     let animationFrameId: number;
     let lastHeights = '';
 
+    const getSafeBody = () => {
+      try {
+        return editorRef.current?.getDocument?.()?.body || null;
+      } catch {
+        return null;
+      }
+    };
+
     const recalculatePageBreaks = () => {
-      const editorDiv = editorRef.current?.getDocument()?.body;
+      const editorDiv = getSafeBody();
       const paperDiv = document.querySelector('.sc-editor-root') as HTMLElement;
       if (!editorDiv || !paperDiv) return;
 
@@ -99,7 +109,7 @@ function PaginationEngine({ editorRef }: { editorRef: React.RefObject<any> }) {
       animationFrameId = requestAnimationFrame(recalculatePageBreaks);
     });
 
-    const body = editorRef.current?.getDocument()?.body;
+    const body = getSafeBody();
     if (body) {
       observer.observe(body, { childList: true, subtree: true, characterData: true });
       recalculatePageBreaks(); // 초기 계산
