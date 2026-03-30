@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import RoosterApp from '../components/RoosterEditor/RoosterApp';
 import UploadSidebar from '../components/RoosterEditor/UploadSidebar';
-import EditorAdapter, { EDITOR_ENGINE } from '../features/editor/adapters/EditorAdapter';
-import { getMeetingsEditorEngine, isWebHwpPreviewEnabled } from '../features/editor/config/webhwpConfig';
-import { createHtmlDocumentBody } from '../features/editor/types';
+import DataBankSidebar from './meetings/DataBankSidebar';
 import { 
   FileText, 
   Search, 
@@ -24,12 +23,26 @@ import {
 import { authApi } from '../utils/apiClient';
 import { exportContent } from 'roosterjs-content-model-core';
 
-const EDITOR_OVERRIDE_STORAGE_KEY = 'meetingsEditorEngineOverride';
+const RIGHT_SIDEBAR_STORAGE_KEY = 'meetingsRightSidebarWidth';
+const RIGHT_SIDEBAR_DEFAULT_WIDTH = 320;
+const RIGHT_SIDEBAR_MIN_WIDTH = 280;
+const RIGHT_SIDEBAR_MAX_WIDTH = 560;
 
-const getStoredEditorOverride = () => {
-  if (typeof window === 'undefined') return '';
-  const stored = window.localStorage.getItem(EDITOR_OVERRIDE_STORAGE_KEY) || '';
-  return stored === EDITOR_ENGINE.ROOSTER ? stored : '';
+const clampRightSidebarWidth = (width) => {
+  if (typeof window === 'undefined') {
+    return Math.min(
+      RIGHT_SIDEBAR_MAX_WIDTH,
+      Math.max(RIGHT_SIDEBAR_MIN_WIDTH, width || RIGHT_SIDEBAR_DEFAULT_WIDTH),
+    );
+  }
+
+  const viewportMax = window.innerWidth - 760;
+  const maxWidth = Math.min(
+    RIGHT_SIDEBAR_MAX_WIDTH,
+    Math.max(RIGHT_SIDEBAR_MIN_WIDTH, viewportMax),
+  );
+
+  return Math.min(maxWidth, Math.max(RIGHT_SIDEBAR_MIN_WIDTH, width || RIGHT_SIDEBAR_DEFAULT_WIDTH));
 };
 
 const hydrateMeetingContentFromDocument = async (meeting, fallbackHtml) => {
@@ -49,7 +62,7 @@ const hydrateMeetingContentFromDocument = async (meeting, fallbackHtml) => {
   return meeting?.content || fallbackHtml;
 };
 
-const persistMeetingDocument = async (meeting, html, engine) => {
+const persistMeetingDocument = async (meeting, html) => {
   if (meeting?.documentId) {
     const response = await authApi(`/api/documents/${meeting.documentId}/body`, {
       method: 'PUT',
@@ -57,7 +70,7 @@ const persistMeetingDocument = async (meeting, html, engine) => {
         title: meeting.title || '',
         ownerType: 'meeting',
         ownerId: String(meeting.id),
-        engine,
+        engine: 'rooster',
         body: {
           kind: 'html',
           html,
@@ -74,7 +87,7 @@ const persistMeetingDocument = async (meeting, html, engine) => {
         ownerType: 'meeting',
         ownerId: String(meeting.id),
         title: meeting.title || '',
-        engine,
+        engine: 'rooster',
       },
       body: {
         kind: 'html',
@@ -116,6 +129,161 @@ const resolveCurrentEditorHtml = (editor, fallbackHtml = '') => {
   return fallbackHtml;
 };
 
+const escapeInlineHtml = (value) => String(value ?? '')
+  .replaceAll('&', '&amp;')
+  .replaceAll('<', '&lt;')
+  .replaceAll('>', '&gt;')
+  .replaceAll('"', '&quot;')
+  .replaceAll("'", '&#39;');
+
+const getEditorSelectionContext = (editor) => {
+  if (!editor) return null;
+
+  const doc = editor.getDocument?.();
+  if (!doc) return null;
+
+  const root = doc.querySelector?.('.sc-editor-root') || doc.body;
+  if (!root) return null;
+
+  const selection = doc.getSelection?.() ?? window.getSelection();
+  if (!selection || selection.rangeCount === 0) {
+    return { doc, root, selection: null, range: null, cell: null };
+  }
+
+  const range = selection.getRangeAt(0);
+  const hasEditorSelection = root.contains(range.commonAncestorContainer);
+  if (!hasEditorSelection) {
+    return { doc, root, selection, range: null, cell: null };
+  }
+
+  const anchorNode = range.startContainer?.nodeType === Node.ELEMENT_NODE
+    ? range.startContainer
+    : range.startContainer?.parentElement;
+  const cell = anchorNode?.closest?.('td, th') || null;
+
+  return {
+    doc,
+    root,
+    selection,
+    range,
+    cell: cell && root.contains(cell) ? cell : null,
+  };
+};
+
+const moveCaretToEndOfElement = (doc, selection, element) => {
+  if (!doc || !selection || !element) return;
+
+  const range = doc.createRange();
+  range.selectNodeContents(element);
+  range.collapse(false);
+  selection.removeAllRanges();
+  selection.addRange(range);
+};
+
+const replaceSelectedTableCellHtml = (editor, html) => {
+  const context = getEditorSelectionContext(editor);
+  if (!context?.cell) return false;
+
+  context.cell.innerHTML = html;
+  moveCaretToEndOfElement(context.doc, context.selection, context.cell);
+  return true;
+};
+
+const fillTableCellsFromSelection = (editor, values) => {
+  const context = getEditorSelectionContext(editor);
+  if (!context?.cell || !Array.isArray(values) || values.length === 0) return false;
+
+  const table = context.cell.closest('table');
+  if (!table) return false;
+
+  const cells = Array.from(table.rows).flatMap((row) => Array.from(row.cells));
+  const startIndex = cells.indexOf(context.cell);
+  if (startIndex === -1) return false;
+
+  let lastCell = context.cell;
+  values.forEach((value, index) => {
+    const cell = cells[startIndex + index];
+    if (!cell) return;
+    cell.innerHTML = escapeInlineHtml(value);
+    lastCell = cell;
+  });
+
+  moveCaretToEndOfElement(context.doc, context.selection, lastCell);
+  return true;
+};
+
+const insertHtmlIntoEditorSelection = (editor, html) => {
+  if (!editor || !html) return false;
+
+  const doc = editor.getDocument?.();
+  if (!doc) return false;
+
+  const root = doc.querySelector?.('.sc-editor-root') || doc.body;
+  if (!root) return false;
+
+  if (typeof editor.focus === 'function') {
+    editor.focus();
+  }
+
+  const container = doc.createElement('div');
+  container.innerHTML = html;
+
+  const fragment = doc.createDocumentFragment();
+  let lastNode = null;
+
+  while (container.firstChild) {
+    lastNode = fragment.appendChild(container.firstChild);
+  }
+
+  const selection = doc.getSelection?.() ?? window.getSelection();
+  const range = selection && selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+  const hasEditorSelection = Boolean(range && root.contains(range.commonAncestorContainer));
+
+  if (hasEditorSelection) {
+    range.deleteContents();
+    range.insertNode(fragment);
+  } else {
+    root.appendChild(fragment);
+  }
+
+  if (selection && lastNode) {
+    const nextRange = doc.createRange();
+    nextRange.setStartAfter(lastNode);
+    nextRange.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(nextRange);
+  }
+
+  return true;
+};
+
+const loadChildrenDataFallback = async () => {
+  if (typeof window !== 'undefined') {
+    try {
+      const saved = window.localStorage.getItem('forestChildrenList');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch {
+      // Ignore malformed local fallback and continue to bundled seed data.
+    }
+  }
+
+  try {
+    const module = await import('../imported_children.js');
+    if (Array.isArray(module.IMPORTED_CHILDREN)) {
+      return module.IMPORTED_CHILDREN;
+    }
+  } catch {
+    // Ignore optional bundled fallback load failures.
+  }
+
+  return [];
+};
+
 const MeetingsPage = () => {
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -123,13 +291,23 @@ const MeetingsPage = () => {
   const [showBatchDeleteModal, setShowBatchDeleteModal] = useState(false);
   const [meetings, setMeetings] = useState([]);
   const [selectedMeetingId, setSelectedMeetingId] = useState(null);
-  const [rightTab, setRightTab] = useState('info'); // info | uploads
+  const [rightTab, setRightTab] = useState('info'); // info | uploads | data
   const [isDocumentLoading, setIsDocumentLoading] = useState(false);
-  const [editorPreviewEngine, setEditorPreviewEngine] = useState(() => getStoredEditorOverride());
+  const [childrenData, setChildrenData] = useState([]);
+  const [isDataBankLoading, setIsDataBankLoading] = useState(false);
+  const [dataBankError, setDataBankError] = useState('');
+  const [rightSidebarWidth, setRightSidebarWidth] = useState(() => {
+    if (typeof window === 'undefined') {
+      return RIGHT_SIDEBAR_DEFAULT_WIDTH;
+    }
+
+    const savedWidth = Number(window.localStorage.getItem(RIGHT_SIDEBAR_STORAGE_KEY));
+    return clampRightSidebarWidth(Number.isFinite(savedWidth) ? savedWidth : RIGHT_SIDEBAR_DEFAULT_WIDTH);
+  });
+  const [isRightSidebarResizing, setIsRightSidebarResizing] = useState(false);
   const editorRef = useRef(null);
   const loadedDocumentIdsRef = useRef(new Set());
-  const defaultEditorEngine = getMeetingsEditorEngine();
-  const webHwpPreviewEnabled = isWebHwpPreviewEnabled();
+  const rightSidebarResizeRef = useRef({ startX: 0, startWidth: RIGHT_SIDEBAR_DEFAULT_WIDTH });
 
   useEffect(() => {
     const fetchMeetings = async () => {
@@ -185,7 +363,7 @@ const MeetingsPage = () => {
       try {
         localStorage.setItem('forestMeetings', JSON.stringify(currentMeetings));
         savedSync = true;
-      } catch (error) {
+      } catch {
         currentMeetings.pop();
         attempts++;
       }
@@ -205,6 +383,70 @@ const MeetingsPage = () => {
 
   const [checkedMeetings, setCheckedMeetings] = useState([]);
   const selectedMeeting = useMemo(() => meetings.find(m => m.id === selectedMeetingId), [meetings, selectedMeetingId]);
+
+  useEffect(() => {
+    if (rightTab !== 'data') return;
+
+    let cancelled = false;
+
+    const loadChildrenData = async () => {
+      setIsDataBankLoading(true);
+      setDataBankError('');
+
+      try {
+        const response = await authApi('/api/children');
+        const serverChildren = Array.isArray(response?.children) ? response.children : [];
+        if (cancelled) return;
+
+        if (serverChildren.length > 0) {
+          setChildrenData(serverChildren);
+          return;
+        }
+
+        const fallbackChildren = await loadChildrenDataFallback();
+        if (cancelled) return;
+        setChildrenData(fallbackChildren);
+        setDataBankError(
+          fallbackChildren.length > 0
+            ? '서버 출결 데이터가 비어 있어 로컬 저장 데이터를 표시합니다.'
+            : '등록된 아동 출결 데이터가 없습니다.',
+        );
+      } catch (error) {
+        const fallbackChildren = await loadChildrenDataFallback();
+        if (cancelled) return;
+
+        setChildrenData(fallbackChildren);
+        if (fallbackChildren.length > 0) {
+          setDataBankError(
+            error.message === 'unauthenticated' || error.message === 'session_expired'
+              ? '로그인 정보가 없어 로컬 저장 데이터를 표시합니다.'
+              : '서버 연결이 불안정해 로컬 저장 데이터를 표시합니다.',
+          );
+        } else {
+          setDataBankError(
+            error.message === 'unauthenticated' || error.message === 'session_expired'
+              ? '로그인이 필요합니다. 아동관리에서 저장한 로컬 데이터가 없으면 출결 조각을 만들 수 없습니다.'
+              : '출결 데이터를 불러오지 못했습니다.',
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setIsDataBankLoading(false);
+        }
+      }
+    };
+
+    loadChildrenData().catch(() => {
+      if (!cancelled) {
+        setIsDataBankLoading(false);
+        setDataBankError('출결 데이터를 불러오지 못했습니다.');
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [rightTab]);
 
   const toggleCheck = (e, id) => {
     e.stopPropagation();
@@ -228,7 +470,9 @@ const MeetingsPage = () => {
     if (!deleteTargetId) return;
     try {
       await authApi(`/api/meetings/${deleteTargetId}`, { method: 'DELETE' });
-    } catch (err) {}
+    } catch (_) {
+      // Local state cleanup should still proceed when remote deletion fails.
+    }
     const newM = meetings.filter(m => m.id !== deleteTargetId);
     setMeetings(newM);
     if (selectedMeetingId === deleteTargetId) setSelectedMeetingId(newM[0]?.id || null);
@@ -239,7 +483,11 @@ const MeetingsPage = () => {
   const executeBatchDelete = async () => {
     if (checkedMeetings.length === 0) return;
     for (const id of checkedMeetings) {
-      try { await authApi(`/api/meetings/${id}`, { method: 'DELETE' }); } catch(err) {}
+      try {
+        await authApi(`/api/meetings/${id}`, { method: 'DELETE' });
+      } catch (_) {
+        // Batch deletion is best-effort; keep removing local rows.
+      }
     }
     const newM = meetings.filter(m => !checkedMeetings.includes(m.id));
     setMeetings(newM);
@@ -323,21 +571,6 @@ const MeetingsPage = () => {
     };
   }, [selectedMeeting, initialTemplate]);
 
-  const selectedDocumentValue = createHtmlDocumentBody(selectedMeeting?.content || initialTemplate);
-  const resolvedEditorEngine = editorPreviewEngine || defaultEditorEngine;
-  const persistedDocumentEngine = resolvedEditorEngine;
-
-  const handlePreviewEngineChange = (engine) => {
-    setEditorPreviewEngine(engine);
-    if (typeof window !== 'undefined') {
-      if (engine) {
-        window.localStorage.setItem(EDITOR_OVERRIDE_STORAGE_KEY, engine);
-      } else {
-        window.localStorage.removeItem(EDITOR_OVERRIDE_STORAGE_KEY);
-      }
-    }
-  };
-
   const handleSave = () => {
     setShowConfirmModal(true);
   };
@@ -353,7 +586,7 @@ const MeetingsPage = () => {
     setShowConfirmModal(false);
 
     try {
-      const document = await persistMeetingDocument(updatedMeeting, content, persistedDocumentEngine);
+      const document = await persistMeetingDocument(updatedMeeting, content);
       const meetingUpdates = {
         ...updatedMeeting,
         documentId: document.id,
@@ -412,6 +645,65 @@ const MeetingsPage = () => {
     setMeetings(prev => prev.map(m => m.id === selectedMeetingId ? { ...m, [field]: value } : m));
   };
 
+  const syncSelectedMeetingContent = () => {
+    if (!selectedMeetingId) return;
+    const nextHtml = resolveCurrentEditorHtml(
+      editorRef.current,
+      contentRef.current || selectedMeeting?.content || initialTemplate,
+    );
+    contentRef.current = nextHtml;
+    setMeetings((prev) => prev.map((meeting) => (
+      meeting.id === selectedMeetingId
+        ? { ...meeting, content: nextHtml }
+        : meeting
+    )));
+  };
+
+  const handleInsertDataHtml = (html) => {
+    const editor = editorRef.current;
+    if (!editor || !selectedMeetingId) return;
+
+    const inserted = insertHtmlIntoEditorSelection(editor, html);
+    if (!inserted) return;
+
+    syncSelectedMeetingContent();
+  };
+
+  const handleInsertDataText = (text) => {
+    const editor = editorRef.current;
+    if (!editor || !selectedMeetingId) return;
+
+    const sanitizedText = escapeInlineHtml(text);
+    const replaced = replaceSelectedTableCellHtml(editor, sanitizedText);
+    if (!replaced) {
+      const inserted = insertHtmlIntoEditorSelection(editor, sanitizedText);
+      if (!inserted) return;
+    }
+
+    syncSelectedMeetingContent();
+  };
+
+  const handleInsertDailyPresentValue = (summary) => {
+    if (!summary) return;
+    handleInsertDataText(String(summary.presentCount));
+  };
+
+  const handleFillMonthlyPresentValues = (summaries) => {
+    const editor = editorRef.current;
+    if (!editor || !selectedMeetingId) return;
+
+    const presentCounts = (Array.isArray(summaries) ? summaries : []).map((summary) => String(summary.presentCount ?? ''));
+    if (presentCounts.length === 0) return;
+
+    const filled = fillTableCellsFromSelection(editor, presentCounts);
+    if (!filled) {
+      window.alert('표 안의 시작 셀을 먼저 클릭한 뒤 다시 시도해 주세요.');
+      return;
+    }
+
+    syncSelectedMeetingContent();
+  };
+
   useEffect(() => {
     const main = document.querySelector('main');
     if (main) {
@@ -425,6 +717,61 @@ const MeetingsPage = () => {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem(RIGHT_SIDEBAR_STORAGE_KEY, String(rightSidebarWidth));
+  }, [rightSidebarWidth]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+
+    const handleWindowResize = () => {
+      setRightSidebarWidth((currentWidth) => clampRightSidebarWidth(currentWidth));
+    };
+
+    window.addEventListener('resize', handleWindowResize);
+    return () => {
+      window.removeEventListener('resize', handleWindowResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isRightSidebarResizing) return undefined;
+
+    const handlePointerMove = (event) => {
+      const { startX, startWidth } = rightSidebarResizeRef.current;
+      const nextWidth = clampRightSidebarWidth(startWidth + (startX - event.clientX));
+      setRightSidebarWidth(nextWidth);
+    };
+
+    const handlePointerUp = () => {
+      setIsRightSidebarResizing(false);
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isRightSidebarResizing]);
+
+  const handleRightSidebarResizeStart = (event) => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) return;
+
+    event.preventDefault();
+    rightSidebarResizeRef.current = {
+      startX: event.clientX,
+      startWidth: rightSidebarWidth,
+    };
+    setIsRightSidebarResizing(true);
+  };
 
   return (
     <div className="flex h-[100vh] bg-slate-50 overflow-hidden font-['Outfit']">
@@ -511,22 +858,6 @@ const MeetingsPage = () => {
               />
            </div>
            <div className="flex items-center gap-3 shrink-0">
-              {webHwpPreviewEnabled && (
-                <div className="hidden items-center rounded-2xl border border-slate-200 bg-slate-50 p-1 md:flex">
-                  <button
-                    onClick={() => handlePreviewEngineChange(EDITOR_ENGINE.ROOSTER)}
-                    className={`rounded-xl px-3 py-2 text-[11px] font-black transition-all ${resolvedEditorEngine === EDITOR_ENGINE.ROOSTER ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
-                  >
-                    Rooster
-                  </button>
-                  <button
-                    onClick={() => handlePreviewEngineChange(EDITOR_ENGINE.WEBHWP)}
-                    className={`rounded-xl px-3 py-2 text-[11px] font-black transition-all ${resolvedEditorEngine === EDITOR_ENGINE.WEBHWP ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}
-                  >
-                    WebHwp
-                  </button>
-                </div>
-              )}
               <button onClick={() => window.print()} className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all"><Printer className="w-4 h-4" /> 인쇄</button>
               <button onClick={handleSave} className="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white rounded-xl text-xs font-black shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 transition-all"><Save className="w-4 h-4" /> 기록 저장</button>
            </div>
@@ -540,13 +871,12 @@ const MeetingsPage = () => {
                   문서 본문을 불러오는 중입니다...
                 </div>
               )}
-              <EditorAdapter
+              <RoosterApp
                 key={selectedMeetingId}
-                engine={resolvedEditorEngine}
-                value={selectedDocumentValue}
+                initialHtml={selectedMeeting?.content || initialTemplate}
                 editorInstanceRef={editorRef}
-                onChange={(nextValue) => {
-                  contentRef.current = nextValue?.html || '';
+                onChangeHtml={(html) => {
+                  contentRef.current = html;
                 }}
               />
             </div>
@@ -555,20 +885,47 @@ const MeetingsPage = () => {
       </div>
 
       {/* Right Column: Metadata & Uploads */}
-      <div className="w-80 bg-white border-l border-slate-200 flex flex-col shrink-0">
+      <div
+        className="relative flex shrink-0 flex-col border-l border-slate-200 bg-white"
+        style={{ width: `${rightSidebarWidth}px` }}
+      >
+        <div
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="오른쪽 사이드바 너비 조절"
+          onPointerDown={handleRightSidebarResizeStart}
+          className="absolute inset-y-0 -left-2 z-30 hidden w-4 cursor-col-resize items-center justify-center md:flex"
+        >
+          <div
+            className={`flex h-24 w-2 items-center justify-center rounded-full border transition-all ${
+              isRightSidebarResizing
+                ? 'border-indigo-300 bg-indigo-100 shadow-[0_0_0_6px_rgba(99,102,241,0.12)]'
+                : 'border-slate-200 bg-white/90 hover:border-indigo-200 hover:bg-indigo-50'
+            }`}
+          >
+            <div className="h-12 w-[3px] rounded-full bg-slate-300" />
+          </div>
+        </div>
+
         {/* 사이드바 탭 헤더 */}
-        <div className="flex border-b border-slate-100">
+        <div className="grid grid-cols-3 border-b border-slate-100">
           <button 
             onClick={() => setRightTab('info')}
-            className={`flex-1 py-4 text-[11px] font-black uppercase tracking-widest transition-all ${rightTab === 'info' ? 'text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50/30' : 'text-slate-400 hover:text-slate-600'}`}
+            className={`py-4 text-[11px] font-black uppercase tracking-widest transition-all ${rightTab === 'info' ? 'text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50/30' : 'text-slate-400 hover:text-slate-600'}`}
           >
             기안 정보
           </button>
           <button 
             onClick={() => setRightTab('uploads')}
-            className={`flex-1 py-4 text-[11px] font-black uppercase tracking-widest transition-all ${rightTab === 'uploads' ? 'text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50/30' : 'text-slate-400 hover:text-slate-600'}`}
+            className={`py-4 text-[11px] font-black uppercase tracking-widest transition-all ${rightTab === 'uploads' ? 'text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50/30' : 'text-slate-400 hover:text-slate-600'}`}
           >
             이미지 뱅크
+          </button>
+          <button 
+            onClick={() => setRightTab('data')}
+            className={`py-4 text-[11px] font-black uppercase tracking-widest transition-all ${rightTab === 'data' ? 'text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50/30' : 'text-slate-400 hover:text-slate-600'}`}
+          >
+            데이터 뱅크
           </button>
         </div>
 
@@ -668,7 +1025,7 @@ const MeetingsPage = () => {
                 <button className="flex items-center gap-2 text-indigo-600 text-[10px] font-black uppercase tracking-widest mt-2 relative z-10">일지 생성 실행 <ArrowRight className="w-3 h-3" /></button>
              </div>
           </div>
-        ) : (
+        ) : rightTab === 'uploads' ? (
           <UploadSidebar onInsertImage={(url) => {
              const editor = editorRef.current;
              if (!editor) return;
@@ -685,9 +1042,19 @@ const MeetingsPage = () => {
                 const img = `<img src="${url}" style="max-width: 100%; border: none; outline: none; margin: 10px 0;" />`;
                 document.execCommand('insertHTML', false, img);
              } catch (err) {
-                console.error('이미지 삽입 실패:', err);
-             }
-          }} />
+                 console.error('이미지 삽입 실패:', err);
+              }
+           }} />
+        ) : (
+          <DataBankSidebar
+            childrenData={childrenData}
+            isLoading={isDataBankLoading}
+            loadError={dataBankError}
+            onInsertText={handleInsertDataText}
+            onInsertHtml={handleInsertDataHtml}
+            onInsertDailyPresentValue={handleInsertDailyPresentValue}
+            onFillMonthlyPresentValues={handleFillMonthlyPresentValues}
+          />
         )}
       </div>
 

@@ -49,13 +49,6 @@ const BCRYPT_ROUNDS = Number(process.env.BCRYPT_ROUNDS || 10);
 const DATABASE_URL = process.env.DATABASE_URL || '';
 const POSTGRES_SSL = process.env.POSTGRES_SSL === 'true';
 const STATE_TABLE = process.env.PG_STATE_TABLE || 'app_state';
-const WEBHWP_ENABLED = process.env.WEBHWP_ENABLED === 'true';
-const WEBHWP_SCRIPT_URL = process.env.WEBHWP_SCRIPT_URL || '';
-const WEBHWP_SERVICE_URL = process.env.WEBHWP_SERVICE_URL || '';
-const WEBHWP_CLIENT_ID = process.env.WEBHWP_CLIENT_ID || '';
-const WEBHWP_CLIENT_SECRET = process.env.WEBHWP_CLIENT_SECRET || '';
-const WEBHWP_MEETING_TEMPLATE = process.env.WEBHWP_MEETING_TEMPLATE || 'meeting-default';
-const WEBHWP_BOOTSTRAP_MODE = process.env.WEBHWP_BOOTSTRAP_MODE || 'server';
 const pgPool = DATABASE_URL ? new pg.Pool({
   connectionString: DATABASE_URL,
   ssl: POSTGRES_SSL ? { rejectUnauthorized: false } : undefined,
@@ -312,7 +305,6 @@ const DOCUMENT_KIND = {
 
 const DOCUMENT_ENGINE = {
   ROOSTER: 'rooster',
-  WEBHWP: 'webhwp',
 };
 
 const normalizeDocumentKind = (value) => (
@@ -797,23 +789,6 @@ app.post('/api/auth/logout', async (req, res) => {
   }
 
   return res.json({ ok: true });
-});
-
-app.get('/api/webhwp/config', authMiddleware, async (_, res) => {
-  return res.json({
-    enabled: WEBHWP_ENABLED,
-    bootstrapMode: WEBHWP_BOOTSTRAP_MODE,
-    scriptUrl: WEBHWP_SCRIPT_URL,
-    serviceUrl: WEBHWP_SERVICE_URL,
-    templates: {
-      meeting: WEBHWP_MEETING_TEMPLATE,
-    },
-    readiness: {
-      hasServiceUrl: Boolean(WEBHWP_SERVICE_URL),
-      hasScriptUrl: Boolean(WEBHWP_SCRIPT_URL),
-      hasClientCredentials: Boolean(WEBHWP_CLIENT_ID && WEBHWP_CLIENT_SECRET),
-    },
-  });
 });
 
 app.get('/api/notifications/telegram/config', authMiddleware, adminOnly, async (_, res) => {

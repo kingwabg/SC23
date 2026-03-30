@@ -1,17 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import path from 'path';
 
 // https://vite.dev/config/
 export default defineConfig({
-  resolve: {
-    alias: {
-      '@lexical/extension': path.resolve(__dirname, './src/components/LexicalEditor/lexical-extension/index.ts'),
-    },
-  },
   define: {
-    'process.env.LEXICAL_VERSION': JSON.stringify('0.41.0'),
     'process.env': {} 
   },
   server: {
